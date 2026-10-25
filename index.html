@@ -9,14 +9,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="본전 미터">
+<meta name="apple-mobile-web-app-title" content="본전">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
-<title>본전 미터</title>
+<title>본전</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
@@ -294,7 +294,7 @@ details.more2[open] summary{color:var(--sub)}
 
 <div class="wrap">
   <section class="panel" data-tab="home" id="tab-home">
-    <header class="top"><span class="brand">본전 미터</span><span class="date" id="homeDate"></span></header>
+    <header class="top"><span class="brand">본전</span><span class="date" id="homeDate"></span></header>
     <div class="panel" id="homeBody"><div class="card"><p class="sub">불러오는 중…</p></div></div>
   </section>
 
@@ -1128,7 +1128,7 @@ details.more2[open] summary{color:var(--sub)}
   $("expBtn").addEventListener("click", async () => {
     const blob = new Blob([JSON.stringify({ app: "bonjeon", version: 2, exportedAt: new Date().toISOString(), items }, null, 2)], { type: "application/json" });
     const filename = `bonjeon-backup-${todayStr()}.json`;
-    try { const file = new File([blob], filename, { type: "application/json" }); if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "본전 미터 백업" }); return toast("백업 파일을 보냈어요"); } }
+    try { const file = new File([blob], filename, { type: "application/json" }); if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "본전 백업" }); return toast("백업 파일을 보냈어요"); } }
     catch (err) { if (err?.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000); toast(`${filename}로 저장했어요`);
@@ -1141,7 +1141,7 @@ details.more2[open] summary{color:var(--sub)}
       const incoming = list.filter(r => r && typeof r.id === "string").map(normalize);
       for (const it of incoming) { const i = items.findIndex(x => x.id === it.id); i >= 0 ? items[i] = it : items.push(it); await store.put(it); }
       renderAll(); toast(`${incoming.length}개를 불러왔어요`);
-    } catch { toast("백업 파일을 읽지 못했어요. 본전 미터에서 저장한 .json 파일인지 확인해 주세요."); }
+    } catch { toast("백업 파일을 읽지 못했어요. 본전에서 저장한 .json 파일인지 확인해 주세요."); }
   });
 
   // ---------- 시작 ----------

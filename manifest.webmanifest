@@ -1,6 +1,6 @@
 {
-  "name": "본전 미터",
-  "short_name": "본전 미터",
+  "name": "본전",
+  "short_name": "본전",
   "description": "월세부터 구독까지, 매달 나가는 돈을 한눈에 보고 줄여요.",
   "lang": "ko",
   "start_url": "./",
