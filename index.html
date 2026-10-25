@@ -179,6 +179,8 @@ details.fold > summary span{font-size:14px;color:var(--good);font-weight:600}
 .acts{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
 .confirm{background:var(--bad-tint);color:var(--bad);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-size:14px}
 .confirm .rowb{display:flex;gap:8px;justify-content:flex-end}
+.banner.demo-on{background:var(--accent-tint);color:var(--accent-dark)}
+.banner.demo-on .btn{background:var(--accent);color:var(--accent-ink)}
 .banner{background:var(--good-tint);color:var(--good);border-radius:14px;padding:12px 14px;font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 
 /* pages (detail, add) */
@@ -372,6 +374,8 @@ details.more2[open] summary{color:var(--sub)}
       <input type="file" id="impFile" accept="application/json,.json" hidden>
       <span class="small">기록은 이 휴대폰에만 저장돼요. 기기를 바꾸기 전에 백업해 두세요.</span>
     </div>
+    <div class="backup" id="resetBox"><button class="btn sm danger" type="button" id="resetBtn">모든 기록 지우고 처음부터</button></div>
+    <div class="confirm" id="resetAsk" hidden><span>넣은 항목, 도장, 아낀 돈 기록이 모두 지워져요. 되돌릴 수 없어요.</span><div class="rowb"><button class="btn sm" type="button" id="resetNo">취소</button><button class="btn sm danger" type="button" id="resetYes">모두 지우기</button></div></div>
     <p class="small" id="installTip" hidden><b>홈 화면에 추가</b>하면 앱처럼 쓸 수 있어요. 아이폰은 사파리 공유 버튼 → ‘홈 화면에 추가’, 안드로이드는 크롬 메뉴 → ‘홈 화면에 추가’.</p>
   </section>
 </div>
@@ -618,7 +622,8 @@ details.more2[open] summary{color:var(--sub)}
       unit: VERB[r.unit] ? r.unit : catOf(cat).unit, uses: Array.isArray(r.uses) ? [...new Set(r.uses.filter(isDate))].sort() : [],
       createdAt: Number(r.createdAt) || 0, color: ((Number(r.color) | 0) % 8 + 8) % 8,
       label: String(r.label || autoLabel(name)).slice(0, 3),
-      emoji: typeof r.emoji === "string" && r.emoji.trim() ? r.emoji.trim().slice(0, 8) : catOf(cat).emoji
+      emoji: typeof r.emoji === "string" && r.emoji.trim() ? r.emoji.trim().slice(0, 8) : catOf(cat).emoji,
+      sample: r.sample === true || /\(예시\)/.test(name)
     };
   };
   const save = it => store.put(it).catch(() => toast("저장하지 못했어요. 연결을 확인하고 다시 해 주세요."));
@@ -682,7 +687,9 @@ details.more2[open] summary{color:var(--sub)}
     if (loading) return;
     if (!items.length) { el.innerHTML = emptyHtml(); return; }
     const st = counted().filter(it => eligible(it, t));
-    let h = `<section class="card"><div><h2 class="h2b">오늘 썼어요?</h2><p class="sub">누르면 색이 채워지고 도장이 쾅 찍혀요</p></div>`;
+    const demo = items.some(it => it.sample);
+    let h = demo ? `<div class="banner demo-on" id="sampleBar"><span>지금은 예시를 보고 있어요</span><button class="btn sm" type="button" data-act="clearSamples">예시 지우고 시작하기</button></div>` : "";
+    h += `<section class="card"><div><h2 class="h2b">오늘 썼어요?</h2><p class="sub">누르면 색이 채워지고 도장이 쾅 찍혀요</p></div>`;
     h += st.length ? `<div class="sgrid" id="homeStamps">${st.map(it => stampBtn(it, t)).join("")}</div>` : `<p class="sub">‘쓸 때마다 도장 찍기’를 켠 항목이 여기에 나와요.</p>`;
     if (homeMsg) h += `<p class="msg" id="homeMsg">${esc(homeMsg)}</p>`;
     h += `</section>`;
@@ -1080,10 +1087,16 @@ details.more2[open] summary{color:var(--sub)}
       { name: "토스 프라임 (예시)", cat: "member", label: "토프", emoji: "🎟️", color: 1, mode: "flat", kind: "recurring", price: 5900, months: 1, start: addMonths(back(26), -4) },
       { name: "iCloud+ 200GB (예시)", cat: "cloud", label: "iC", emoji: "☁️", color: 7, mode: "flat", kind: "recurring", price: 4400, months: 1, start: addMonths(back(5), -8) },
       { name: "밀리의 서재 (예시)", cat: "study", label: "밀리", emoji: "📚", color: 4, kind: "recurring", price: 9900, months: 1, start: addMonths(back(40), -6), status: "cancelled", cancelledAt: back(40) }
-    ].map((r, i) => normalize({ ...r, id: newId() + i, createdAt: Date.now() + i }));
+    ].map((r, i) => normalize({ ...r, id: newId() + i, createdAt: Date.now() + i, sample: true }));
     items.push(...s); renderAll();
     for (const it of s) await save(it);
-    toast("예시를 넣었어요. 오늘 쓴 것에 도장을 찍어 보세요");
+    toast("예시를 넣었어요. 다 보셨으면 홈 위 ‘예시 지우고 시작하기’를 눌러 주세요");
+  }
+  async function clearSamples() {
+    const gone = items.filter(it => it.sample);
+    items = items.filter(it => !it.sample); renderAll();
+    for (const it of gone) { try { await store.del(it.id); } catch {} }
+    if (!items.length) openOnb(2); else toast(`예시 ${gone.length}개를 지웠어요`);
   }
 
   // ---------- 처음 화면: 체험 → 한 번에 고르기 → 첫 결과 ----------
@@ -1136,7 +1149,7 @@ details.more2[open] summary{color:var(--sub)}
         <div><h1 class="h1">매달 나가는 것,<br>있는 대로 다 눌러 주세요</h1><p class="sub" style="margin-top:6px">금액은 2026년 10월 정가로 채워 둘게요</p></div>
         ${ONB_GROUPS.map(([g, names]) => `<div class="pgrp"><p class="catttl">${g}${g === "주거 · 통신" ? " <span>· 금액은 다음 화면에서 넣어요</span>" : ""}</p>
           <div class="pchips" role="group" aria-label="${g}">${names.map(n => { const on = onb.picked.includes(n); return `<button type="button" class="pchip" data-pickp="${esc(n)}" aria-pressed="${on}">${on ? "✓ " : ""}${esc(chipName(n))}</button>`; }).join("")}</div></div>`).join("")}
-        <p class="small">여기 없는 건 나중에 아래 ＋에서 검색해 넣을 수 있어요</p></div>
+        <button type="button" class="textbtn" data-onb="manual" style="align-self:flex-start">고를 게 없어요, 직접 넣을게요</button></div>
         <div class="cta onb-bar"><div class="cta-in"><div class="sumline"><span>고른 ${k}개 · 한 달</span><b id="onbMonth">${won(onbMonthly())}</b></div>
           <button type="button" data-onb="next" ${k ? "" : "disabled"}>${k ? "다음" : "하나 이상 골라 주세요"}</button></div></div>`;
       return;
@@ -1196,6 +1209,7 @@ details.more2[open] summary{color:var(--sub)}
     if (a === "sample") { closeOnb(); return loadSamples(); }
     if (a === "addHome") { for (const n of ["월세", "휴대폰 요금"]) if (!onb.picked.includes(n)) onb.picked.push(n); renderOnb(); return setTimeout(() => document.querySelector('#onbPage [data-amt]')?.focus(), 30); }
     if (a === "finish") return finishOnb();
+    if (a === "manual") { closeOnb(); return openAdd(); }
   });
   $("onbPage").addEventListener("input", e => {
     const k = e.target.dataset?.amt; if (!k) return;
@@ -1250,6 +1264,7 @@ details.more2[open] summary{color:var(--sub)}
     if (act === "manual") { add.preset = null; add.cat = "etc"; add.step = 2; renderAdd(); setTimeout(() => $("fName")?.focus(), 30); return; }
     if (act === "sample") return loadSamples();
     if (act === "onbPick") return openOnb(2);
+    if (act === "clearSamples") return clearSamples();
     if (act === "savedSheet") return openSaved();
     if (act === "closeSheet") { $("savedSheet").hidden = true; return unlock(); }
     if (act === "closeDetail") return closeDetail();
@@ -1304,6 +1319,15 @@ details.more2[open] summary{color:var(--sub)}
       for (const it of incoming) { const i = items.findIndex(x => x.id === it.id); i >= 0 ? items[i] = it : items.push(it); await store.put(it); }
       renderAll(); toast(`${incoming.length}개를 불러왔어요`);
     } catch { toast("백업 파일을 읽지 못했어요. 본전에서 저장한 .json 파일인지 확인해 주세요."); }
+  });
+
+  // ---------- 처음부터 ----------
+  $("resetBtn").addEventListener("click", () => { $("resetAsk").hidden = false; $("resetBox").hidden = true; });
+  $("resetNo").addEventListener("click", () => { $("resetAsk").hidden = true; $("resetBox").hidden = false; });
+  $("resetYes").addEventListener("click", async () => {
+    const all = items.slice(); items = []; $("resetAsk").hidden = true; $("resetBox").hidden = false;
+    renderAll(); showTab("home", true); openOnb(1);
+    for (const it of all) { try { await store.del(it.id); } catch {} }
   });
 
   // ---------- 시작 ----------
