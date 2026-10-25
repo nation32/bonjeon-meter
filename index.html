@@ -272,6 +272,47 @@ details.more2[open] summary{color:var(--sub)}
 .foot{background:var(--field);border-radius:14px;padding:12px 14px;font-size:13px;color:var(--sub);line-height:1.5;display:flex;flex-direction:column;gap:4px}
 .foot b{color:var(--ink)}
 
+/* onboarding */
+.onb{gap:22px;padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:calc(210px + env(safe-area-inset-bottom,0px))}
+.onb-brand{font-size:15px;font-weight:800;letter-spacing:-.02em;color:var(--accent)}
+.onb-h{margin:0;font-size:28px;font-weight:800;letter-spacing:-.035em;line-height:1.32}
+.demo{background:color-mix(in srgb,var(--accent) 7%,var(--surface));border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.demo-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.demo-top .who{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:var(--sub)}
+.demo-ic{width:36px;height:36px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:18px;flex:none}
+.demo-mid{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.demo-mid > span{display:flex;flex-direction:column;gap:2px}
+.demo-n{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.demo-btn{flex:none;width:76px;height:76px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:15px;font-weight:800;line-height:1.25;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 7%,var(--surface)),0 0 0 6px var(--accent)}
+.demo-btn .e{font-size:34px;line-height:1}
+.demo-msg{margin:0;background:var(--surface);border-radius:12px;padding:10px 12px;font-size:14px;color:var(--accent-dark);font-weight:600}
+.onb-vs{margin:0;font-size:17px;font-weight:700;line-height:1.45}
+.onb-vs .m{color:var(--mute)} .onb-vs .a{color:var(--accent)}
+.feats{display:flex;flex-direction:column;gap:14px}
+.feat{display:flex;gap:12px;align-items:center}
+.feat .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:none}
+.feat b{display:block;font-size:15px;font-weight:600}
+.feat > span:last-child span{font-size:13px;color:var(--mute)}
+.onb-cta{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.cta .textbtn{width:auto;height:auto;background:none;color:var(--sub);font-size:15px;font-weight:500;text-decoration:none;padding:6px}
+.cta .textbtn:hover{background:none;color:var(--ink)}
+.cta button:disabled{background:var(--line);color:var(--mute);cursor:default}
+.pgrp{display:flex;flex-direction:column;gap:8px}
+.pgrp .catttl{margin:0}
+.pgrp .catttl span{font-weight:500}
+.pchips{display:flex;flex-wrap:wrap;gap:8px}
+.pchip{border:0;border-radius:999px;padding:9px 14px;background:var(--field);font-size:15px}
+.pchip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.page.white .cta.onb-bar,.cta.onb-bar{background:var(--surface);border-top:1px solid var(--line)}
+.sumline{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;font-size:14px;color:var(--sub)}
+.sumline b{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.onb-home{border:0;text-align:left;flex-direction:row;align-items:center;font:inherit;color:inherit;width:100%}
+.onb-home .tx{display:flex;flex-direction:column;flex-grow:1;min-width:0}
+.onb-home .tx b{font-size:15px;font-weight:600}
+.onb-home .tx span{font-size:13px;color:var(--mute)}
+.onb-home .go{font-size:14px;font-weight:700;color:var(--accent);white-space:nowrap}
+.cnt{font-size:15px;font-weight:700;color:var(--accent);white-space:nowrap}
+
 /* tab bar */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--surface);border-top:1px solid var(--line);padding-top:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
 .tabs{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end}
@@ -347,6 +388,7 @@ details.more2[open] summary{color:var(--sub)}
 
 <div class="page" id="detailPage" hidden role="dialog" aria-label="상세"><div class="page-in" id="detailBody"></div><div class="cta" id="detailCta" hidden><div class="cta-in" id="detailCtaIn"></div></div></div>
 <div class="page white" id="addPage" hidden role="dialog" aria-label="추가"><div class="page-in" id="addBody"></div><div class="cta" id="addCta" hidden><div class="cta-in"><button type="button" id="addSave">추가하기</button></div></div></div>
+<div class="page white" id="onbPage" hidden role="dialog" aria-label="시작하기"></div>
 <div class="sheet" id="savedSheet" hidden><div class="sheet-in" role="dialog" aria-label="올해 아낀 돈 내역" id="savedBody"></div></div>
 <div class="toast" id="toast" hidden><span id="toastMsg"></span><button type="button" id="toastUndo" hidden>되돌리기</button></div>
 
@@ -632,7 +674,7 @@ details.more2[open] summary{color:var(--sub)}
   function emptyHtml() {
     return `<section class="card empty"><h2>매달 나가는 돈을 넣어 보세요</h2>
       <p>월세·통신비 같은 고정비와 헬스장·넷플릭스 같은 구독을 넣고, 쓴 날 도장을 찍으면 1번에 얼마인지 알려줘요.</p>
-      <div class="rowb"><button class="btn pri" type="button" data-act="sample">예시로 둘러보기</button><button class="btn" type="button" data-act="openAdd">바로 추가하기</button></div></section>`;
+      <div class="rowb"><button class="btn pri" type="button" data-act="onbPick">한 번에 골라 넣기</button><button class="btn" type="button" data-act="sample">예시로 둘러보기</button></div></section>`;
   }
   function renderHome() {
     const t = todayStr(), dt = parse(t), el = $("homeBody");
@@ -1044,6 +1086,125 @@ details.more2[open] summary{color:var(--sub)}
     toast("예시를 넣었어요. 오늘 쓴 것에 도장을 찍어 보세요");
   }
 
+  // ---------- 처음 화면: 체험 → 한 번에 고르기 → 첫 결과 ----------
+  const ONB_KEY = "bonjeon-onboarded";
+  const ONB_GROUPS = [
+    ["영상 · 음악", ["넷플릭스 스탠다드", "유튜브 프리미엄", "티빙 스탠다드", "쿠팡플레이 프리미엄 패스", "멜론"]],
+    ["쇼핑 · 배달 · 멤버십", ["쿠팡 와우", "배민클럽", "네이버플러스 멤버십", "토스 프라임"]],
+    ["운동 · AI · 클라우드", ["헬스장 1년권", "필라테스 3개월", "ChatGPT Plus", "iCloud+ 200GB"]],
+    ["주거 · 통신", ["월세", "관리비", "휴대폰 요금", "인터넷"]]
+  ];
+  const CHIP_NAME = { "넷플릭스 스탠다드": "넷플릭스", "티빙 스탠다드": "티빙", "쿠팡플레이 프리미엄 패스": "쿠팡플레이", "네이버플러스 멤버십": "네이버플러스",
+    "헬스장 1년권": "헬스장", "필라테스 3개월": "필라테스", "iCloud+ 200GB": "iCloud+" };
+  const ONB_INK = { "넷플릭스 스탠다드": 0, "유튜브 프리미엄": 5, "티빙 스탠다드": 6, "쿠팡플레이 프리미엄 패스": 7, "멜론": 2, "쿠팡 와우": 1, "배민클럽": 4,
+    "네이버플러스 멤버십": 2, "토스 프라임": 1, "헬스장 1년권": 1, "필라테스 3개월": 3, "ChatGPT Plus": 7, "iCloud+ 200GB": 3, "월세": 6, "관리비": 7, "휴대폰 요금": 2, "인터넷": 3 };
+  let onb = { step: 1, demo: false, picked: [], amt: {} }, cloud = false;
+  const presetByName = n => allPresets().find(p => p.name === n);
+  const chipName = n => CHIP_NAME[n] || n;
+  const needsAmount = p => p.price == null || /예시/.test(p.note || "");
+  const onbPrice = p => p.key in onb.amt ? onb.amt[p.key] : (p.price ?? 0);
+  const planOf = p => { const [k, m] = (p.plan || "recurring:1").split(":"); return { kind: k === "pass" ? "pass" : "recurring", months: +m || 1 }; };
+  const onbPicked = () => onb.picked.map(presetByName).filter(Boolean);
+  const onbMonthly = () => onbPicked().reduce((s, p) => s + onbPrice(p) / planOf(p).months, 0);
+  const onbSeen = () => { try { return localStorage.getItem(ONB_KEY) === "1"; } catch { return false; } };
+  const markSeen = () => { try { localStorage.setItem(ONB_KEY, "1"); } catch {} };
+  function openOnb(step = 1) { onb = { step, demo: false, picked: [], amt: {} }; $("onbPage").hidden = false; lock(); renderOnb(); }
+  function closeOnb() { $("onbPage").hidden = true; markSeen(); unlock(); }
+  const backSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>`;
+  function renderOnb() {
+    const el = $("onbPage");
+    el.classList.toggle("white", onb.step !== 3);
+    if (onb.step === 1) {
+      const n = onb.demo ? 10 : 9, trust = cloud ? "가입 없이 · 계좌·카드 연결 없이 · 나만 보는 내 계정에 저장" : "가입 없이 · 계좌·카드 연결 없이 · 이 휴대폰에만 저장";
+      el.innerHTML = `<div class="page-in onb"><span class="onb-brand">본전</span>
+        <h1 class="onb-h">헬스장, 영상 구독 서비스…<br>1번 갈 때마다, 1번 볼 때마다<br>얼마 내고 있을까요?</h1>
+        <div class="demo"><div class="demo-top"><span class="who"><span class="demo-ic" aria-hidden="true">🏋️</span>헬스장 1년권 ₩600,000</span><span class="small" id="demoCnt">${n}번 갔어요</span></div>
+          <div class="demo-mid"><span><span class="lbl">1번에</span><span class="demo-n" id="demoN">${won(600000 / n)}</span></span>
+            <button type="button" class="demo-btn" data-onb="demo" aria-pressed="${onb.demo}" aria-label="${onb.demo ? "도장 지우기" : "오늘도 갔어요 도장 찍기"}">${onb.demo ? `<span class="e sb-c pop" style="width:auto;height:auto;font-size:34px">🏋️</span>` : "오늘도<br>갔어요"}</button></div>
+          <p class="demo-msg" id="demoMsg">${onb.demo ? "10번째! 1번 ₩66,667 → ₩60,000 · 30번 더 가면 본전" : "눌러 보세요 → 1번 ₩60,000으로 내려가요"}</p></div>
+        <p class="onb-vs">다른 앱은 <span class="m">얼마 나갔는지</span>만 알려줘요.<br>여기선 <span class="a">본전 뽑았는지</span>까지 알려줘요.</p>
+        <div class="feats">
+          <div class="feat"><span class="ic" style="background:var(--accent-tint)" aria-hidden="true">🎯</span><span><b>몇 번 더 써야 본전인지</b><span>헬스장·배달·OTT, 쓴 날 도장만 찍으면 돼요</span></span></div>
+          <div class="feat"><span class="ic" style="background:var(--t0)" aria-hidden="true">💸</span><span><b>안 쓰고 새는 돈</b><span>30일째 안 본 넷플릭스, 끝나는 할인을 먼저 알려줘요</span></span></div>
+          <div class="feat"><span class="ic" style="background:var(--t6)" aria-hidden="true">🏠</span><span><b>월세부터 구독까지 한 달 고정비</b><span>3개월권·1년권도 한 달 금액으로 나눠 보여줘요</span></span></div></div></div>
+        <div class="cta"><div class="cta-in onb-cta"><span class="small">${trust}</span><button type="button" data-onb="next">내 고정비 30초 만에 계산하기</button><button type="button" class="textbtn" data-onb="sample">예시로 먼저 둘러볼게요</button></div></div>`;
+      return;
+    }
+    if (onb.step === 2) {
+      const k = onb.picked.length;
+      el.innerHTML = `<div class="page-in onb" style="gap:18px"><div class="pagehead"><button class="iconbtn" type="button" data-onb="back" aria-label="뒤로">${backSvg}</button><span class="small">1 / 2</span></div>
+        <div><h1 class="h1">매달 나가는 것,<br>있는 대로 다 눌러 주세요</h1><p class="sub" style="margin-top:6px">금액은 2026년 10월 정가로 채워 둘게요</p></div>
+        ${ONB_GROUPS.map(([g, names]) => `<div class="pgrp"><p class="catttl">${g}${g === "주거 · 통신" ? " <span>· 금액은 다음 화면에서 넣어요</span>" : ""}</p>
+          <div class="pchips" role="group" aria-label="${g}">${names.map(n => { const on = onb.picked.includes(n); return `<button type="button" class="pchip" data-pickp="${esc(n)}" aria-pressed="${on}">${on ? "✓ " : ""}${esc(chipName(n))}</button>`; }).join("")}</div></div>`).join("")}
+        <p class="small">여기 없는 건 나중에 아래 ＋에서 검색해 넣을 수 있어요</p></div>
+        <div class="cta onb-bar"><div class="cta-in"><div class="sumline"><span>고른 ${k}개 · 한 달</span><b id="onbMonth">${won(onbMonthly())}</b></div>
+          <button type="button" data-onb="next" ${k ? "" : "disabled"}>${k ? "다음" : "하나 이상 골라 주세요"}</button></div></div>`;
+      return;
+    }
+    const ps = onbPicked(), amts = ps.filter(needsAmount), hasHome = onb.picked.includes("월세") || onb.picked.includes("휴대폰 요금");
+    const bon = ps.filter(p => (p.mode || catOf(p.cat).mode) === "count" && p.ref > 0);
+    const rest = ps.filter(p => !bon.includes(p)).map(p => chipName(p.name));
+    const restTxt = rest.length ? ` · ${rest.slice(0, 2).join("·")}${rest.length > 2 ? ` 외 ${rest.length - 2}개` : ""}${josa(rest.length > 2 ? "개" : rest[Math.min(1, rest.length - 1)], "은", "는")} 금액만 확인해요` : "";
+    el.innerHTML = `<div class="page-in" style="padding-top:env(safe-area-inset-top,0px)"><div class="pagehead"><button class="iconbtn" type="button" data-onb="back" aria-label="뒤로">${backSvg}</button><span class="small" style="padding-right:6px">2 / 2</span></div>
+      <div class="dtop"><span class="lbl" style="font-size:16px">고른 ${ps.length}개만 해도 1년이면</span><span class="hero" id="onbYear"></span><span class="lbl" id="onbSub"></span></div>
+      ${amts.length ? `<section class="card"><div><h2 class="h2">금액을 넣어 주세요</h2><p class="sub">사람마다 달라서 직접 넣어야 정확해요. 비워 두면 빼고 넣을게요</p></div>
+        <div class="frows">${amts.map(p => `<div class="frow"><span class="tx"><b>${esc(chipName(p.name))}</b><span>${p.price != null ? "예시 금액이에요 · 실제 금액으로 고쳐 주세요" : planOf(p).months === 12 ? "1년 금액" : "한 달 금액"}</span></span>
+          <input class="inl" inputmode="numeric" data-amt="${p.key}" value="${p.key in onb.amt ? fmt(onb.amt[p.key]) : p.price != null ? fmt(p.price) : ""}" placeholder="0원" aria-label="${esc(chipName(p.name))} 금액"></div>`).join("")}</div></section>` : ""}
+      ${bon.length ? `<section class="card"><div><h2 class="h2">이 ${bon.length}개는 본전을 따져 볼게요</h2><p class="sub">쓴 날 도장을 찍으면 1번에 얼마인지 알려드려요</p></div>
+        <div class="rows" id="onbBon"></div><p class="sub">이만큼 쓰면 본전이에요${esc(restTxt)}</p></section>`
+        : `<section class="card"><p class="sub">헬스장·배달·OTT처럼 쓸 때마다 도장 찍는 걸 고르면, 몇 번 써야 본전인지 따져 드려요.</p></section>`}
+      ${hasHome ? "" : `<button type="button" class="card onb-home" data-onb="addHome"><span class="feat"><span class="ic" style="background:var(--t6)" aria-hidden="true">🏠</span></span>
+        <span class="tx"><b>월세·휴대폰 요금도 넣을까요?</b><span>넣으면 진짜 한 달 고정비가 나와요</span></span><span class="go">금액 넣기 ›</span></button>`}</div>
+      <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="finish">${bon.length ? "오늘 쓴 것 도장 찍으러 가기" : "홈으로 가기"}</button>
+        ${!window.claude && !(matchMedia("(display-mode: standalone)").matches || navigator.standalone === true) ? `<span class="small">홈 화면에 추가하면 앱처럼 바로 열려요</span>` : ""}</div></div>`;
+    onbNums();
+  }
+  function onbNums() {
+    const m = onbMonthly(), y = m * 12;
+    if ($("onbMonth")) $("onbMonth").textContent = won(m);
+    if (!$("onbYear")) return;
+    $("onbYear").textContent = won(y);
+    $("onbSub").textContent = `한 달 ${won(m)} · 하루 ${won(y / 365)}씩 나가요`;
+    const box = $("onbBon"); if (!box) return;
+    const ps = onbPicked().filter(p => (p.mode || catOf(p.cat).mode) === "count" && p.ref > 0);
+    box.innerHTML = ps.map((p, i) => {
+      const c = catOf(p.cat), { kind, months } = planOf(p), price = onbPrice(p), be = price ? Math.ceil(price / p.ref) : 0;
+      const basis = c.unit === "편" ? `1편 따로 보면 ${won(p.ref)} 기준` : p.cat === "food" ? `배달비 1번 ${won(p.ref)} 기준` : p.cat === "shop" ? `무료배송 1번 ${won(p.ref)} 기준` : `1번 따로 내면 ${won(p.ref)} 기준`;
+      const per = kind === "recurring" && months === 1 ? "한 달" : months === 12 ? "1년" : `${months}개월`;
+      return `<div class="row"><span class="av t${(ONB_INK[p.name] ?? 7)}" aria-hidden="true">${esc(p.label || autoLabel(p.name))}</span>
+        <span class="mid"><span class="nm">${esc(chipName(p.name))}</span><span class="ds">${esc(basis)}</span></span><span class="cnt">${be ? `${per} ${be}${c.unit === "편" ? "편" : "번"}` : "금액을 넣어 주세요"}</span></div>`;
+    }).join("");
+  }
+  async function finishOnb() {
+    const t = todayStr(), ps = onbPicked(), keep = ps.filter(p => onbPrice(p) > 0 || (!needsAmount(p) && p.price === 0));
+    const made = keep.map((p, i) => { const c = catOf(p.cat);
+      return normalize({ id: newId() + i, createdAt: Date.now() + i, name: p.name, cat: p.cat, ...planOf(p), price: onbPrice(p), start: t, mode: p.mode || c.mode,
+        ref: p.ref || 0, unit: c.unit, label: p.label || autoLabel(p.name), emoji: p.emoji || c.emoji, color: (ONB_INK[p.name] ?? 7), status: "active", uses: [] }); });
+    items.push(...made); closeOnb(); showTab("home", true); renderAll();
+    const skipped = ps.length - keep.length;
+    toast(`${made.length}개를 넣었어요${skipped ? ` · 금액을 안 넣은 ${skipped}개는 뺐어요` : ""}`);
+    for (const it of made) await save(it);
+  }
+  $("onbPage").addEventListener("click", e => {
+    const b = e.target.closest("[data-onb],[data-pickp]");
+    if (!b || b.disabled) return;
+    if (b.dataset.pickp) { const n = b.dataset.pickp, i = onb.picked.indexOf(n); i >= 0 ? onb.picked.splice(i, 1) : onb.picked.push(n); return renderOnb(); }
+    const a = b.dataset.onb;
+    if (a === "demo") { onb.demo = !onb.demo; return renderOnb(); }
+    if (a === "next") { onb.step++; renderOnb(); return $("onbPage").scrollTop = 0; }
+    if (a === "back") { onb.step--; renderOnb(); return $("onbPage").scrollTop = 0; }
+    if (a === "sample") { closeOnb(); return loadSamples(); }
+    if (a === "addHome") { for (const n of ["월세", "휴대폰 요금"]) if (!onb.picked.includes(n)) onb.picked.push(n); renderOnb(); return setTimeout(() => document.querySelector('#onbPage [data-amt]')?.focus(), 30); }
+    if (a === "finish") return finishOnb();
+  });
+  $("onbPage").addEventListener("input", e => {
+    const k = e.target.dataset?.amt; if (!k) return;
+    const raw = String(e.target.value).replace(/[^\d]/g, "");
+    e.target.value = raw === "" ? "" : Number(raw).toLocaleString("ko-KR");
+    if (raw === "") delete onb.amt[k]; else onb.amt[k] = Number(raw);
+    onbNums();
+  });
+
   // ---------- 탭 ----------
   const TABS = ["home", "list", "cal", "save"], TAB_KEY = "bonjeon-tab";
   let tab = "home";
@@ -1057,7 +1218,7 @@ details.more2[open] summary{color:var(--sub)}
   function renderAll() { renderHome(); renderList(); renderCal(); renderSave(); if (detailId && !$("detailPage").hidden) renderDetail(); }
   let locks = 0;
   const lock = () => { document.documentElement.classList.add("lock"); };
-  const unlock = () => { if ($("detailPage").hidden && $("addPage").hidden && $("savedSheet").hidden) document.documentElement.classList.remove("lock"); };
+  const unlock = () => { if ($("detailPage").hidden && $("addPage").hidden && $("savedSheet").hidden && $("onbPage").hidden) document.documentElement.classList.remove("lock"); };
 
   // ---------- 알림 메시지 ----------
   let toastTimer, undoFn = null;
@@ -1088,6 +1249,7 @@ details.more2[open] summary{color:var(--sub)}
     if (act === "groupBack") { add.group = null; return renderAdd(); }
     if (act === "manual") { add.preset = null; add.cat = "etc"; add.step = 2; renderAdd(); setTimeout(() => $("fName")?.focus(), 30); return; }
     if (act === "sample") return loadSamples();
+    if (act === "onbPick") return openOnb(2);
     if (act === "savedSheet") return openSaved();
     if (act === "closeSheet") { $("savedSheet").hidden = true; return unlock(); }
     if (act === "closeDetail") return closeDetail();
@@ -1147,6 +1309,7 @@ details.more2[open] summary{color:var(--sub)}
   // ---------- 시작 ----------
   async function boot() {
     try { store = await dbStore(); } catch { store = null; }
+    cloud = !!store;
     $("storeNote").innerHTML = store ? "<b>내 계정에 저장돼요.</b> 다른 기기에서 열어도 그대로 있고, 나만 볼 수 있어요." : "<b>이 기기에만 저장돼요.</b> 서버로 보내지 않아요.";
     if (!store && !window.claude) {
       $("backup").hidden = false;
@@ -1157,6 +1320,7 @@ details.more2[open] summary{color:var(--sub)}
     try { items = (await store.all()).map(normalize); } catch { items = []; toast("기록을 불러오지 못했어요. 새로고침해 주세요."); }
     loading = false;
     renderAll();
+    if (!items.length && !onbSeen()) openOnb(1);
   }
   showTab((/^#(home|list|cal|save)$/.test(location.hash) && location.hash.slice(1)) || (() => { try { return localStorage.getItem(TAB_KEY); } catch { return null; } })() || "home");
   renderAll();
