@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="월세부터 구독까지, 매달 나가는 돈을 한눈에 보고 줄여요.">
+<meta name="theme-color" content="#EEF1F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F151F" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="본전 미터">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>본전 미터</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: summary + savings, a "챙길 것" list, one shared stamp calendar, then 본전 cards, a fixed-cost ledger, and cancelled items. */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#16233A; --muted:#5E6B7E; --line:#D8DEE6;
+  --accent:#1F5BD8; --accent-ink:#FFFFFF; --good:#0E7A55; --warn:#B26A00; --bad:#C2352B;
+  --good-bg:#E2F3EB; --warn-bg:#FBF0DC; --bad-bg:#FBE6E3; --soft:#E6ECF5; --paper:#FBFCFD;
+  --s0:#D0342C; --s1:#2C5BD2; --s2:#178657; --s3:#7B3FC4; --s4:#CF6A00; --s5:#0E8794; --s6:#C2357A; --s7:#7A5530;
+  --f-display:"Black Han Sans","IBM Plex Sans KR",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151F; --surface:#172131; --ink:#E7ECF3; --muted:#9AA7B8; --line:#2A374A;
+  --accent:#6E9BFF; --accent-ink:#0F151F; --good:#4CCB96; --warn:#E8A93D; --bad:#FF7A6E;
+  --good-bg:#15322A; --warn-bg:#3A2C14; --bad-bg:#3D1D1B; --soft:#1F2C40; --paper:#131C2A;
+  --s0:#FF6B62; --s1:#7FA3FF; --s2:#4CCB8E; --s3:#B58BFF; --s4:#FFA347; --s5:#3FC9D6; --s6:#FF7AB8; --s7:#D3A779; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151F; --surface:#172131; --ink:#E7ECF3; --muted:#9AA7B8; --line:#2A374A;
+  --accent:#6E9BFF; --accent-ink:#0F151F; --good:#4CCB96; --warn:#E8A93D; --bad:#FF7A6E;
+  --good-bg:#15322A; --warn-bg:#3A2C14; --bad-bg:#3D1D1B; --soft:#1F2C40; --paper:#131C2A;
+  --s0:#FF6B62; --s1:#7FA3FF; --s2:#4CCB8E; --s3:#B58BFF; --s4:#FFA347; --s5:#3FC9D6; --s6:#FF7AB8; --s7:#D3A779; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+.wrap{max-width:1000px;margin:0 auto;padding-block:20px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h2.sec{font-size:1.1rem;margin:0}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sec-head span{font-size:.82rem;color:var(--muted)}
+.col{display:flex;flex-direction:column;gap:12px}
+
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand h1{font-family:var(--f-display);font-weight:400;font-size:2rem;line-height:1;margin:0}
+.brand p{margin:6px 0 0;color:var(--muted);font-size:.92rem}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font-weight:600}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.sm{padding:6px 11px;font-size:.85rem}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted);padding:6px 10px}
+.btn.ghost:hover{color:var(--ink);background:var(--soft)}
+.btn.danger{color:var(--bad)}
+
+/* summary */
+.sumwrap{background:var(--ink);color:var(--bg);border-radius:16px;overflow:hidden}
+.sum{padding:18px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.sum div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sum span{font-size:.8rem;opacity:.75}
+.sum small{font-size:.75rem;opacity:.7}
+.sum strong{font-family:var(--f-num);font-size:1.6rem;font-weight:600;line-height:1.2}
+.sum strong.alert{color:var(--warn)}
+@media (max-width:640px){.sum{grid-template-columns:1fr 1fr}}
+.saved{border-top:1px solid color-mix(in srgb,var(--bg) 18%,transparent);padding:12px 22px;display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap;font-size:.88rem}
+.saved b{font-family:var(--f-num);font-size:1.15rem;color:var(--good)}
+.saved span{opacity:.75}
+
+/* todo */
+.todo{display:flex;flex-direction:column;gap:8px}
+.tcard{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:12px;padding:12px 14px}
+.tcard.bad{border-left-color:var(--bad)}
+.tcard .tx{flex:1;min-width:220px;font-size:.92rem}
+.tcard .tx b{font-weight:700}
+.tcard .tx .n{font-family:var(--f-num);font-weight:600}
+.tcard .tx small{display:block;color:var(--muted);font-size:.8rem}
+.tcard .ac{display:flex;gap:6px;flex-wrap:wrap}
+
+/* stamp */
+.st{--c:var(--s0);display:inline-grid;place-items:center;border-radius:50%;color:var(--c);border:2px solid var(--c);box-shadow:inset 0 0 0 2px var(--surface),inset 0 0 0 3px var(--c);font-family:var(--f-display);line-height:1;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;background:color-mix(in srgb,var(--c) 10%,transparent);box-sizing:border-box}
+.st.c0{--c:var(--s0)}.st.c1{--c:var(--s1)}.st.c2{--c:var(--s2)}.st.c3{--c:var(--s3)}.st.c4{--c:var(--s4)}.st.c5{--c:var(--s5)}.st.c6{--c:var(--s6)}.st.c7{--c:var(--s7)}
+
+/* calendar */
+.calbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.calhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.calhead .mon{display:flex;align-items:center;gap:4px}
+.calhead h2{font-family:var(--f-display);font-weight:400;font-size:1.4rem;margin:0 6px;min-width:6.5em;text-align:center}
+.calhead .cnt{font-size:.85rem;color:var(--muted)}
+.calhead .cnt b{color:var(--ink);font-family:var(--f-num)}
+.nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:1.1rem;line-height:1}
+.nav:hover{border-color:var(--muted)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dow{font-size:.75rem;color:var(--muted);text-align:center;padding-bottom:2px}
+.dow.sun{color:var(--bad)}
+.day{background:var(--paper);border:1px solid var(--line);border-radius:10px;min-height:76px;padding:5px;display:flex;flex-direction:column;gap:4px;text-align:left;min-width:0}
+.day:hover{border-color:var(--muted)}
+.day .d{font-size:.8rem;font-weight:600;font-family:var(--f-num)}
+.day.sun .d{color:var(--bad)}
+.day.future{opacity:.5}
+.day.today .d{background:var(--ink);color:var(--bg);border-radius:6px;padding:0 5px;align-self:flex-start}
+.day.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.day .stamps{display:flex;flex-wrap:wrap;gap:2px}
+.day .st{width:24px;height:24px;font-size:9px;border-width:1.5px;box-shadow:inset 0 0 0 1.5px var(--paper),inset 0 0 0 2.5px var(--c)}
+.day .more{font-size:.7rem;color:var(--muted);font-family:var(--f-num);align-self:center}
+.blank{min-height:76px}
+@media (max-width:560px){
+  .day,.blank{min-height:58px}
+  .day{padding:4px 3px}
+  .day .st{width:13px;height:13px;font-size:0;box-shadow:none;background:var(--c)}
+}
+.pad{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.pad-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pad-head strong{font-size:1rem}
+.pad-head span{font-size:.82rem;color:var(--muted)}
+.padgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.pbtn{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-align:left;min-width:0}
+.pbtn:hover:not(:disabled){border-color:var(--muted)}
+.pbtn:disabled{opacity:.45;cursor:default}
+.pbtn .st{width:40px;height:40px;font-size:12px;flex:none}
+.pbtn .t{display:flex;flex-direction:column;min-width:0}
+.pbtn .t b{font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbtn .t small{font-size:.75rem;color:var(--muted)}
+.pbtn[aria-pressed="true"]{background:var(--soft);border-color:transparent}
+.pbtn[aria-pressed="false"] .st{opacity:.35;filter:grayscale(.6)}
+@media (prefers-reduced-motion:no-preference){
+  .st.pop{animation:thunk .38s cubic-bezier(.2,.9,.3,1.3)}
+  @keyframes thunk{0%{transform:scale(1.9) rotate(-18deg);opacity:0}60%{transform:scale(.92) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+  .bar i{transition:width .4s ease}
+}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.c-head{display:flex;gap:12px;align-items:center}
+.c-head .st{width:44px;height:44px;font-size:13px;flex:none}
+.c-head .nm{flex:1;min-width:0}
+.c-head h3{margin:0;font-size:1.05rem;font-weight:700;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}
+.meta{color:var(--muted);font-size:.8rem;margin-top:2px}
+.promo{font-size:.8rem;color:var(--warn);font-weight:600}
+.chip{font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.chip.good{background:var(--good-bg);color:var(--good)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.idle{background:var(--soft);color:var(--muted)}
+.fare .lab{font-size:.85rem;color:var(--muted)}
+.fare .val{font-size:2.2rem;font-weight:600;line-height:1.15}
+.fare .val.bad{color:var(--bad)} .fare .val.good{color:var(--good)} .fare .val.warn{color:var(--warn)}
+.fare .sub{font-size:.85rem;color:var(--muted)}
+.fare .sub b{color:var(--good);font-family:var(--f-num)}
+.say{border-radius:10px;padding:10px 12px;font-size:.92rem;line-height:1.5}
+.say.good{background:var(--good-bg)} .say.warn{background:var(--warn-bg)} .say.bad{background:var(--bad-bg)} .say.idle{background:var(--soft)}
+.say b{font-family:var(--f-num)}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden;position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--warn)}
+.bar.good i{background:var(--good)}
+details.more{border-top:1px solid var(--line);padding-top:10px}
+details.more summary{cursor:pointer;color:var(--muted);font-size:.85rem;font-weight:600}
+.more-body{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stats div{display:flex;flex-direction:column;min-width:0}
+.stats span{font-size:.72rem;color:var(--muted)}
+.stats strong{font-family:var(--f-num);font-weight:600;font-size:.92rem}
+.pace{display:flex;gap:6px;flex-wrap:wrap}
+.pace span{font-size:.75rem;background:var(--soft);border-radius:6px;padding:3px 7px;color:var(--muted)}
+.pace span b{color:var(--ink);font-family:var(--f-num);font-weight:600}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.confirm{display:flex;gap:8px;align-items:center;font-size:.85rem;background:var(--bad-bg);color:var(--bad);border-radius:10px;padding:8px 10px;flex-wrap:wrap}
+.confirm span{flex:1}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.empty h2{margin:0;font-size:1.15rem}
+.empty p{margin:0;color:var(--muted);max-width:60ch}
+
+/* ledger (고정 지출) */
+.ledger{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.ledger-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ledger-head span{font-size:.82rem;color:var(--muted)}
+.lgroup{padding:8px 16px 2px;font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:.04em;background:var(--paper);border-bottom:1px solid var(--line)}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 16px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.frow:last-child{border-bottom:0}
+.frow .nm{display:flex;gap:10px;align-items:center;min-width:0}
+.frow .dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--c,var(--muted))}
+.frow .nm b{display:block;font-weight:600;overflow-wrap:anywhere}
+.frow .nm small{color:var(--muted);font-size:.78rem}
+.frow .v{text-align:right;display:flex;flex-direction:column}
+.frow .v span{font-size:.72rem;color:var(--muted)}
+.frow .v strong{font-family:var(--f-num);font-weight:600}
+.frow .v strong.good{color:var(--good)}
+.frow .acts{grid-column:1/-1;display:flex;gap:4px;justify-content:flex-end;margin-top:-4px}
+.frow .confirm{grid-column:1/-1}
+.d0{--c:var(--s0)}.d1{--c:var(--s1)}.d2{--c:var(--s2)}.d3{--c:var(--s3)}.d4{--c:var(--s4)}.d5{--c:var(--s5)}.d6{--c:var(--s6)}.d7{--c:var(--s7)}
+details.gone{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+details.gone > summary{cursor:pointer;padding:14px 16px;font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+details.gone > summary span{font-weight:400;color:var(--muted);font-size:.85rem}
+details.gone[open] > summary{border-bottom:1px solid var(--line)}
+
+.help{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:.92rem}
+.help summary{cursor:pointer;font-weight:600}
+.help p{margin:8px 0 0;color:var(--muted);max-width:68ch}
+.help p b{color:var(--ink)}
+.note{font-size:.85rem;color:var(--muted)}
+.note b{color:var(--ink)}
+
+/* form */
+.sheet{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 45%,transparent);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
+.sheet form{background:var(--surface);border-radius:16px;width:min(580px,100%);max-height:100%;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box}
+.sheet h2{margin:0;font-size:1.2rem}
+.cats{display:flex;gap:6px;flex-wrap:wrap}
+.cats button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:600}
+.cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+.presets button{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:8px 10px;text-align:left;display:flex;flex-direction:column;gap:1px;min-width:0}
+.presets button:hover{border-color:var(--muted)}
+.presets button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.presets b{font-size:.86rem;font-weight:600}
+.presets small{font-size:.76rem;color:var(--muted)}
+.pnote{font-size:.76rem;color:var(--muted);margin:0}
+.divider{border:0;border-top:1px solid var(--line);margin:0}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field > span{font-size:.85rem;font-weight:600}
+.field small{color:var(--muted);font-size:.78rem}
+.field input:not([type="checkbox"]):not([type="radio"]),.field select{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%;box-sizing:border-box}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:440px){.two{grid-template-columns:1fr}}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:520px){.modes{grid-template-columns:1fr}}
+.modes label{border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px;background:var(--paper)}
+.modes input,.inks input{position:absolute;opacity:0;pointer-events:none}
+.modes b{font-size:.92rem}
+.modes small{font-size:.78rem;color:var(--muted);line-height:1.4}
+.modes label:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--surface)}
+.modes label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem;font-weight:600;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.promobox{background:var(--warn-bg);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.inks{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.inks label{cursor:pointer}
+.inks .st{width:38px;height:38px;font-size:11px}
+.inks label:has(input:checked) .st{outline:2px solid var(--ink);outline-offset:2px}
+.inks label:has(input:focus-visible) .st{outline:2px solid var(--accent);outline-offset:2px}
+.err{color:var(--bad);font-size:.85rem;margin:0}
+.formact{display:flex;gap:8px;justify-content:flex-end}
+
+.prev{font-size:.8rem;color:var(--muted)}
+.prev b{font-family:var(--f-num);color:var(--ink)}
+
+.backup{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.backup label.btn{cursor:pointer}
+.backup span{font-size:.8rem;color:var(--muted)}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:30;display:flex;gap:12px;align-items:center;max-width:calc(100% - 32px)}
+.toast button{background:none;border:0;color:var(--warn);font-weight:700;padding:0}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>본전 미터</h1>
+      <p>월세부터 구독까지, 매달 나가는 돈을 한눈에 보고 줄여요.</p>
+    </div>
+    <button class="btn primary" id="addBtn" type="button">+ 추가</button>
+  </header>
+
+  <section class="sumwrap" aria-label="전체 요약">
+    <div class="sum">
+      <div><span>한 달 고정비</span><strong id="mMonth">₩0</strong></div>
+      <div><span>하루로 치면</span><strong id="mDay">₩0</strong></div>
+      <div><span>항목 수</span><strong id="mCount">0개</strong><small id="mCountSub"></small></div>
+      <div><span>아직 본전 못 뽑은 것</span><strong id="mBehind">0개</strong></div>
+    </div>
+    <div class="saved" id="saved"></div>
+  </section>
+
+  <section class="col" id="todoSec" hidden>
+    <div class="sec-head"><h2 class="sec">챙길 것</h2><span>할인 종료 · 이용권 재등록 · 해지 추천</span></div>
+    <div class="todo" id="todo"></div>
+  </section>
+
+  <section class="calbox" aria-label="도장 달력">
+    <div class="calhead">
+      <div class="mon">
+        <button class="nav" type="button" id="prevM" aria-label="이전 달">‹</button>
+        <h2 id="monTitle">2026년 10월</h2>
+        <button class="nav" type="button" id="nextM" aria-label="다음 달">›</button>
+      </div>
+      <div class="cnt" id="monCount"></div>
+    </div>
+    <div class="cal" id="cal"></div>
+    <div class="pad" id="pad"></div>
+  </section>
+
+  <section id="list" class="col" style="gap:20px" aria-live="polite"></section>
+
+  <details class="help">
+    <summary>‘횟수 기록’과 ‘고정 지출’은 뭐가 달라요?</summary>
+    <p><b>횟수 기록</b>은 헬스장, 배달 멤버십, OTT처럼 <b>쓴 만큼 값을 하는 것</b>이에요. 쓴 날 달력에 도장을 찍으면 1번에 얼마 냈는지, 본전까지 몇 번 남았는지 알려줘요.</p>
+    <p><b>고정 지출</b>은 월세, 통신비, 클라우드, 멤버십처럼 <b>쓰든 안 쓰든 나가는 돈</b>이에요. 도장 없이 한 달·하루 금액만 보여주고 합계에 더해져요.</p>
+  </details>
+  <details class="help">
+    <summary>본전은 어떻게 정하나요?</summary>
+    <p>본전은 <b>구독 없이 그때그때 돈 내고 썼다면 냈을 금액</b>이 기준이에요. 추가할 때 “따로 사면 1번에 얼마?”에 넣으면 됩니다.</p>
+    <p>예: 헬스장 1년권 <b>60만 원</b>, 일일권 <b>1만 5천 원</b> → <b>40번</b> 가면 본전.</p>
+    <p>예: 배민클럽 월 <b>3,990원</b>, 1번 주문 때 아끼는 배달비 <b>약 3,000원</b> → 이번 달 <b>2번</b> 시키면 본전.</p>
+  </details>
+  <details class="help">
+    <summary>‘아낀 돈’은 어떻게 계산해요?</summary>
+    <p><b>해지</b>: ‘해지했어요’를 누른 날부터 그 구독의 하루 금액이 매일 아낀 돈으로 쌓여요.</p>
+    <p><b>본전 넘김</b>: 결제 기간마다 (따로 샀을 때 금액 − 실제 낸 금액)이 플러스면 그만큼 아낀 걸로 쳐요. 올해 결제 기간만 더해요.</p>
+  </details>
+  <details class="help">
+    <summary>운동 이용권(1년·3개월·1개월)은 어떻게 계산해요?</summary>
+    <p>한 번 결제한 이용권은 <b>결제한 날부터 기간이 끝날 때까지</b>를 한 덩어리로 봐요. 1번 비용은 결제 금액 ÷ 그 기간에 찍은 도장 수이고, 한 달 고정비에는 결제 금액 ÷ 개월 수가 들어가요.</p>
+    <p>끝나기 14일 전부터 ‘챙길 것’에 재등록을 물어봐요. 재등록하면 같은 설정으로 다음 기간이 이어지고, 지난 기간 결과와 비교해서 보여줘요. 끝난 이용권은 아래 ‘끝난 이용권’에 모여요.</p>
+    <p>매달 자동으로 빠져나가는 헬스장이면 결제 방식을 ‘매달 자동결제’로 고르세요. 매달 도장 수가 0부터 다시 시작해요.</p>
+  </details>
+
+  <div class="note" id="storeNote">불러오는 중…</div>
+  <div class="backup" id="backup" hidden>
+    <button class="btn sm" type="button" id="expBtn">백업 파일 저장</button>
+    <label class="btn sm" for="impFile">백업 불러오기</label>
+    <input type="file" id="impFile" accept="application/json,.json" hidden>
+    <span>기록은 이 휴대폰에만 저장돼요. 기기를 바꾸기 전에 백업해 두세요.</span>
+  </div>
+  <div class="note" id="installTip" hidden><b>홈 화면에 추가</b>하면 앱처럼 쓸 수 있어요. 아이폰은 사파리 공유 버튼 → ‘홈 화면에 추가’, 안드로이드는 크롬 메뉴 → ‘홈 화면에 추가’.</div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <form id="form" novalidate>
+    <h2 id="formTitle">추가하기</h2>
+    <div id="presetBox" style="display:flex;flex-direction:column;gap:10px">
+      <div class="cats" id="cats" role="group" aria-label="분류"></div>
+      <div class="presets" id="presets"></div>
+      <p class="pnote">가격은 2026년 10월에 찾아본 정가예요. ‘확인 필요’는 최신 가격을 못 찾은 것이니 실제 결제 금액으로 고쳐 주세요.</p>
+      <hr class="divider">
+    </div>
+    <div class="field"><span>어떻게 볼까요?</span>
+      <div class="modes" role="radiogroup" aria-label="보는 방식">
+        <label><input type="radio" name="mode" id="modeCount" value="count" checked><b>횟수 기록</b><small>쓴 날 도장을 찍어요. 1번에 얼마인지, 몇 번 더 써야 본전인지 알려줘요. 헬스장·배달·OTT</small></label>
+        <label><input type="radio" name="mode" id="modeFlat" value="flat"><b>고정 지출</b><small>월세·통신비·멤버십처럼 쓰든 안 쓰든 나가는 돈. 한 달·하루 금액만 봐요.</small></label>
+      </div>
+    </div>
+    <label class="field"><span>이름</span><input id="fName" maxlength="40" placeholder="예: 월세, 휴대폰 요금, 헬스장" required></label>
+    <div class="two">
+      <label class="field"><span>지금 내는 금액 (원)</span><input id="fPrice" inputmode="numeric" placeholder="10,900" required></label>
+      <label class="field"><span>결제 방식</span><select id="fPlan"></select></label>
+    </div>
+    <div class="two">
+      <label class="field"><span>결제한 날</span><input id="fStart" type="date" required><small id="startHelp">이 날짜마다 새 결제 기간으로 계산돼요.</small></label>
+      <label class="field" id="refField"><span>따로 사면 1번에 얼마? (선택)</span><input id="fRef" inputmode="numeric" placeholder="예: 일일권 15,000"><small>본전 기준이에요.</small></label>
+    </div>
+    <label class="check"><input type="checkbox" id="fPromo"> 할인·무료체험 중이에요</label>
+    <div class="promobox" id="promoBox" hidden>
+      <div class="two">
+        <label class="field"><span>할인 끝나는 날</span><input id="fPromoEnd" type="date"></label>
+        <label class="field"><span>끝나면 내는 금액 (원)</span><input id="fAfter" inputmode="numeric" placeholder="3,990"></label>
+      </div>
+      <small class="pnote">무료체험이면 ‘지금 내는 금액’에 0을 넣으세요. 끝나기 14일 전부터 ‘챙길 것’에 알려드리고, 끝나는 날부터 금액이 자동으로 바뀌어요.</small>
+    </div>
+    <div class="field"><span id="inkTitle">도장</span>
+      <div class="inks" id="inks"></div>
+      <label class="field" id="labelField" style="max-width:200px"><small>도장 글자 (2~3자)</small><input id="fLabel" maxlength="3" placeholder="헬스"></label>
+    </div>
+    <p class="err" id="fErr" hidden></p>
+    <div class="formact">
+      <button type="button" class="btn" id="cancelBtn">취소</button>
+      <button type="submit" class="btn primary">저장</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" hidden><span id="toastMsg"></span><button type="button" id="toastUndo" hidden>되돌리기</button></div>
+
+<script>
+(() => {
+  // ---------- presets: 2026-10 조사 정가. price null = 직접 입력, ref = 1번 쓸 때 따로 내면 드는 돈 ----------
+  const CATS = [
+    { id: "home", name: "주거", unit: "회", mode: "flat", items: [
+      { name: "월세", price: null, label: "월세" },
+      { name: "관리비", price: null, label: "관리" },
+      { name: "대출 이자", price: null, label: "이자" },
+      { name: "전기·가스", price: null, label: "공과", note: "평균 금액으로" } ] },
+    { id: "tel", name: "통신", unit: "회", mode: "flat", items: [
+      { name: "휴대폰 요금", price: null, label: "폰" },
+      { name: "알뜰폰 요금", price: null, label: "알뜰" },
+      { name: "인터넷", price: null, label: "인터" },
+      { name: "IPTV", price: null, label: "TV" },
+      { name: "통신사 구독 (T우주·유독 등)", price: null, label: "통구" } ] },
+    { id: "ins", name: "보험", unit: "회", mode: "flat", items: [
+      { name: "실손보험", price: null, label: "실손" },
+      { name: "자동차보험", price: null, plan: "recurring:12", label: "자보", note: "1년 금액으로" },
+      { name: "기타 보험", price: null, label: "보험" } ] },
+    { id: "move", name: "교통·이동", unit: "회", mode: "count", items: [
+      { name: "기후동행패스", price: 62000, label: "기동", ref: 1550, note: "청년 할인 별도 · 1회 1,550 기준" },
+      { name: "따릉이 1년 정기권 (1시간)", price: 30000, plan: "pass:12", label: "따릉", ref: 1000, note: "1시간권 1,000 기준" },
+      { name: "정기 주차권", price: null, label: "주차", mode: "flat" },
+      { name: "쏘카패스", price: null, label: "쏘카" } ] },
+    { id: "ai", name: "AI", unit: "일", mode: "flat", items: [
+      { name: "ChatGPT Plus", price: 29000, label: "GPT", note: "$20 + 부가세 환산" },
+      { name: "ChatGPT Go", price: 15000, label: "GO" },
+      { name: "ChatGPT Pro", price: 290000, label: "GPT", note: "$200 + 부가세 환산" },
+      { name: "Claude Pro", price: 29000, label: "CL", note: "$20 + 부가세 환산" },
+      { name: "Claude Max", price: 145000, label: "CL", note: "$100 + 부가세 환산" },
+      { name: "Google AI Pro", price: 29000, label: "GEM" },
+      { name: "Google AI Plus", price: 11000, label: "GEM", note: "프로모션가" },
+      { name: "Perplexity Pro", price: 29000, label: "PPL", note: "$20 + 부가세 환산" },
+      { name: "Cursor Pro", price: 29000, label: "CUR", note: "$20 + 부가세 환산" },
+      { name: "Midjourney Basic", price: 14500, label: "MJ", note: "$10 + 부가세 환산" } ] },
+    { id: "music", name: "음악", unit: "일", mode: "flat", items: [
+      { name: "멜론", price: 10900, label: "멜론", note: "확인 필요" },
+      { name: "지니뮤직", price: 10900, label: "지니", note: "확인 필요" },
+      { name: "FLO", price: 10900, label: "플로", note: "확인 필요" },
+      { name: "스포티파이", price: 11990, label: "스포" },
+      { name: "유튜브 뮤직", price: 11990, label: "유뮤" },
+      { name: "Apple Music", price: 8900, label: "AM", note: "확인 필요" } ] },
+    { id: "video", name: "영상", unit: "편", mode: "count", items: [
+      { name: "유튜브 프리미엄", price: 14900, label: "유튜", note: "iOS 앱 결제 19,500", mode: "flat" },
+      { name: "유튜브 프리미엄 라이트", price: 8500, label: "유라", mode: "flat" },
+      { name: "넷플릭스 광고형", price: 5500, label: "넷플", ref: 3500, note: "확인 필요" },
+      { name: "넷플릭스 스탠다드", price: 13500, label: "넷플", ref: 3500, note: "확인 필요" },
+      { name: "넷플릭스 프리미엄", price: 17000, label: "넷플", ref: 3500, note: "확인 필요" },
+      { name: "티빙 광고형", price: 5500, label: "티빙", ref: 3500 },
+      { name: "티빙 베이직", price: 9500, label: "티빙", ref: 3500 },
+      { name: "티빙 스탠다드", price: 13500, label: "티빙", ref: 3500 },
+      { name: "티빙 프리미엄", price: 17000, label: "티빙", ref: 3500 },
+      { name: "디즈니+ 스탠다드", price: 9900, label: "디즈", ref: 3500, note: "확인 필요" },
+      { name: "웨이브 베이직", price: 7900, label: "웨이", note: "확인 필요" },
+      { name: "왓챠 베이직", price: 7900, label: "왓챠", ref: 3500 },
+      { name: "왓챠 프리미엄", price: 12900, label: "왓챠", ref: 3500 },
+      { name: "Apple TV+", price: null, label: "ATV", note: "금액 직접 입력" },
+      { name: "쿠팡플레이 프리미엄 패스", price: 3900, label: "쿠플" } ] },
+    { id: "shop", name: "쇼핑", unit: "주문", mode: "count", items: [
+      { name: "쿠팡 와우", price: 7890, label: "와우", ref: 3000, note: "무료배송 1회 ≈ 3,000" },
+      { name: "컬리멤버스", price: 1900, label: "컬리", mode: "flat" } ] },
+    { id: "member", name: "멤버십", unit: "회", mode: "flat", items: [
+      { name: "네이버플러스 멤버십", price: 4900, label: "네플", note: "연간 결제 시 월 3,900" },
+      { name: "토스 프라임", price: 5900, label: "토프", note: "월 최대 12,000P 적립" },
+      { name: "신세계 유니버스 클럽", price: 30000, plan: "recurring:12", label: "유니", note: "연회비, 확인 필요" } ] },
+    { id: "food", name: "배달", unit: "주문", mode: "count", items: [
+      { name: "배민클럽", price: 3990, label: "배민", ref: 3000, note: "배달비 1회 ≈ 3,000" },
+      { name: "요기패스X", price: 2900, label: "요기", ref: 3000, note: "확인 필요" } ] },
+    { id: "game", name: "게임", unit: "일", mode: "flat", items: [
+      { name: "Xbox Game Pass Ultimate", price: null, label: "XGP", note: "금액 직접 입력 (미국 $22.99)" },
+      { name: "PlayStation Plus", price: null, label: "PS+", note: "금액 직접 입력" },
+      { name: "Nintendo Switch Online", price: 19900, plan: "recurring:12", label: "NSO", note: "12개월, 확인 필요" } ] },
+    { id: "work", name: "업무", unit: "일", mode: "flat", items: [
+      { name: "Microsoft 365 Personal", price: 12500, label: "MS", note: "연간 125,000" },
+      { name: "Adobe Creative Cloud 모든 앱", price: 78100, label: "Ad" },
+      { name: "Notion Plus", price: 14500, label: "NT", note: "$10 + 부가세 환산" },
+      { name: "Canva Pro", price: null, label: "CV", note: "금액 직접 입력 ($12.99)" },
+      { name: "Dropbox Plus", price: null, label: "DB", note: "금액 직접 입력" } ] },
+    { id: "study", name: "공부·독서", unit: "일", mode: "count", items: [
+      { name: "밀리의 서재", price: 9900, label: "밀리", note: "확인 필요" },
+      { name: "리디셀렉트", price: 4900, label: "리디", note: "확인 필요" },
+      { name: "윌라 오디오북", price: 9900, label: "윌라", note: "확인 필요" },
+      { name: "듀오링고 슈퍼", price: null, label: "듀오", note: "금액 직접 입력" },
+      { name: "스픽", price: null, label: "스픽", note: "금액 직접 입력" },
+      { name: "클래스101+", price: null, label: "101", note: "금액 직접 입력" } ] },
+    { id: "fit", name: "운동", unit: "회", mode: "count", items: [
+      { name: "헬스장 1년권", price: 600000, plan: "pass:12", label: "헬스", ref: 15000, note: "금액은 예시 · 일일권 15,000" },
+      { name: "헬스장 3개월권", price: 200000, plan: "pass:3", label: "헬스", ref: 15000, note: "금액은 예시" },
+      { name: "필라테스 3개월", price: 450000, plan: "pass:3", label: "필라", ref: 50000, note: "금액은 예시" },
+      { name: "클라이밍 1개월", price: null, plan: "pass:1", label: "클밍", ref: 25000, note: "일일권 25,000 기준" },
+      { name: "요가 3개월", price: null, plan: "pass:3", label: "요가", ref: 25000 },
+      { name: "수영장 1개월", price: 80000, plan: "pass:1", label: "수영", ref: 6000, note: "금액은 예시 · 자유수영 1회" } ] },
+    { id: "life", name: "생활", unit: "회", mode: "count", items: [
+      { name: "커피 정기권", price: null, label: "커피" },
+      { name: "세탁 구독", price: null, label: "세탁" },
+      { name: "정수기 렌탈", price: null, label: "정수", mode: "flat" },
+      { name: "안마의자 렌탈", price: null, label: "안마", mode: "flat" },
+      { name: "공기청정기 렌탈", price: null, label: "공청", mode: "flat" } ] },
+    { id: "cloud", name: "클라우드", unit: "일", mode: "flat", items: [
+      { name: "iCloud+ 200GB", price: 4400, label: "iC" },
+      { name: "Google One 100GB", price: 2400, label: "G1" } ] },
+    { id: "etc", name: "직접 입력", unit: "회", mode: "count", items: [] }
+  ];
+  const catOf = id => CATS.find(c => c.id === id);
+
+  // ---------- dates ----------
+  const pad2 = n => String(n).padStart(2, "0");
+  const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const parse = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const todayStr = () => ymd(new Date());
+  const addMonths = (s, n) => {
+    const d = parse(s), day = d.getDate();
+    const t = new Date(d.getFullYear(), d.getMonth() + n, 1);
+    t.setDate(Math.min(day, new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate()));
+    return ymd(t);
+  };
+  const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return ymd(d); };
+  const daysBetween = (a, b) => Math.round((parse(b) - parse(a)) / 86400000);
+  const md = s => `${+s.slice(5, 7)}월 ${+s.slice(8)}일`;
+  const DOW = ["일", "월", "화", "수", "목", "금", "토"];
+
+  const won = v => isFinite(v) ? "₩" + Math.round(v).toLocaleString("ko-KR") : "—";
+  const planName = it => it.kind === "recurring"
+    ? (it.months === 1 ? "매달" : it.months === 12 ? "매년" : `${it.months}개월마다`)
+    : (it.months === 12 ? "1년권" : it.months === 24 ? "2년권" : `${it.months}개월권`);
+
+  // ---------- core math ----------
+  const priceAt = (it, d) => it.promoEnd && d >= it.promoEnd ? it.after : it.price;
+  const monthlyOf = (it, d = todayStr()) => priceAt(it, d) / it.months;
+  const usesIn = (it, s, e) => it.uses.filter(d => d >= s && d < e).length;
+
+  function analyze(it, today = todayStr()) {
+    const months = it.months;
+    let pStart, pEnd, state = "active";
+    if (it.kind === "recurring") {
+      if (today < it.start) { pStart = it.start; pEnd = addMonths(it.start, months); state = "upcoming"; }
+      else {
+        const s = parse(it.start), t = parse(today);
+        let k = Math.max(0, Math.floor(((t.getFullYear() - s.getFullYear()) * 12 + t.getMonth() - s.getMonth()) / months) - 1);
+        while (addMonths(it.start, (k + 1) * months) <= today) k++;
+        pStart = addMonths(it.start, k * months); pEnd = addMonths(it.start, (k + 1) * months);
+      }
+    } else {
+      pStart = it.start; pEnd = addMonths(it.start, months);
+      if (today < pStart) state = "upcoming"; else if (today >= pEnd) state = "ended";
+    }
+    const price = priceAt(it, it.kind === "pass" ? it.start : (state === "upcoming" ? it.start : today));
+    const totalDays = Math.max(1, daysBetween(pStart, pEnd));
+    const daily = price / totalDays;
+    const uses = usesIn(it, pStart, pEnd);
+    const elapsed = state === "upcoming" ? 0 : Math.min(totalDays, daysBetween(pStart, today) + 1);
+    const breakEven = it.ref > 0 ? Math.ceil(price / it.ref) : null;
+    return {
+      price, pStart, pEnd, totalDays, daily, monthly: price / months, uses, elapsed, remaining: totalDays - elapsed, state, breakEven,
+      perUse: uses ? price / uses : price, nextPerUse: price / (uses + 1), spent: daily * elapsed,
+      left: breakEven != null ? Math.max(0, breakEven - uses) : null
+    };
+  }
+
+  // Money saved this calendar year: cancellations accrue daily, and each period's 본전 surplus counts once.
+  function savings(today = todayStr()) {
+    const y0 = today.slice(0, 4) + "-01-01";
+    let cancel = 0, gain = 0, nCancel = 0;
+    for (const it of items) {
+      if (it.status === "cancelled" && it.cancelledAt) {
+        const from = it.cancelledAt > y0 ? it.cancelledAt : y0;
+        const days = Math.max(0, daysBetween(from, today));
+        if (it.cancelledAt.slice(0, 4) === today.slice(0, 4)) nCancel++;
+        cancel += days * monthlyOf(it, it.cancelledAt) * 12 / 365;
+      }
+      if (it.mode !== "count" || !(it.ref > 0)) continue;
+      const step = it.kind === "recurring" ? it.months : null;
+      for (let k = 0, s = it.start; s <= today && k < 400; k++) {
+        const e = addMonths(it.start, step ? (k + 1) * step : it.months);
+        if (e > y0) gain += Math.max(0, it.ref * usesIn(it, s, e) - priceAt(it, s));
+        if (!step) break;
+        s = e;
+      }
+    }
+    return { cancel, gain, nCancel, total: cancel + gain };
+  }
+
+  function verdict(it, a) {
+    const period = it.kind === "recurring" ? (it.months === 1 ? "이번 달" : "이번 결제 기간") : "이용 기간";
+    if (a.state === "upcoming") return { cls: "idle", chip: "시작 전", text: `${md(a.pStart)}부터 시작해요.` };
+    if (a.state === "ended") return { cls: "idle", chip: "끝남", text: `기간이 끝났어요. 도장 ${a.uses}개, 1번에 <b>${won(a.perUse)}</b> 냈어요.` };
+    if (a.breakEven != null) {
+      if (a.left === 0) return { cls: "good", chip: "본전 달성", text: `본전 넘었어요. 따로 냈을 때보다 <b>${won(it.ref * a.uses - a.price)}</b> 아꼈어요.` };
+      return { cls: a.uses ? "warn" : "bad", chip: `${a.left}번 남음`,
+        text: `본전까지 도장 <b>${a.left}개</b> 더. ${period}이 <b>${a.remaining}일</b> 남았어요.${a.left > a.remaining ? " 남은 날보다 많아서 빠듯해요." : ""}` };
+    }
+    if (!a.uses) return { cls: "bad", chip: "도장 0", text: `${period}에 도장이 없어요. 하루 <b>${won(a.daily)}</b>씩 그냥 나가고 있어요.` };
+    return { cls: "idle", chip: `도장 ${a.uses}`, text: `하루 <b>${won(a.daily)}</b>씩 나가요. 도장이 늘수록 1번 값이 내려가요.` };
+  }
+
+  // 해지 추천: 30일 도장 0, 또는 지난 기간·이번 기간 모두 본전 미달(이번 기간 절반 이상 지남)
+  function cancelReason(it, a, t = todayStr()) {
+    if (it.kind !== "recurring" || it.status !== "active" || a.state !== "active") return null;
+    if (it.keepUntil && t < it.keepUntil) return null;
+    if (it.mode !== "count") return null;
+    if (daysBetween(it.start, t) >= 30 && usesIn(it, addDays(t, -29), addDays(t, 1)) === 0) return "최근 30일 동안 도장이 하나도 없어요.";
+    if (it.ref > 0) {
+      const ps = addMonths(a.pStart, -it.months);
+      if (ps >= it.start) {
+        const pu = usesIn(it, ps, a.pStart), be = Math.ceil(priceAt(it, ps) / it.ref);
+        if (pu < be && a.left > 0 && a.elapsed >= a.totalDays / 2) return `지난 기간에도 본전을 못 뽑았고(${pu}/${be}번), 이번에도 아직이에요.`;
+      }
+    }
+    return null;
+  }
+  const promoDue = (it, t = todayStr()) => it.status === "active" && it.promoEnd && t < it.promoEnd && it.promoAck !== it.promoEnd && daysBetween(t, it.promoEnd) <= 14;
+  const renewedFrom = it => items.find(x => x.prevId === it.id);
+  const passEnded = (it, t = todayStr()) => it.kind === "pass" && t >= addMonths(it.start, it.months);
+
+  // ---------- storage ----------
+  const LS_KEY = "bonjeon-items-v1";
+  let store = null, items = [], loading = true;
+  const localStore = {
+    async all() { try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { return []; } },
+    async put(it) { const all = await this.all(); const i = all.findIndex(x => x.id === it.id); i >= 0 ? all[i] = it : all.push(it); this._w(all); },
+    async del(id) { this._w((await this.all()).filter(x => x.id !== id)); },
+    _w(all) { try { localStorage.setItem(LS_KEY, JSON.stringify(all)); } catch {} }
+  };
+  async function dbStore() {
+    const db = await window.claude?.use?.("db");
+    const user = db ? await window.claude.use("user") : null;
+    const uid = user ? await user.id() : null;
+    if (!db || !uid) return null;
+    const col = db.collection("data/users/" + uid);
+    return {
+      async all() { const snap = await col.get(); return snap.docs.map(d => ({ ...d.data(), id: d.id })); },
+      async put(it) { const { id, ...body } = it; await col.doc(id).set(body); },
+      async del(id) { await col.doc(id).delete(); }
+    };
+  }
+  const isDate = s => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
+  const autoLabel = name => (String(name).replace(/\(.*?\)|\s/g, "").slice(0, 2) || "구독");
+  const normalize = r => {
+    const name = String(r.name || "이름 없음");
+    const promoEnd = isDate(r.promoEnd) ? r.promoEnd : "";
+    return {
+      id: r.id, name, cat: String(r.cat || "etc"), kind: r.kind === "pass" ? "pass" : "recurring",
+      // 예전 '적립금' 방식은 고정 지출로 옮겨요.
+      mode: r.mode === "flat" || r.mode === "points" ? "flat" : "count",
+      prevId: typeof r.prevId === "string" ? r.prevId : "", renewAck: isDate(r.renewAck) ? r.renewAck : "",
+      price: Math.max(0, Number(r.price) || 0), months: Math.max(1, Number(r.months) || 1),
+      start: isDate(r.start) ? r.start : todayStr(), ref: Math.max(0, Number(r.ref) || 0),
+      promoEnd, after: promoEnd ? Math.max(0, Number(r.after) || 0) : 0, promoAck: isDate(r.promoAck) ? r.promoAck : "",
+      status: r.status === "cancelled" ? "cancelled" : "active", cancelledAt: isDate(r.cancelledAt) ? r.cancelledAt : "",
+      keepUntil: isDate(r.keepUntil) ? r.keepUntil : "",
+      unit: String(r.unit || "회"), uses: Array.isArray(r.uses) ? [...new Set(r.uses.filter(isDate))].sort() : [],
+      createdAt: Number(r.createdAt) || 0, color: Number.isInteger(r.color) ? ((r.color % 8) + 8) % 8 : 0,
+      label: String(r.label || autoLabel(name)).slice(0, 3)
+    };
+  };
+  const save = it => store.put(it).catch(() => toast("저장하지 못했어요. 연결을 확인하고 다시 눌러 주세요."));
+
+  // ---------- render helpers ----------
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const stamp = (it, extra = "") => `<span class="st c${it.color} ${extra}" aria-hidden="true">${esc(it.label)}</span>`;
+  const sorted = () => [...items].sort((x, y) => x.createdAt - y.createdAt);
+  const live = () => sorted().filter(it => it.status === "active");
+  const counted = () => live().filter(it => it.mode === "count");
+  const flats = () => live().filter(it => it.mode === "flat");
+  const gone = () => sorted().filter(it => it.status === "cancelled");
+  const endedPasses = () => live().filter(it => passEnded(it));
+  const showCards = () => live().filter(it => it.mode !== "flat" && !passEnded(it));
+  let confirmId = null, popKey = null;
+  const openDetails = new Set();
+  let viewMonth = todayStr().slice(0, 7), selDay = todayStr();
+
+  function promoLine(it) {
+    if (!it.promoEnd) return "";
+    const t = todayStr();
+    if (t >= it.promoEnd) return `<div class="meta">할인 끝남 · ${md(it.promoEnd)}부터 ${won(it.after)}</div>`;
+    return `<div class="promo">할인 D-${daysBetween(t, it.promoEnd)} · ${md(it.promoEnd)}부터 ${won(it.price)} → ${won(it.after)}</div>`;
+  }
+
+  function renderSum() {
+    let day = 0, month = 0, behind = 0;
+    for (const it of live()) {
+      const a = analyze(it);
+      if (a.state !== "active") continue;
+      day += a.daily; month += a.monthly;
+      if (it.mode === "count" && (a.left ? a.left > 0 : a.uses === 0)) behind++;
+    }
+    const nc = counted().filter(it => !passEnded(it)).length, nf = flats().length;
+    $("mMonth").textContent = won(month);
+    $("mDay").textContent = won(day);
+    $("mCount").textContent = `${nc + nf}개`;
+    $("mCountSub").textContent = nc + nf ? `횟수 기록 ${nc} · 고정 지출 ${nf}` : "";
+    $("mBehind").textContent = `${behind}개`;
+    $("mBehind").classList.toggle("alert", behind > 0);
+    const s = savings();
+    const y = todayStr().slice(0, 4);
+    $("saved").innerHTML = s.total > 0
+      ? `<span>${y}년 아낀 돈</span><b>${won(s.total)}</b><span>해지 ${s.nCancel}건 ${won(s.cancel)} · 본전 넘김 ${won(s.gain)}</span>`
+      : `<span>${y}년 아낀 돈 ₩0 · 안 쓰는 구독을 해지하거나 본전을 넘기면 여기에 쌓여요.</span>`;
+  }
+
+  function renderTodo() {
+    const t = todayStr(), cards = [];
+    for (const it of live()) {
+      if (promoDue(it, t)) {
+        const d = daysBetween(t, it.promoEnd), diff = (it.after - it.price) / it.months;
+        cards.push({ urgent: d <= 3, d, html: `<div class="tcard${d <= 3 ? " bad" : ""}" data-id="${esc(it.id)}">
+          <div class="tx"><b>${esc(it.name)}</b> 할인이 <span class="n">${d === 0 ? "오늘" : `D-${d}`}</span>에 끝나요.
+            <small>${md(it.promoEnd)}부터 ${won(it.price)} → ${won(it.after)}${diff > 0 ? ` (한 달 +${won(diff)})` : ""}. 계속 쓸지 지금 정하세요.</small></div>
+          <div class="ac"><button class="btn sm" type="button" data-act="cancel">해지했어요</button><button class="btn sm ghost" type="button" data-act="promoOk">계속 쓸게요</button></div></div>` });
+      }
+      const a = analyze(it, t);
+      if (it.kind === "pass" && a.state === "active" && a.remaining <= 14 && it.renewAck !== a.pEnd && !renewedFrom(it)) {
+        const left = a.remaining;
+        cards.push({ d: left, html: `<div class="tcard" data-id="${esc(it.id)}">
+          <div class="tx"><b>${esc(it.name)}</b> 이용권이 <span class="n">${left === 0 ? "오늘" : `D-${left}`}</span>에 끝나요.
+            <small>이번 기간 도장 ${a.uses}개, 1번에 ${won(a.perUse)}${it.ref ? ` (본전 기준 ${won(it.ref)})` : ""}. 재등록하면 ${md(a.pEnd)}부터 이어져요.</small></div>
+          <div class="ac"><button class="btn sm" type="button" data-act="renew">재등록</button><button class="btn sm ghost" type="button" data-act="noRenew">안 할게요</button></div></div>` });
+      }
+      const why = cancelReason(it, a, t);
+      if (why) cards.push({ urgent: false, d: 99, html: `<div class="tcard bad" data-id="${esc(it.id)}">
+          <div class="tx"><b>${esc(it.name)}</b> 해지를 생각해 보세요. 1년이면 <span class="n">${won(monthlyOf(it) * 12)}</span> 아껴요.
+            <small>${why}</small></div>
+          <div class="ac"><button class="btn sm" type="button" data-act="cancel">해지했어요</button><button class="btn sm ghost" type="button" data-act="keep">계속 쓸게요</button></div></div>` });
+    }
+    cards.sort((a, b) => a.d - b.d);
+    $("todoSec").hidden = !cards.length;
+    $("todo").innerHTML = cards.map(c => c.html).join("");
+  }
+
+  function renderCal() {
+    const [y, m] = viewMonth.split("-").map(Number);
+    $("monTitle").textContent = `${y}년 ${m}월`;
+    const first = new Date(y, m - 1, 1), dim = new Date(y, m, 0).getDate(), t = todayStr();
+    const byDay = {};
+    let monthStamps = 0;
+    for (const it of sorted().filter(x => x.mode === "count" && x.status === "active")) for (const d of it.uses) if (d.startsWith(viewMonth)) { (byDay[d] ||= []).push(it); monthStamps++; }
+    $("monCount").innerHTML = counted().length ? `이번 달 도장 <b>${monthStamps}</b>개` : "";
+    let html = DOW.map((d, i) => `<div class="dow${i === 0 ? " sun" : ""}">${d}</div>`).join("");
+    for (let i = 0; i < first.getDay(); i++) html += `<div class="blank"></div>`;
+    for (let day = 1; day <= dim; day++) {
+      const d = `${viewMonth}-${pad2(day)}`, list = byDay[d] || [], dow = (first.getDay() + day - 1) % 7;
+      const shown = list.slice(0, 4).map(it => stamp(it, popKey === it.id + d ? "pop" : "")).join("");
+      const cls = ["day", dow === 0 ? "sun" : "", d === t ? "today" : "", d > t ? "future" : "", d === selDay ? "sel" : ""].join(" ");
+      html += `<button type="button" class="${cls}" data-day="${d}" aria-label="${m}월 ${day}일, 도장 ${list.length}개" aria-pressed="${d === selDay}">
+        <span class="d">${day}</span><span class="stamps">${shown}${list.length > 4 ? `<span class="more">+${list.length - 4}</span>` : ""}</span></button>`;
+    }
+    $("cal").innerHTML = html;
+    renderPad();
+  }
+
+  function renderPad() {
+    const d = selDay, dt = parse(d), t = todayStr();
+    const label = `${dt.getMonth() + 1}월 ${dt.getDate()}일 ${DOW[dt.getDay()]}요일`;
+    if (!counted().length) { $("pad").innerHTML = `<div class="pad-head"><strong>${label}</strong><span>‘횟수 기록’으로 추가한 항목이 있으면 여기서 도장을 찍어요.</span></div>`; return; }
+    const future = d > t;
+    // 기간권은 고른 날짜가 그 이용 기간 안에 있을 때만 보여줘요(재등록한 이전·다음 기간이 겹치지 않게).
+    const list = counted().filter(it => it.kind !== "pass" || (d >= it.start && d < addMonths(it.start, it.months)));
+    if (!list.length) { $("pad").innerHTML = `<div class="pad-head"><strong>${label}</strong><span>이 날짜에 쓸 수 있는 이용권이 없어요.</span></div>`; return; }
+    const btns = list.map(it => {
+      const on = it.uses.includes(d), before = d < it.start;
+      const a = analyze(it);
+      const sub = future ? "아직 오지 않은 날" : before ? "결제 전 날짜" : on ? "도장 찍음 · 누르면 취소" : `찍으면 1번에 ${won(a.nextPerUse)}`;
+      return `<button type="button" class="pbtn" data-stamp="${esc(it.id)}" aria-pressed="${on}" ${future || before ? "disabled" : ""}>
+        ${stamp(it, popKey === it.id + d ? "pop" : "")}<span class="t"><b>${esc(it.name)}</b><small>${sub}</small></span></button>`;
+    }).join("");
+    $("pad").innerHTML = `<div class="pad-head"><strong>${label}${d === t ? " · 오늘" : ""}</strong><span>쓴 것을 눌러 도장을 찍으세요</span></div><div class="padgrid">${btns}</div>`;
+  }
+
+  const confirmBox = it => confirmId === it.id ? `<div class="confirm"><span>‘${esc(it.name)}’과 기록을 모두 지울까요? 아낀 돈 기록도 사라져요.</span>
+      <button class="btn" type="button" data-act="nodel">취소</button><button class="btn danger" type="button" data-act="yesdel">삭제</button></div>` : "";
+
+  function card(it) {
+    const a = analyze(it), v = verdict(it, a);
+    const valCls = a.state !== "active" ? "" : a.breakEven != null ? (a.left ? (a.uses ? "warn" : "bad") : "good") : (a.uses ? "" : "bad");
+    const period = it.kind === "recurring" ? (it.months === 1 ? "이번 달" : "이번 기간") : "지금까지";
+    const bar = a.breakEven != null && a.state === "active"
+      ? `<div class="bar ${a.left ? "" : "good"}" aria-label="본전 진행 ${a.uses}/${a.breakEven}"><i style="width:${Math.min(100, a.uses / a.breakEven * 100)}%"></i></div>` : "";
+    const pace = it.kind === "pass" && a.state !== "ended"
+      ? `<div class="pace">${[1, 2, 3].map(w => `<span>주 ${w}번 가면 1번에 <b>${won(a.price / Math.max(1, Math.round(a.totalDays / 7 * w)))}</b></span>`).join("")}</div>` : "";
+    const prev = it.prevId && find(it.prevId);
+    const prevLine = prev ? (() => { const pa = analyze(prev); return `<div class="prev">지난 기간 도장 <b>${pa.uses}개</b> · 1번에 <b>${won(pa.perUse)}</b>${a.uses ? ` → 지금 ${won(a.perUse)}` : ""}</div>`; })() : "";
+    return `<article class="card" data-id="${esc(it.id)}">
+      <div class="c-head">${stamp(it)}<div class="nm"><h3>${esc(it.name)}</h3><div class="meta">${planName(it)} ${won(a.price)}${it.ref ? ` · 본전 기준 1번 ${won(it.ref)}` : ""}</div>${promoLine(it)}</div>
+        <span class="chip ${v.cls}">${esc(v.chip)}</span></div>
+      <div class="fare">
+        <div class="lab">${a.uses ? `${period} 도장 ${a.uses}개, 1번에` : "도장 0개라 1번에"}</div>
+        <div class="val num ${valCls}">${won(a.perUse)}</div>
+        ${a.state === "active" ? `<div class="sub">도장 하나 더 찍으면 <b>${won(a.nextPerUse)}</b></div>` : ""}
+      </div>
+      ${bar}
+      ${prevLine}
+      <div class="say ${v.cls}">${v.text}</div>
+      ${confirmBox(it)}
+      <details class="more" data-more ${openDetails.has(it.id) ? "open" : ""}><summary>자세히 보기</summary>
+        <div class="more-body">
+          <div class="stats">
+            <div><span>하루</span><strong>${won(a.daily)}</strong></div>
+            <div><span>지금까지 나간 돈</span><strong>${won(a.spent)}</strong></div>
+            <div><span>남은 날</span><strong>${a.remaining}일</strong></div>
+          </div>
+          ${pace}
+          ${it.kind === "pass" && !renewedFrom(it) ? `<div class="row"><button class="btn sm" type="button" data-act="renew">미리 재등록하기</button></div>` : ""}
+          <div class="row">
+            <button class="btn ghost" type="button" data-act="edit">수정</button>
+            ${it.kind === "recurring" ? `<button class="btn ghost" type="button" data-act="cancel">해지했어요</button>` : ""}
+            <button class="btn ghost" type="button" data-act="del">삭제</button>
+          </div>
+        </div></details>
+    </article>`;
+  }
+
+  function endedRow(it) {
+    const a = analyze(it), next = renewedFrom(it);
+    return `<div class="frow" data-id="${esc(it.id)}">
+      <div class="nm"><span class="dot d${it.color}"></span><div><b>${esc(it.name)}</b><small>${md(it.start)}–${md(addDays(a.pEnd, -1))} · ${won(a.price)}${next ? " · 재등록함" : ""}</small></div></div>
+      <div class="v"><span>도장</span><strong>${a.uses}개</strong></div>
+      <div class="v"><span>1번에</span><strong class="${it.ref && a.perUse <= it.ref ? "good" : ""}">${won(a.perUse)}</strong></div>
+      ${confirmBox(it)}
+      <div class="acts">${next ? "" : `<button class="btn ghost" type="button" data-act="renew">재등록</button>`}<button class="btn ghost" type="button" data-act="del">삭제</button></div>
+    </div>`;
+  }
+
+  function flatRow(it) {
+    const a = analyze(it);
+    const state = a.state === "upcoming" ? " · 시작 전" : a.state === "ended" ? " · 끝남" : "";
+    return `<div class="frow" data-id="${esc(it.id)}">
+      <div class="nm"><span class="dot d${it.color}"></span><div><b>${esc(it.name)}</b><small>${planName(it)} ${won(a.price)}${state}</small>${promoLine(it)}</div></div>
+      <div class="v"><span>하루</span><strong>${won(a.daily)}</strong></div>
+      <div class="v"><span>한 달</span><strong>${won(a.monthly)}</strong></div>
+      ${confirmBox(it)}
+      <div class="acts"><button class="btn ghost" type="button" data-act="edit">수정</button>${it.kind === "recurring" ? `<button class="btn ghost" type="button" data-act="cancel">해지했어요</button>` : ""}<button class="btn ghost" type="button" data-act="del">삭제</button></div>
+    </div>`;
+  }
+
+  function goneRow(it) {
+    const t = todayStr(), days = Math.max(0, daysBetween(it.cancelledAt || t, t));
+    const saved = days * monthlyOf(it, it.cancelledAt || t) * 12 / 365;
+    return `<div class="frow" data-id="${esc(it.id)}">
+      <div class="nm"><span class="dot d${it.color}"></span><div><b>${esc(it.name)}</b><small>${it.cancelledAt ? md(it.cancelledAt) : ""} 해지 · 한 달 ${won(monthlyOf(it, it.cancelledAt || t))}</small></div></div>
+      <div class="v"><span>해지 후 아낀 돈</span><strong class="good">${won(saved)}</strong></div>
+      <div class="v"><span>1년이면</span><strong>${won(monthlyOf(it, it.cancelledAt || t) * 12)}</strong></div>
+      ${confirmBox(it)}
+      <div class="acts"><button class="btn ghost" type="button" data-act="restore">다시 쓰기</button><button class="btn ghost" type="button" data-act="del">삭제</button></div>
+    </div>`;
+  }
+
+  function render() {
+    renderSum();
+    renderTodo();
+    renderCal();
+    const list = $("list");
+    if (loading) { list.innerHTML = ""; return; }
+    if (!items.length) {
+      list.innerHTML = `<div class="empty">
+        <h2>예시로 먼저 둘러보세요</h2>
+        <p>월세·휴대폰 요금 같은 고정비, 횟수를 기록하는 헬스장·배민클럽·넷플릭스 예시가 들어가요. 할인 종료 알림과 해지 추천도 같이 볼 수 있어요. 다 보고 나면 지우면 됩니다.</p>
+        <div class="row"><button class="btn primary" type="button" data-act="sample">예시 넣어 보기</button>
+        <button class="btn" type="button" data-act="add">바로 추가하기</button></div></div>`;
+      return;
+    }
+    const c = showCards(), f = flats(), g = gone(), ended = endedPasses();
+    let html = "";
+    if (c.length) html += `<div class="col"><div class="sec-head"><h2 class="sec">횟수 기록</h2><span>쓴 날 도장을 찍는 항목 ${c.length}개</span></div>
+      <div class="grid">${c.map(card).join("")}</div></div>`;
+    if (f.length) {
+      let fm = 0, fd = 0;
+      for (const it of f) { const a = analyze(it); if (a.state === "active") { fm += a.monthly; fd += a.daily; } }
+      const groups = [];
+      for (const it of f) { const name = catOf(it.cat)?.name || "기타"; let gr = groups.find(x => x.name === name); if (!gr) groups.push(gr = { name, rows: [] }); gr.rows.push(it); }
+      html += `<div class="ledger"><div class="ledger-head"><h2 class="sec">고정 지출</h2><span>${f.length}개 · 한 달 ${won(fm)} · 하루 ${won(fd)}</span></div>
+        ${groups.map(gr => `<div class="lgroup">${esc(gr.name)}</div>${gr.rows.map(flatRow).join("")}`).join("")}</div>`;
+    }
+    if (ended.length) html += `<details class="gone"><summary>끝난 이용권 ${ended.length}개<span>기간별 결과</span></summary>${ended.map(endedRow).join("")}</details>`;
+    if (g.length) {
+      const total = g.reduce((s, it) => s + monthlyOf(it, it.cancelledAt || todayStr()), 0);
+      html += `<details class="gone"><summary>해지한 것 ${g.length}개<span>한 달 ${won(total)}씩 아끼는 중</span></summary>${g.map(goneRow).join("")}</details>`;
+    }
+    list.innerHTML = html;
+  }
+
+  // ---------- toast ----------
+  let toastTimer, undoFn = null;
+  function toast(msg, undo) {
+    $("toastMsg").textContent = msg; undoFn = undo || null;
+    $("toastUndo").hidden = !undo; $("toast").hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { $("toast").hidden = true; undoFn = null; }, 4500);
+  }
+  $("toastUndo").addEventListener("click", () => { const f = undoFn; $("toast").hidden = true; undoFn = null; f && f(); });
+
+  // ---------- calendar actions ----------
+  const find = id => items.find(x => x.id === id);
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const shiftMonth = n => { const d = new Date(+viewMonth.slice(0, 4), +viewMonth.slice(5) - 1 + n, 1); viewMonth = ymd(d).slice(0, 7); popKey = null; renderCal(); };
+  $("prevM").addEventListener("click", () => shiftMonth(-1));
+  $("nextM").addEventListener("click", () => shiftMonth(1));
+  $("cal").addEventListener("click", e => {
+    const b = e.target.closest("[data-day]"); if (!b) return;
+    selDay = b.dataset.day; popKey = null; renderCal();
+  });
+  $("pad").addEventListener("click", e => {
+    const b = e.target.closest("[data-stamp]"); if (!b || b.disabled) return;
+    const it = find(b.dataset.stamp); if (!it) return;
+    const d = selDay, prev = it.uses.slice(), before = analyze(it).perUse;
+    if (it.uses.includes(d)) {
+      it.uses = it.uses.filter(x => x !== d); popKey = null;
+      render(); save(it);
+      toast(`${it.name} 도장을 지웠어요`, () => { it.uses = prev; render(); save(it); });
+    } else {
+      it.uses = [...it.uses, d].sort(); popKey = it.id + d;
+      render(); save(it);
+      const after = analyze(it).perUse;
+      toast(after < before ? `쾅! ${it.name} 1번에 ${won(before)} → ${won(after)}` : `쾅! ${it.name} 도장을 찍었어요`, () => { it.uses = prev; popKey = null; render(); save(it); });
+    }
+  });
+
+  // ---------- item actions (cards, ledger, todo) ----------
+  function snapshot(it) { return JSON.parse(JSON.stringify(it)); }
+  function restoreFrom(it, snap) { Object.assign(it, snap); render(); save(it); }
+  async function itemAction(act, it, b) {
+    const snap = snapshot(it), t = todayStr();
+    if (act === "edit") return openForm(it);
+    if (act === "renew") {
+      const a = analyze(it);
+      const start = t < a.pEnd ? a.pEnd : t;
+      const next = normalize({ ...snapshot(it), id: newId(), createdAt: Date.now(), start, uses: [], prevId: it.id,
+        promoEnd: "", after: 0, promoAck: "", renewAck: "", keepUntil: "", price: a.price });
+      items.push(next); render(); save(next);
+      return toast(`${it.name}을 ${md(start)}부터 재등록했어요. 금액이 바뀌었으면 ‘수정’에서 고쳐 주세요`, async () => {
+        items = items.filter(x => x !== next); render(); try { await store.del(next.id); } catch {}
+      });
+    }
+    if (act === "noRenew") {
+      it.renewAck = analyze(it).pEnd; render(); save(it);
+      return toast("알겠어요. 이번 이용권은 다시 묻지 않을게요", () => restoreFrom(it, snap));
+    }
+    if (act === "del") { confirmId = it.id; return render(); }
+    if (act === "nodel") { confirmId = null; return render(); }
+    if (act === "yesdel") {
+      confirmId = null; items = items.filter(x => x !== it); render();
+      try { await store.del(it.id); toast(`‘${it.name}’을 지웠어요`, () => { items.push(it); render(); save(it); }); }
+      catch { items.push(it); render(); toast("지우지 못했어요. 다시 시도해 주세요."); }
+      return;
+    }
+    if (act === "cancel") {
+      it.status = "cancelled"; it.cancelledAt = t; render(); save(it);
+      return toast(`${it.name} 해지! 1년이면 ${won(monthlyOf(it, t) * 12)} 아껴요`, () => restoreFrom(it, snap));
+    }
+    if (act === "restore") {
+      it.status = "active"; it.cancelledAt = ""; it.keepUntil = ""; render(); save(it);
+      return toast(`${it.name}을 다시 합계에 넣었어요`, () => restoreFrom(it, snap));
+    }
+    if (act === "keep") {
+      it.keepUntil = analyze(it).pEnd; render(); save(it);
+      return toast(`이번 결제 기간(${md(addDays(it.keepUntil, -1))}까지)에는 다시 묻지 않을게요`, () => restoreFrom(it, snap));
+    }
+    if (act === "promoOk") {
+      it.promoAck = it.promoEnd; render(); save(it);
+      return toast(`알겠어요. ${md(it.promoEnd)}부터 ${won(it.after)}로 계산할게요`, () => restoreFrom(it, snap));
+    }
+  }
+  function onItemClick(e) {
+    const b = e.target.closest("button[data-act]"); if (!b) return;
+    const act = b.dataset.act;
+    if (act === "add") return openForm();
+    if (act === "sample") return loadSamples();
+    const it = find(b.closest("[data-id]")?.dataset.id);
+    if (it) itemAction(act, it, b);
+  }
+  $("list").addEventListener("click", onItemClick);
+  $("todo").addEventListener("click", onItemClick);
+  $("list").addEventListener("toggle", e => {
+    const c = e.target.closest?.(".card");
+    if (c && e.target.matches("[data-more]")) e.target.open ? openDetails.add(c.dataset.id) : openDetails.delete(c.dataset.id);
+  }, true);
+
+  async function loadSamples() {
+    const t = todayStr(), back = n => addDays(t, -n);
+    const s = [
+      { name: "헬스장 1년권 (예시)", cat: "fit", label: "헬스", color: 1, kind: "pass", price: 600000, months: 12, start: back(60), ref: 15000, unit: "회", uses: [back(58), back(55), back(51), back(44), back(37), back(30), back(21), back(9), back(3)] },
+      { name: "배민클럽 (예시)", cat: "food", label: "배민", color: 5, kind: "recurring", price: 1990, months: 1, start: addMonths(back(20), -5), ref: 3000, unit: "주문", uses: [back(15), back(2)], promoEnd: addDays(t, 6), after: 3990 },
+      { name: "넷플릭스 스탠다드 (예시)", cat: "video", label: "넷플", color: 0, kind: "recurring", price: 13500, months: 1, start: addMonths(back(12), -3), ref: 3500, unit: "편", uses: [back(41), back(47)] },
+      { name: "월세 (예시)", cat: "home", label: "월세", color: 7, mode: "flat", kind: "recurring", price: 550000, months: 1, start: addMonths(back(24), -10) },
+      { name: "휴대폰 요금 (예시)", cat: "tel", label: "폰", color: 2, mode: "flat", kind: "recurring", price: 55000, months: 1, start: addMonths(back(14), -20) },
+      { name: "필라테스 3개월 (예시)", cat: "fit", label: "필라", color: 6, kind: "pass", price: 450000, months: 3, start: addDays(addMonths(t, -3), 10), ref: 50000, unit: "회", uses: [back(70), back(63), back(56), back(42), back(35), back(21), back(14), back(7)] },
+      { name: "토스 프라임 (예시)", cat: "member", label: "토프", color: 1, mode: "flat", kind: "recurring", price: 5900, months: 1, start: addMonths(back(26), -4) },
+      { name: "iCloud+ 200GB (예시)", cat: "cloud", label: "iC", color: 3, mode: "flat", kind: "recurring", price: 4400, months: 1, start: addMonths(back(5), -8) },
+      { name: "밀리의 서재 (예시)", cat: "study", label: "밀리", color: 4, kind: "recurring", price: 9900, months: 1, start: addMonths(back(40), -6), status: "cancelled", cancelledAt: back(40) }
+    ].map((r, i) => normalize({ ...r, id: newId() + i, createdAt: Date.now() + i }));
+    items.push(...s); render();
+    for (const it of s) await save(it);
+    toast("예시를 넣었어요. ‘챙길 것’과 달력을 눌러 보세요.");
+  }
+
+  // ---------- form ----------
+  let editing = null, curCat = "home", curPreset = null;
+  const PLANS = [["recurring", 1, "매달 자동결제"], ["recurring", 12, "매년 자동결제"], ["pass", 1, "1개월권 (한 번 결제)"], ["pass", 3, "3개월권 (한 번 결제)"], ["pass", 6, "6개월권 (한 번 결제)"], ["pass", 12, "1년권 (한 번 결제)"], ["pass", 24, "2년권 (한 번 결제)"]];
+  function fillPlans(kind, months) {
+    const list = PLANS.slice();
+    if (kind && !list.some(p => p[0] === kind && p[1] === months)) list.push([kind, months, planName({ kind, months })]);
+    $("fPlan").innerHTML = list.map(([k, m, l]) => `<option value="${k}:${m}">${l}</option>`).join("");
+    $("fPlan").value = `${kind || "recurring"}:${months || 1}`;
+    planHelp();
+  }
+  const planHelp = () => { $("startHelp").textContent = $("fPlan").value.startsWith("pass") ? "이 날부터 이용 기간을 계산해요." : "이 날짜마다 새 결제 기간으로 계산돼요."; };
+  $("fPlan").addEventListener("change", planHelp);
+  const numIn = v => Number(String(v).replace(/[^\d]/g, ""));
+  const fmt = n => n ? n.toLocaleString("ko-KR") : "";
+  ["fPrice", "fRef", "fAfter"].forEach(id => $(id).addEventListener("input", e => {
+    const raw = String(e.target.value).replace(/[^\d]/g, "");
+    e.target.value = raw === "" ? "" : Number(raw).toLocaleString("ko-KR");
+  }));
+
+  const inkVal = () => Number(document.querySelector('input[name="ink"]:checked')?.value || 0);
+  function renderInks(sel) {
+    const lab = $("fLabel").value.trim() || autoLabel($("fName").value);
+    $("inks").innerHTML = [0, 1, 2, 3, 4, 5, 6, 7].map(i =>
+      `<label><input type="radio" name="ink" id="ink${i}" value="${i}" ${i === sel ? "checked" : ""} aria-label="색 ${i + 1}"><span class="st c${i}">${esc(lab)}</span></label>`).join("");
+  }
+  const refreshInkLabels = () => { const lab = $("fLabel").value.trim() || autoLabel($("fName").value); document.querySelectorAll("#inks .st").forEach(s => s.textContent = lab); };
+  $("fLabel").addEventListener("input", refreshInkLabels);
+  $("fName").addEventListener("input", refreshInkLabels);
+
+  const modeVal = () => document.querySelector('input[name="mode"]:checked')?.value === "flat" ? "flat" : "count";
+  function setMode(m) { $(m === "flat" ? "modeFlat" : "modeCount").checked = true; modeUi(); }
+  function modeUi() {
+    const m = modeVal();
+    $("refField").hidden = m !== "count";
+    $("labelField").hidden = m === "flat";
+    $("inkTitle").textContent = m === "count" ? "도장" : "표시 색";
+  }
+  document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", modeUi));
+  const promoUi = () => { $("promoBox").hidden = !$("fPromo").checked; };
+  $("fPromo").addEventListener("change", () => { promoUi(); if ($("fPromo").checked && !$("fPromoEnd").value) $("fPromoEnd").focus(); });
+
+  function renderCats() {
+    $("cats").innerHTML = CATS.map(c => `<button type="button" data-cat="${c.id}" aria-pressed="${c.id === curCat}">${c.name}</button>`).join("");
+    const cat = catOf(curCat);
+    $("presets").innerHTML = cat.items.length ? cat.items.map((p, i) => {
+      const per = p.plan?.startsWith("pass") ? "" : p.plan === "recurring:12" ? "연 " : "월 ";
+      const price = p.price == null ? "금액 직접 입력" : per + won(p.price);
+      return `<button type="button" data-preset="${i}" aria-pressed="${curPreset === p}"><b>${esc(p.name)}</b><small>${price}${p.note && p.note !== "금액 직접 입력" ? ` · ${esc(p.note)}` : ""}</small></button>`;
+    }).join("") : `<p class="pnote" style="grid-column:1/-1">아래에 직접 입력해 주세요.</p>`;
+    if (!editing && !curPreset) setMode(cat.mode);
+  }
+  $("cats").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (!b) return; curCat = b.dataset.cat; curPreset = null; renderCats(); });
+  $("presets").addEventListener("click", e => {
+    const b = e.target.closest("[data-preset]"); if (!b) return;
+    const p = catOf(curCat).items[+b.dataset.preset];
+    curPreset = p;
+    $("fName").value = p.name; $("fPrice").value = p.price == null ? "" : fmt(p.price); $("fRef").value = fmt(p.ref || 0); $("fLabel").value = p.label || "";
+    const [k, m] = (p.plan || "recurring:1").split(":"); fillPlans(k, +m);
+    setMode(p.mode || catOf(curCat).mode);
+    renderCats(); refreshInkLabels();
+    if (p.price == null) $("fPrice").focus();
+  });
+
+  function openForm(it) {
+    editing = it || null;
+    $("formTitle").textContent = it ? "수정하기" : "추가하기";
+    $("presetBox").hidden = !!it;
+    curCat = it?.cat && catOf(it.cat) ? it.cat : "home"; curPreset = null;
+    fillPlans(it?.kind, it?.months);
+    $("fName").value = it?.name || "";
+    $("fPrice").value = it ? (it.price === 0 && it.promoEnd ? "0" : fmt(it.price)) : "";
+    $("fRef").value = it?.ref ? fmt(it.ref) : "";
+    $("fStart").value = it?.start || todayStr();
+    $("fLabel").value = it?.label || "";
+    $("fPromo").checked = !!it?.promoEnd;
+    $("fPromoEnd").value = it?.promoEnd || "";
+    $("fAfter").value = it?.promoEnd ? fmt(it.after) : "";
+    promoUi();
+    renderInks(it ? it.color : items.length % 8);
+    renderCats();
+    if (it) setMode(it.mode);
+    $("fErr").hidden = true;
+    $("sheet").hidden = false;
+    (it ? $("fName") : document.querySelector("#cats button")).focus();
+  }
+  const closeForm = () => { $("sheet").hidden = true; editing = null; };
+  $("addBtn").addEventListener("click", () => openForm());
+  $("cancelBtn").addEventListener("click", closeForm);
+  $("sheet").addEventListener("click", e => { if (e.target === $("sheet")) closeForm(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sheet").hidden) closeForm(); });
+
+  $("form").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("fName").value.trim(), priceRaw = $("fPrice").value.trim(), price = numIn(priceRaw), start = $("fStart").value;
+    const promo = $("fPromo").checked, promoEnd = $("fPromoEnd").value, after = numIn($("fAfter").value);
+    const err = !name ? "이름을 입력하거나 위에서 골라 주세요."
+      : (!priceRaw || (!price && !promo)) ? "지금 내는 금액을 숫자로 입력해 주세요. 무료체험이면 ‘할인·무료체험 중’을 켜고 0을 넣으세요."
+      : !start ? "결제한 날을 골라 주세요."
+      : promo && !promoEnd ? "할인 끝나는 날을 골라 주세요."
+      : promo && !after ? "할인이 끝나면 내는 금액을 입력해 주세요." : "";
+    if (err) { $("fErr").textContent = err; $("fErr").hidden = false; return; }
+    const [kind, months] = $("fPlan").value.split(":");
+    const mode = modeVal();
+    const unit = editing?.unit || catOf(curCat)?.unit || "회";
+    const data = normalize({ ...(editing || { id: newId(), uses: [], createdAt: Date.now(), status: "active" }),
+      name, price, start, kind, months: Number(months), mode, cat: editing?.cat || curCat,
+      ref: mode === "count" ? numIn($("fRef").value) : 0, color: inkVal(), label: $("fLabel").value.trim() || autoLabel(name), unit,
+      promoEnd: promo ? promoEnd : "", after: promo ? after : 0, promoAck: promo && editing?.promoEnd === promoEnd ? editing.promoAck : "" });
+    if (editing) Object.assign(editing, data); else items.push(data);
+    const target = editing || data;
+    closeForm(); render(); save(target);
+    toast(mode === "flat" ? "저장했어요. 한 달 고정비에 더했어요." : "저장했어요. 달력에서 도장을 찍어 보세요.");
+  });
+
+  // ---------- backup (기기 저장일 때) ----------
+  $("expBtn").addEventListener("click", async () => {
+    const t = todayStr();
+    const blob = new Blob([JSON.stringify({ app: "bonjeon", version: 1, exportedAt: new Date().toISOString(), items }, null, 2)], { type: "application/json" });
+    const filename = `bonjeon-backup-${t}.json`;
+    try {
+      const file = new File([blob], filename, { type: "application/json" });
+      if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "본전 미터 백업" }); return toast("백업 파일을 보냈어요"); }
+    } catch (e) { if (e?.name === "AbortError") return; }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    toast(`${filename}로 저장했어요`);
+  });
+  $("impFile").addEventListener("change", async e => {
+    const f = e.target.files?.[0]; e.target.value = "";
+    if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      const list = Array.isArray(data) ? data : data?.items;
+      if (!Array.isArray(list)) throw new Error("format");
+      const incoming = list.filter(r => r && typeof r.id === "string").map(normalize);
+      for (const it of incoming) {
+        const i = items.findIndex(x => x.id === it.id);
+        i >= 0 ? items[i] = it : items.push(it);
+        await store.put(it);
+      }
+      render();
+      toast(`${incoming.length}개를 불러왔어요`);
+    } catch { toast("백업 파일을 읽지 못했어요. 본전 미터에서 저장한 .json 파일인지 확인해 주세요."); }
+  });
+
+  // ---------- boot ----------
+  async function boot() {
+    try { store = await dbStore(); } catch { store = null; }
+    $("storeNote").innerHTML = store ? "<b>내 계정에 저장돼요.</b> 다른 기기에서 열어도 그대로 있고, 나만 볼 수 있어요."
+                                     : "<b>이 기기에만 저장돼요.</b> 서버로 보내지 않아요.";
+    // claude.ai 밖(내 웹사이트)에서는 백업과 홈 화면 안내를 보여줘요.
+    if (!store && !window.claude) {
+      $("backup").hidden = false;
+      const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+      $("installTip").hidden = standalone || !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+    store = store || localStore;
+    try { items = (await store.all()).map(normalize); }
+    catch { items = []; $("storeNote").textContent = "기록을 불러오지 못했어요. 새로고침해 주세요."; }
+    loading = false;
+    render();
+  }
+  render();
+  boot();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+</script>
+</body>
+</html>
