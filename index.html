@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="월세부터 구독까지, 매달 나가는 돈을 한눈에 보고 줄여요.">
-<meta name="theme-color" content="#EEF1F4" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F151F" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F3F4F6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101218" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -19,531 +19,431 @@
 <title>본전 미터</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
 <style>
-/* Layout: summary + savings, a "챙길 것" list, one shared stamp calendar, then 본전 cards, a fixed-cost ledger, and cancelled items. */
+/* Layout: a phone-first app column. Five tabs (홈·목록·추가·달력·절약) above a fixed bar; detail and add open as full pages; one bottom sheet for savings. */
 :root{
-  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#16233A; --muted:#5E6B7E; --line:#D8DEE6;
-  --accent:#1F5BD8; --accent-ink:#FFFFFF; --good:#0E7A55; --warn:#B26A00; --bad:#C2352B;
-  --good-bg:#E2F3EB; --warn-bg:#FBF0DC; --bad-bg:#FBE6E3; --soft:#E6ECF5; --paper:#FBFCFD;
-  --s0:#D0342C; --s1:#2C5BD2; --s2:#178657; --s3:#7B3FC4; --s4:#CF6A00; --s5:#0E8794; --s6:#C2357A; --s7:#7A5530;
-  --f-display:"Black Han Sans","IBM Plex Sans KR",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --f-num:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --bg:#F3F4F6; --surface:#FFFFFF; --ink:#1B1F27; --sub:#505A69; --mute:#8A94A3; --line:#EDEFF2; --line2:#F0F1F4; --field:#F3F4F6;
+  --accent:#6A4DF4; --accent-ink:#FFFFFF; --accent-dark:#5235D6; --accent-tint:#EFEBFE;
+  --good:#12833F; --good-tint:#E6F4EA; --bad:#C8343A; --bad-tint:#FDECEC; --warn:#B26A00;
+  --scrim:rgba(27,31,39,.48);
+  --t0:#FDECEC; --i0:#C8343A; --t1:#E8F0FE; --i1:#2E62C9; --t2:#E6F4EA; --i2:#17803D; --t3:#E3F4F6; --i3:#0B7A86;
+  --t4:#FDF0E3; --i4:#C0600E; --t5:#FCE8F1; --i5:#B4316B; --t6:#F4EEE6; --i6:#8A5A2B; --t7:#ECEFF3; --i7:#4E5968;
+  --f:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F151F; --surface:#172131; --ink:#E7ECF3; --muted:#9AA7B8; --line:#2A374A;
-  --accent:#6E9BFF; --accent-ink:#0F151F; --good:#4CCB96; --warn:#E8A93D; --bad:#FF7A6E;
-  --good-bg:#15322A; --warn-bg:#3A2C14; --bad-bg:#3D1D1B; --soft:#1F2C40; --paper:#131C2A;
-  --s0:#FF6B62; --s1:#7FA3FF; --s2:#4CCB8E; --s3:#B58BFF; --s4:#FFA347; --s5:#3FC9D6; --s6:#FF7AB8; --s7:#D3A779; color-scheme:dark}}
+  --bg:#101218; --surface:#1A1D26; --ink:#E9ECF2; --sub:#A7AFBD; --mute:#7D8696; --line:#272B36; --line2:#232733; --field:#232733;
+  --accent:#8B74FF; --accent-ink:#FFFFFF; --accent-dark:#B3A4FF; --accent-tint:#2A2447;
+  --good:#3DCC7A; --good-tint:#163222; --bad:#FF6B6B; --bad-tint:#3A1F22; --warn:#F0B24A; --scrim:rgba(0,0,0,.6);
+  --t0:#3A1F22; --i0:#FF8A8A; --t1:#1E2A44; --i1:#8FB2FF; --t2:#18301F; --i2:#6FD08C; --t3:#163338; --i3:#5FD0DA;
+  --t4:#3A2A18; --i4:#FFB067; --t5:#3A1E2C; --i5:#FF8CC0; --t6:#33291F; --i6:#D9AE7E; --t7:#262B33; --i7:#B5BECB; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F151F; --surface:#172131; --ink:#E7ECF3; --muted:#9AA7B8; --line:#2A374A;
-  --accent:#6E9BFF; --accent-ink:#0F151F; --good:#4CCB96; --warn:#E8A93D; --bad:#FF7A6E;
-  --good-bg:#15322A; --warn-bg:#3A2C14; --bad-bg:#3D1D1B; --soft:#1F2C40; --paper:#131C2A;
-  --s0:#FF6B62; --s1:#7FA3FF; --s2:#4CCB8E; --s3:#B58BFF; --s4:#FFA347; --s5:#3FC9D6; --s6:#FF7AB8; --s7:#D3A779; color-scheme:dark}
+  --bg:#101218; --surface:#1A1D26; --ink:#E9ECF2; --sub:#A7AFBD; --mute:#7D8696; --line:#272B36; --line2:#232733; --field:#232733;
+  --accent:#8B74FF; --accent-ink:#FFFFFF; --accent-dark:#B3A4FF; --accent-tint:#2A2447;
+  --good:#3DCC7A; --good-tint:#163222; --bad:#FF6B6B; --bad-tint:#3A1F22; --warn:#F0B24A; --scrim:rgba(0,0,0,.6);
+  --t0:#3A1F22; --i0:#FF8A8A; --t1:#1E2A44; --i1:#8FB2FF; --t2:#18301F; --i2:#6FD08C; --t3:#163338; --i3:#5FD0DA;
+  --t4:#3A2A18; --i4:#FFB067; --t5:#3A1E2C; --i5:#FF8CC0; --t6:#33291F; --i6:#D9AE7E; --t7:#262B33; --i7:#B5BECB; color-scheme:dark}
 
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
-.wrap{max-width:1000px;margin:0 auto;padding-block:16px calc(110px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
-.num{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-button{font:inherit;cursor:pointer;color:inherit}
-button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-h2.sec{font-size:1.1rem;margin:0}
-.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
-.sec-head span{font-size:.82rem;color:var(--muted)}
-.col{display:flex;flex-direction:column;gap:12px}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.5;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+html.lock,html.lock body{overflow:hidden}
+.wrap{max-width:560px;margin:0 auto;padding-block:16px calc(108px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.panel{display:flex;flex-direction:column;gap:12px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;padding:4px 4px 4px}
+.top h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.2}
+.top .brand{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.top p{margin:2px 0 0;font-size:15px;color:var(--sub)}
+.top .date{font-size:15px;color:var(--sub);font-weight:500}
 
-header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand h1{font-family:var(--f-display);font-weight:400;font-size:1.75rem;line-height:1.1;margin:0}
-.brand p{margin:6px 0 0;color:var(--muted);font-size:.92rem}
-.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font-weight:600}
-.btn:hover{border-color:var(--muted)}
-.btn:disabled{opacity:.45;cursor:default}
-.btn.sm{padding:6px 11px;font-size:.85rem}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.primary:hover{filter:brightness(1.07)}
-.btn.ghost{background:transparent;border-color:transparent;color:var(--muted);padding:6px 10px}
-.btn.ghost:hover{color:var(--ink);background:var(--soft)}
+.card{background:var(--surface);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card.tight{padding:6px 18px}
+.h2b{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.h2{margin:0;font-size:18px;font-weight:700}
+.ch{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.ch .side{font-size:13px;color:var(--mute);white-space:nowrap}
+.sub{font-size:14px;color:var(--mute);margin:0}
+.lbl{font-size:14px;color:var(--sub)}
+.good{color:var(--good)} .bad{color:var(--bad)}
+.big{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+.hero{display:block;font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.15}
+.link{background:none;border:0;padding:0;color:var(--mute);font-size:14px;display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+.link:hover{color:var(--ink)}
+.link b{font-weight:700}
+.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:700;background:var(--field);color:var(--ink)}
+.btn.pri{background:var(--accent);color:var(--accent-ink)}
+.btn.pri:hover{background:var(--accent-dark)}
+.btn.sm{padding:8px 12px;font-size:14px;border-radius:10px}
 .btn.danger{color:var(--bad)}
+.textbtn{background:none;border:0;color:var(--sub);font-size:15px;padding:10px 4px;text-decoration:underline;text-underline-offset:3px}
 
-/* panels + bottom tab bar */
-.panel{display:flex;flex-direction:column;gap:20px}
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--surface);border-top:1px solid var(--line);padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
-.tabs{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:end}
-.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem;font-weight:600;color:var(--muted);padding:4px 0;border-radius:10px;min-width:0}
-.tab:hover{color:var(--ink)}
-.tab[aria-current="page"]{color:var(--accent)}
-.tab.add{color:var(--ink)}
-.tab.add .ic{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--accent-ink);margin-top:-18px;box-shadow:0 2px 8px color-mix(in srgb,var(--ink) 25%,transparent)}
-.padbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
-.steps{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
-.steps ol{margin:10px 0 0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;color:var(--muted)}
-.steps b{color:var(--ink)}
-@media (prefers-reduced-motion:no-preference){.panel{animation:fadein .18s ease}@keyframes fadein{from{opacity:.4}to{opacity:1}}}
-
-/* summary */
-.sumwrap{background:var(--ink);color:var(--bg);border-radius:16px;overflow:hidden}
-.sum{padding:18px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.sum div{display:flex;flex-direction:column;gap:2px;min-width:0}
-.sum span{font-size:.8rem;opacity:.75}
-.sum small{font-size:.75rem;opacity:.7}
-.sum strong{font-family:var(--f-num);font-size:1.6rem;font-weight:600;line-height:1.2}
-.sum strong.alert{color:var(--warn)}
-@media (max-width:640px){.sum{grid-template-columns:1fr 1fr}}
-.saved{border-top:1px solid color-mix(in srgb,var(--bg) 18%,transparent);padding:12px 22px;display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap;font-size:.88rem}
-.saved b{font-family:var(--f-num);font-size:1.15rem;color:var(--good)}
-.saved span{opacity:.75}
-
-/* todo */
-.todo{display:flex;flex-direction:column;gap:8px}
-.tcard{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:12px;padding:12px 14px}
-.tcard.bad{border-left-color:var(--bad)}
-.tcard .tx{flex:1;min-width:220px;font-size:.92rem}
-.tcard .tx b{font-weight:700}
-.tcard .tx .n{font-family:var(--f-num);font-weight:600}
-.tcard .tx small{display:block;color:var(--muted);font-size:.8rem}
-.tcard .ac{display:flex;gap:6px;flex-wrap:wrap}
-
-/* stamp */
-.st{--c:var(--s0);display:inline-grid;place-items:center;border-radius:50%;color:var(--c);border:2px solid var(--c);box-shadow:inset 0 0 0 2px var(--surface),inset 0 0 0 3px var(--c);font-family:var(--f-display);line-height:1;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;background:color-mix(in srgb,var(--c) 10%,transparent);box-sizing:border-box}
-.st.c0{--c:var(--s0)}.st.c1{--c:var(--s1)}.st.c2{--c:var(--s2)}.st.c3{--c:var(--s3)}.st.c4{--c:var(--s4)}.st.c5{--c:var(--s5)}.st.c6{--c:var(--s6)}.st.c7{--c:var(--s7)}
-
-/* calendar */
-.calbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
-.calhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.calhead .mon{display:flex;align-items:center;gap:4px}
-.calhead h2{font-family:var(--f-display);font-weight:400;font-size:1.4rem;margin:0 6px;min-width:6.5em;text-align:center}
-.calhead .cnt{font-size:.85rem;color:var(--muted)}
-.calhead .cnt b{color:var(--ink);font-family:var(--f-num)}
-.nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:1.1rem;line-height:1}
-.nav:hover{border-color:var(--muted)}
-.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-.dow{font-size:.75rem;color:var(--muted);text-align:center;padding-bottom:2px}
-.dow.sun{color:var(--bad)}
-.day{background:var(--paper);border:1px solid var(--line);border-radius:10px;min-height:76px;padding:5px;display:flex;flex-direction:column;gap:4px;text-align:left;min-width:0}
-.day:hover{border-color:var(--muted)}
-.day .d{font-size:.8rem;font-weight:600;font-family:var(--f-num)}
-.day.sun .d{color:var(--bad)}
-.day.future{opacity:.5}
-.day.today .d{background:var(--ink);color:var(--bg);border-radius:6px;padding:0 5px;align-self:flex-start}
-.day.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
-.day .stamps{display:flex;flex-wrap:wrap;gap:2px}
-.day .st{width:24px;height:24px;font-size:9px;border-width:1.5px;box-shadow:inset 0 0 0 1.5px var(--paper),inset 0 0 0 2.5px var(--c)}
-.day .more{font-size:.7rem;color:var(--muted);font-family:var(--f-num);align-self:center}
-.blank{min-height:76px}
-@media (max-width:560px){
-  .day,.blank{min-height:58px}
-  .day{padding:4px 3px}
-  .day .st{width:13px;height:13px;font-size:0;box-shadow:none;background:var(--c)}
-}
-.pad{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
-.pad-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
-.pad-head strong{font-size:1rem}
-.pad-head span{font-size:.82rem;color:var(--muted)}
-.padgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-.pbtn{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-align:left;min-width:0}
-.pbtn:hover:not(:disabled){border-color:var(--muted)}
-.pbtn:disabled{opacity:.45;cursor:default}
-.pbtn .st{width:40px;height:40px;font-size:12px;flex:none}
-.pbtn .t{display:flex;flex-direction:column;min-width:0}
-.pbtn .t b{font-size:.88rem;font-weight:600;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}
-.pbtn .t small{font-size:.75rem;color:var(--muted)}
-.pbtn[aria-pressed="true"]{background:var(--soft);border-color:transparent}
-.pbtn[aria-pressed="false"] .st{opacity:.35;filter:grayscale(.6)}
+/* identity avatar + stamp */
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;flex:none;letter-spacing:-.03em;white-space:nowrap;overflow:hidden}
+.av.lg{width:44px;height:44px;font-size:14px}
+.t0{background:var(--t0);color:var(--i0)}.t1{background:var(--t1);color:var(--i1)}.t2{background:var(--t2);color:var(--i2)}.t3{background:var(--t3);color:var(--i3)}
+.t4{background:var(--t4);color:var(--i4)}.t5{background:var(--t5);color:var(--i5)}.t6{background:var(--t6);color:var(--i6)}.t7{background:var(--t7);color:var(--i7)}
+.tmark{display:inline-grid;place-items:center;border:2px solid currentColor;border-radius:6px;padding:0 3px;font-size:.5em;font-weight:800;line-height:1.3;font-family:var(--f)}
+.sgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 8px}
+.stampbtn{background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.stampbtn:disabled{opacity:.4;cursor:default}
+.sb-c{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:800;letter-spacing:-.03em;transition:transform .15s}
+.sb-c.on{background:var(--accent);color:var(--accent-ink);font-size:28px;box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--accent)}
+.sb-c.on .tmark{font-size:13px;color:var(--accent-ink)}
+.stampbtn:active .sb-c{transform:scale(.94)}
+.sb-l{font-size:13px;color:var(--sub);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-l.on{color:var(--accent);font-weight:700}
 @media (prefers-reduced-motion:no-preference){
-  .st.pop{animation:thunk .38s cubic-bezier(.2,.9,.3,1.3)}
-  @keyframes thunk{0%{transform:scale(1.9) rotate(-18deg);opacity:0}60%{transform:scale(.92) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+  .sb-c.pop{animation:thunk .4s cubic-bezier(.2,.9,.3,1.3)}
+  @keyframes thunk{0%{transform:scale(1.6) rotate(-14deg);opacity:.2}60%{transform:scale(.92) rotate(3deg);opacity:1}100%{transform:scale(1)}}
   .bar i{transition:width .4s ease}
 }
+.msg{margin:0;background:var(--accent-tint);color:var(--accent-dark);border-radius:12px;padding:11px 14px;font-size:14px;font-weight:600}
 
-/* cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.c-head{display:flex;gap:12px;align-items:center}
-.c-head .st{width:44px;height:44px;font-size:13px;flex:none}
-.c-head .nm{flex:1;min-width:0}
-.c-head h3{margin:0;font-size:1.05rem;font-weight:700;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}
-.meta{color:var(--muted);font-size:.8rem;margin-top:2px}
-.promo{font-size:.8rem;color:var(--warn);font-weight:600}
-.chip{font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
-.chip.good{background:var(--good-bg);color:var(--good)}
-.chip.warn{background:var(--warn-bg);color:var(--warn)}
-.chip.bad{background:var(--bad-bg);color:var(--bad)}
-.chip.idle{background:var(--soft);color:var(--muted)}
-.fare .lab{font-size:.85rem;color:var(--muted)}
-.fare .val{font-size:2.2rem;font-weight:600;line-height:1.15}
-.fare .val.bad{color:var(--bad)} .fare .val.good{color:var(--good)} .fare .val.warn{color:var(--warn)}
-.fare .sub{font-size:.85rem;color:var(--muted)}
-.fare .sub b{color:var(--good);font-family:var(--f-num)}
-.say{border-radius:10px;padding:10px 12px;font-size:.92rem;line-height:1.5}
-.say.good{background:var(--good-bg)} .say.warn{background:var(--warn-bg)} .say.bad{background:var(--bad-bg)} .say.idle{background:var(--soft)}
-.say b{font-family:var(--f-num)}
-.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden;position:relative}
-.bar i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--warn)}
-.bar.good i{background:var(--good)}
-details.more{border-top:1px solid var(--line);padding-top:10px}
-details.more summary{cursor:pointer;color:var(--muted);font-size:.85rem;font-weight:600}
-.more-body{display:flex;flex-direction:column;gap:12px;margin-top:12px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stats div{display:flex;flex-direction:column;min-width:0}
-.stats span{font-size:.72rem;color:var(--muted)}
-.stats strong{font-family:var(--f-num);font-weight:600;font-size:.92rem}
-.pace{display:flex;gap:6px;flex-wrap:wrap}
-.pace span{font-size:.75rem;background:var(--soft);border-radius:6px;padding:3px 7px;color:var(--muted)}
-.pace span b{color:var(--ink);font-family:var(--f-num);font-weight:600}
-.row{display:flex;gap:6px;flex-wrap:wrap}
-.confirm{display:flex;gap:8px;align-items:center;font-size:.85rem;background:var(--bad-bg);color:var(--bad);border-radius:10px;padding:8px 10px;flex-wrap:wrap}
-.confirm span{flex:1}
-.empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
-.empty h2{margin:0;font-size:1.15rem}
-.empty p{margin:0;color:var(--muted);max-width:60ch}
+.sumrow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sumfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:10px;font-size:14px;flex-wrap:wrap}
+.sumfoot span{color:var(--sub)}
+.sumfoot b{color:var(--ink)}
+.sumfoot b.good{color:var(--good)}
 
-/* ledger (고정 지출) */
-.ledger{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.ledger-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.ledger-head span{font-size:.82rem;color:var(--muted)}
-.lgroup{padding:8px 16px 2px;font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:.04em;background:var(--paper);border-bottom:1px solid var(--line)}
-.frow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 16px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
-.frow:last-child{border-bottom:0}
-.frow .nm{display:flex;gap:10px;align-items:center;min-width:0}
-.frow .dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--c,var(--muted))}
-.frow .nm b{display:block;font-weight:600;overflow-wrap:anywhere}
-.frow .nm small{color:var(--muted);font-size:.78rem}
-.frow .v{text-align:right;display:flex;flex-direction:column}
-.frow .v span{font-size:.72rem;color:var(--muted)}
-.frow .v strong{font-family:var(--f-num);font-weight:600}
-.frow .v strong.good{color:var(--good)}
-.frow .acts{grid-column:1/-1;display:flex;gap:4px;justify-content:flex-end;margin-top:-4px}
-.frow .confirm{grid-column:1/-1}
-.d0{--c:var(--s0)}.d1{--c:var(--s1)}.d2{--c:var(--s2)}.d3{--c:var(--s3)}.d4{--c:var(--s4)}.d5{--c:var(--s5)}.d6{--c:var(--s6)}.d7{--c:var(--s7)}
-details.gone{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-details.gone > summary{cursor:pointer;padding:14px 16px;font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
-details.gone > summary span{font-weight:400;color:var(--muted);font-size:.85rem}
-details.gone[open] > summary{border-bottom:1px solid var(--line)}
+/* tasks */
+.task{display:flex;flex-direction:column;gap:10px;padding:12px 0;border-top:1px solid var(--line2)}
+.task:first-of-type{border-top:0;padding-top:4px}
+.task-h{display:flex;align-items:center;gap:12px}
+.task-h b{display:block;font-size:16px;font-weight:600;line-height:1.35}
+.task-h .sub{font-size:13px}
+.task-b{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tbtn{border:0;border-radius:12px;background:var(--field);padding:9px 8px;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tbtn b{font-size:14px;font-weight:700}
+.tbtn span{font-size:12px;color:var(--sub)}
+.tbtn.pri{background:var(--accent-tint);color:var(--accent-dark)}
+.tbtn.pri span{color:var(--accent-dark)}
+.note{font-size:12px;color:var(--mute);margin:0}
+.more{background:none;border:0;border-top:1px solid var(--line2);padding:12px 0 4px;font-size:14px;color:var(--sub);width:100%}
 
-.help{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:.92rem}
-.help summary{cursor:pointer;font-weight:600}
-.help p{margin:8px 0 0;color:var(--muted);max-width:68ch}
-.help p b{color:var(--ink)}
-.note{font-size:.85rem;color:var(--muted)}
-.note b{color:var(--ink)}
+/* list rows */
+.rows{display:flex;flex-direction:column}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;background:none;border:0;width:100%;text-align:left;min-width:0}
+.row + .row{border-top:1px solid var(--line2)}
+.row .mid{display:flex;flex-direction:column;flex-grow:1;min-width:0;gap:5px}
+.row .nm{font-size:16px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.row .ds{font-size:13px;color:var(--mute);line-height:1.35}
+.row .ds.bad{color:var(--bad);font-weight:600}
+.row .ds.good{color:var(--good);font-weight:600}
+.row .rt{display:flex;flex-direction:column;align-items:flex-end;flex:none}
+.row .rt b{font-size:16px;font-weight:700}
+.row .rt span{font-size:13px;color:var(--mute)}
+.bar{height:4px;border-radius:4px;background:var(--line);position:relative;overflow:hidden}
+.bar.lg{height:8px}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--accent)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 2px}
+.chip{border:0;border-radius:999px;padding:8px 14px;background:var(--surface);color:var(--sub);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:700}
+details.fold > summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0}
+details.fold > summary::-webkit-details-marker{display:none}
+details.fold > summary b{font-size:16px;font-weight:600}
+details.fold > summary span{font-size:14px;color:var(--good);font-weight:600}
+.empty{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.empty h2{margin:0;font-size:20px;font-weight:800}
+.empty p{margin:0;color:var(--sub);font-size:15px}
+.empty .rowb{display:flex;gap:8px;flex-wrap:wrap}
 
-/* form */
-.sheet{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 45%,transparent);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
-.sheet form{background:var(--surface);border-radius:16px;width:min(580px,100%);max-height:100%;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box}
-.sheet h2{margin:0;font-size:1.2rem}
-.cats{display:flex;gap:6px;flex-wrap:wrap}
-.cats button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:600}
-.cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
-.presets button{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:8px 10px;text-align:left;display:flex;flex-direction:column;gap:1px;min-width:0}
-.presets button:hover{border-color:var(--muted)}
-.presets button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-.presets b{font-size:.86rem;font-weight:600}
-.presets small{font-size:.76rem;color:var(--muted)}
-.pnote{font-size:.76rem;color:var(--muted);margin:0}
-.divider{border:0;border-top:1px solid var(--line);margin:0}
-.field{display:flex;flex-direction:column;gap:5px;min-width:0}
-.field > span{font-size:.85rem;font-weight:600}
-.field small{color:var(--muted);font-size:.78rem}
-.field input:not([type="checkbox"]):not([type="radio"]),.field select{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%;box-sizing:border-box}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:440px){.two{grid-template-columns:1fr}}
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media (max-width:520px){.modes{grid-template-columns:1fr}}
-.modes label{border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px;background:var(--paper)}
-.modes input,.inks input{position:absolute;opacity:0;pointer-events:none}
-.modes b{font-size:.92rem}
-.modes small{font-size:.78rem;color:var(--muted);line-height:1.4}
-.modes label:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--surface)}
-.modes label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
-.check{display:flex;gap:8px;align-items:center;font-size:.9rem;font-weight:600;cursor:pointer}
-.check input{width:18px;height:18px;accent-color:var(--accent)}
-.promobox{background:var(--warn-bg);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
-.inks{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* calendar */
+.calhead{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.navs{display:flex;gap:4px}
+.navbtn{width:38px;height:38px;border-radius:50%;border:0;background:var(--surface);display:grid;place-items:center;color:var(--sub)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:2px;text-align:center}
+.cal .dow{font-size:12px;color:var(--mute);padding-bottom:6px}
+.cal .dow.sun{color:var(--bad)}
+.dbtn{background:none;border:0;min-height:50px;padding:4px 0 2px;display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:12px;font-size:13px;color:var(--sub);min-width:0}
+.dbtn .n{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;line-height:1}
+.dbtn.sun .n{color:var(--bad)}
+.dbtn.future{color:var(--mute);opacity:.55}
+.dbtn.today .n{background:var(--ink);color:var(--bg);font-weight:700}
+.dbtn.sel{background:var(--accent-tint)}
+.dbtn .mk{display:flex;gap:1px;font-size:13px;line-height:1;align-items:center;max-width:100%;overflow:hidden}
+.dbtn .mk .tmark{font-size:8px;border-width:1.5px;padding:0 2px}
+.dbtn .mk small{font-size:10px;color:var(--mute)}
+.mcal .dbtn{min-height:40px}
+.mcal .dbtn .n{width:32px;height:32px}
+.mcal .dbtn.on .n{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.mcal .dbtn.today:not(.on) .n{background:none;box-shadow:inset 0 0 0 1.5px var(--accent);color:var(--accent)}
+.mcal .dbtn:disabled{cursor:default}
+
+/* info rows */
+.info{display:flex;flex-direction:column}
+.info div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;font-size:15px}
+.info div + div{border-top:1px solid var(--line2)}
+.info span{color:var(--sub)}
+.info b{font-weight:600;text-align:right}
+.acts{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.confirm{background:var(--bad-tint);color:var(--bad);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.confirm .rowb{display:flex;gap:8px;justify-content:flex-end}
+.banner{background:var(--good-tint);color:var(--good);border-radius:14px;padding:12px 14px;font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* pages (detail, add) */
+.page{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;overscroll-behavior:contain}
+.page.white{background:var(--surface)}
+.page-in{max-width:560px;margin:0 auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(112px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
+.pagehead{display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;margin-left:-8px;margin-right:-4px}
+.iconbtn{width:44px;height:44px;border:0;background:none;display:grid;place-items:center;border-radius:12px}
+.dtop{display:flex;flex-direction:column;gap:6px;padding:0 6px 6px}
+.dtop .who{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600;color:var(--sub)}
+.cta{position:fixed;left:0;right:0;bottom:0;z-index:21;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(to top,var(--bg) 72%,transparent)}
+.page.white .cta{background:linear-gradient(to top,var(--surface) 72%,transparent)}
+.cta-in{max-width:560px;margin:0 auto}
+.cta button{width:100%;height:56px;border:0;border-radius:16px;background:var(--accent);color:var(--accent-ink);font-size:17px;font-weight:700}
+.cta button:hover{background:var(--accent-dark)}
+.cta button.sec{background:var(--field);color:var(--ink)}
+
+/* add */
+.h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.35}
+.search{display:flex;align-items:center;gap:10px;background:var(--field);border-radius:14px;padding:0 14px;height:52px}
+.search input{border:0;background:transparent;outline:none;font-size:16px;flex-grow:1;min-width:0}
+.pop{display:flex;flex-wrap:wrap;gap:8px}
+.pop button{border:0;background:var(--field);border-radius:999px;padding:9px 14px;font-size:15px}
+.grp{display:flex;align-items:center;gap:14px;padding:13px 0;background:none;border:0;width:100%;text-align:left}
+.grp .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;font-size:20px}
+.grp .tx{display:flex;flex-direction:column;flex-grow:1;min-width:0}
+.grp .tx b{font-size:16px;font-weight:600}
+.grp .tx span{font-size:13px;color:var(--mute)}
+.secttl{font-size:15px;font-weight:700;margin:6px 0 0}
+.catttl{font-size:13px;font-weight:700;color:var(--mute);margin:10px 0 2px}
+.prow{display:flex;align-items:center;gap:12px;padding:11px 0;background:none;border:0;width:100%;text-align:left;border-top:1px solid var(--line2)}
+.prow .tx{display:flex;flex-direction:column;flex-grow:1;min-width:0}
+.prow .tx b{font-size:15px;font-weight:600}
+.prow .tx span{font-size:13px;color:var(--mute)}
+.prow .em{font-size:22px;width:32px;text-align:center;flex:none}
+.f{display:flex;flex-direction:column;gap:8px}
+.f > label,.f > .fl{font-size:14px;color:var(--sub)}
+.amt{display:flex;align-items:baseline;gap:4px;border-bottom:2px solid var(--accent);padding-bottom:8px}
+.amt input{border:0;outline:none;font-size:30px;font-weight:800;width:100%;padding:0;background:transparent;min-width:0}
+.amt span{font-size:22px;font-weight:700}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--field);border-radius:12px;padding:4px}
+.seg label{text-align:center;padding:9px 2px;border-radius:9px;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer;white-space:nowrap}
+.seg input,.pills input,.emos input,.inks input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(27,31,39,.12)}
+.seg label:has(input:focus-visible),.pills label:has(input:focus-visible),.emos label:has(input:focus-visible),.inks label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.help{font-size:13px;color:var(--mute);margin:0;line-height:1.5}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pills label{border-radius:999px;padding:7px 12px;background:var(--field);font-size:14px;font-weight:600;color:var(--sub);cursor:pointer}
+.pills label:has(input:checked){background:var(--accent);color:var(--accent-ink)}
+.frows{display:flex;flex-direction:column}
+.frow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line2)}
+.frow .tx{display:flex;flex-direction:column;min-width:0}
+.frow .tx b{font-size:16px;font-weight:500;color:var(--sub)}
+.frow .tx span{font-size:13px;color:var(--mute)}
+.frow input[type="date"],.frow select,.frow .inl{border:0;background:var(--field);border-radius:10px;padding:8px 10px;font-size:15px;font-weight:600;max-width:60%;min-width:0}
+.frow .inl{width:120px;text-align:right}
+.sw{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:30px;background:var(--line);position:relative;flex:none;cursor:pointer;margin:0;transition:background .15s}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#FFFFFF;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sw:checked{background:var(--accent)}
+.sw:checked::after{transform:translateX(20px)}
+.box{background:var(--accent-tint);border-radius:16px;padding:4px 16px;display:flex;flex-direction:column}
+.box .frow{border-top-color:color-mix(in srgb,var(--accent) 14%,transparent)}
+.box .frow:first-child{border-top:0}
+.box .frow input,.box .frow select{background:var(--surface)}
+.steps{display:flex;flex-direction:column;gap:12px;padding:4px 0 8px}
+.steps div{display:flex;gap:12px;align-items:flex-start}
+.steps .n{width:24px;height:24px;border-radius:50%;background:var(--surface);color:var(--accent);display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}
+.steps b{display:block;font-size:15px;font-weight:600}
+.steps span{font-size:13px;color:var(--mute)}
+.emos{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.emos label{width:40px;height:40px;border-radius:50%;background:var(--field);display:grid;place-items:center;font-size:20px;cursor:pointer}
+.emos label:has(input:checked){background:var(--accent-tint);box-shadow:0 0 0 2px var(--accent)}
+.emos .own{width:64px;height:40px;border-radius:10px;border:0;background:var(--field);text-align:center;font-size:18px}
+.inks{display:flex;gap:8px;flex-wrap:wrap}
 .inks label{cursor:pointer}
-.inks .st{width:38px;height:38px;font-size:11px}
-.inks label:has(input:checked) .st{outline:2px solid var(--ink);outline-offset:2px}
-.inks label:has(input:focus-visible) .st{outline:2px solid var(--accent);outline-offset:2px}
-.err{color:var(--bad);font-size:.85rem;margin:0}
-.formact{display:flex;gap:8px;justify-content:flex-end}
+.inks .av{width:36px;height:36px;font-size:11px}
+.inks label:has(input:checked) .av{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.preview{background:var(--field);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.preview .row{background:var(--surface);border-radius:12px;padding:10px 12px}
+.err{color:var(--bad);font-size:14px;margin:0}
+.name-in{border:0;background:none;font-size:16px;font-weight:600;color:var(--sub);padding:2px 0;min-width:0;flex:1;border-bottom:1px dashed var(--line)}
+details.more2 summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-top:1px solid var(--line2);font-size:15px;color:var(--mute)}
+details.more2 summary::-webkit-details-marker{display:none}
+details.more2[open] summary{color:var(--sub)}
 
-.prev{font-size:.8rem;color:var(--muted)}
-.prev b{font-family:var(--f-num);color:var(--ink)}
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:30;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
+.sheet-in{background:var(--surface);border-radius:26px 26px 0 0;width:100%;max-width:560px;max-height:88%;overflow:auto;padding:12px 22px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:18px;box-sizing:border-box}
+.grab{width:40px;height:5px;border-radius:5px;background:var(--line);align-self:center}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;font-weight:700}
+.foot{background:var(--field);border-radius:14px;padding:12px 14px;font-size:13px;color:var(--sub);line-height:1.5;display:flex;flex-direction:column;gap:4px}
+.foot b{color:var(--ink)}
 
+/* tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--surface);border-top:1px solid var(--line);padding-top:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+.tabs{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--mute);padding:2px 0}
+.tab[aria-current="page"]{color:var(--ink);font-weight:700}
+.tab.add .ic{width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;margin-top:-20px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+
+.helpd{background:var(--surface);border-radius:16px;padding:14px 16px;font-size:15px}
+.helpd summary{cursor:pointer;font-weight:600}
+.helpd p{margin:8px 0 0;color:var(--sub);font-size:14px;line-height:1.6}
+.helpd p b{color:var(--ink)}
+.small{font-size:13px;color:var(--mute)}
+.small b{color:var(--ink)}
 .backup{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .backup label.btn{cursor:pointer}
-.backup span{font-size:.8rem;color:var(--muted)}
 
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:30;display:flex;gap:12px;align-items:center;max-width:calc(100% - 32px)}
-.toast button{background:none;border:0;color:var(--warn);font-weight:700;padding:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:12px;font-size:14px;display:flex;gap:14px;align-items:center;max-width:calc(100% - 32px);box-sizing:border-box}
+.toast button{background:none;border:0;color:var(--accent-tint);font-weight:700;padding:0;white-space:nowrap}
 </style>
 
 <div class="wrap">
-  <header class="top">
-    <div class="brand">
-      <h1 id="tabTitle">본전 미터</h1>
-      <p id="tabSub">월세부터 구독까지, 매달 나가는 돈을 한눈에 보고 줄여요.</p>
+  <section class="panel" data-tab="home" id="tab-home">
+    <header class="top"><span class="brand">본전 미터</span><span class="date" id="homeDate"></span></header>
+    <div class="panel" id="homeBody"><div class="card"><p class="sub">불러오는 중…</p></div></div>
+  </section>
+
+  <section class="panel" data-tab="list" id="tab-list" hidden>
+    <header class="top"><div><h1>목록</h1><p id="listSub">매달 나가는 돈을 한 줄씩 봐요</p></div></header>
+    <div class="panel" id="listBody"></div>
+  </section>
+
+  <section class="panel" data-tab="cal" id="tab-cal" hidden>
+    <div class="panel" id="calBody"></div>
+  </section>
+
+  <section class="panel" data-tab="save" id="tab-save" hidden>
+    <header class="top"><div><h1>절약</h1><p>새는 돈을 찾고, 아낀 돈을 모아 봐요</p></div></header>
+    <div class="panel" id="saveBody"></div>
+    <details class="helpd"><summary>‘횟수 기록’과 ‘금액만 확인’은 뭐가 달라요?</summary>
+      <p><b>횟수 기록</b>은 헬스장, 배달 멤버십, OTT처럼 쓴 만큼 값을 하는 것이에요. 쓴 날 도장을 찍으면 1번에 얼마 냈는지 알려줘요.</p>
+      <p><b>금액만 확인</b>은 월세, 통신비, 클라우드처럼 쓰든 안 쓰든 나가는 돈이에요. 한 달·하루 금액만 보여줘요.</p></details>
+    <details class="helpd"><summary>본전은 어떻게 정하나요?</summary>
+      <p>구독 없이 그때그때 돈 내고 썼다면 냈을 금액이 기준이에요. 추가할 때 ‘더 설정하기’의 <b>본전 기준 금액</b>에 넣어요.</p>
+      <p>예: 헬스장 1년권 60만 원, 일일권 1만 5천 원이면 40번 가면 본전이에요.</p></details>
+    <details class="helpd"><summary>기간 이용권은 어떻게 계산해요?</summary>
+      <p>3개월권·1년권처럼 한 번 낸 이용권은 시작일부터 끝나는 날까지를 한 덩어리로 봐요. 1번 비용은 결제 금액 ÷ 그 기간의 도장 수이고, 한 달 고정비에는 결제 금액 ÷ 개월 수가 들어가요.</p>
+      <p>끝나기 14일 전부터 홈 ‘할 일’에 재등록할지 물어봐요.</p></details>
+    <details class="helpd"><summary>‘올해 아낀 돈’은 어떻게 계산해요?</summary>
+      <p><b>해지</b>: ‘해지했어요’를 누른 날부터 그 구독의 하루 금액이 매일 쌓여요.</p>
+      <p><b>본전 넘김</b>: 결제 기간마다 따로 샀을 때 금액에서 낸 금액을 뺀 만큼이에요. 올해 기간만 더해요.</p></details>
+    <details class="helpd"><summary>멤버십에 포함된 넷플릭스는 어떻게 넣어요?</summary>
+      <p>넷플릭스를 추가할 때 <b>다른 멤버십에 포함돼 있어요</b>를 켜고 멤버십을 고르세요. ‘네이버플러스 멤버십 (넷플릭스)’처럼 멤버십 금액으로 계산하고, 본 날 도장을 찍으면 그 금액을 본 횟수로 나눠요.</p></details>
+    <p class="small" id="storeNote">불러오는 중…</p>
+    <div class="backup" id="backup" hidden>
+      <button class="btn sm" type="button" id="expBtn">백업 파일 저장</button>
+      <label class="btn sm" for="impFile">백업 불러오기</label>
+      <input type="file" id="impFile" accept="application/json,.json" hidden>
+      <span class="small">기록은 이 휴대폰에만 저장돼요. 기기를 바꾸기 전에 백업해 두세요.</span>
     </div>
-  </header>
-
-  <section class="panel" id="tab-home" data-tab="home" aria-label="홈">
-  <section class="sumwrap" aria-label="전체 요약">
-    <div class="sum">
-      <div><span>한 달 고정비</span><strong id="mMonth">₩0</strong></div>
-      <div><span>하루로 치면</span><strong id="mDay">₩0</strong></div>
-      <div><span>항목 수</span><strong id="mCount">0개</strong><small id="mCountSub"></small></div>
-      <div><span>아직 본전 못 뽑은 것</span><strong id="mBehind">0개</strong></div>
-    </div>
-    <div class="saved" id="saved"></div>
-  </section>
-
-  <section class="col" id="todaySec" hidden>
-    <div class="sec-head"><h2 class="sec">오늘 도장</h2><span>오늘 쓴 걸 바로 찍어요</span></div>
-    <div class="padbox" id="todayPad"></div>
-  </section>
-
-  <section class="col" id="todoSec">
-    <div class="sec-head"><h2 class="sec">챙길 것</h2><span>할인 종료 · 이용권 재등록 · 해지 추천</span></div>
-    <div class="todo" id="todo"></div>
-    <p class="note" id="todoNone" hidden>지금 챙길 것은 없어요. 할인 종료, 이용권 재등록, 해지 추천이 생기면 여기에 떠요.</p>
-  </section>
-
-
-  <div id="homeEmpty"></div>
-  </section>
-
-  <section class="panel" id="tab-list" data-tab="list" aria-label="목록" hidden>
-  <section id="list" class="col" style="gap:20px" aria-live="polite"></section>
-  </section>
-
-  <section class="panel" id="tab-cal" data-tab="cal" aria-label="달력" hidden>
-  <section class="calbox" aria-label="도장 달력">
-    <div class="calhead">
-      <div class="mon">
-        <button class="nav" type="button" id="prevM" aria-label="이전 달">‹</button>
-        <h2 id="monTitle">2026년 10월</h2>
-        <button class="nav" type="button" id="nextM" aria-label="다음 달">›</button>
-      </div>
-      <div class="cnt" id="monCount"></div>
-    </div>
-    <div class="cal" id="cal"></div>
-    <div class="pad" id="pad"></div>
-  </section>
-  </section>
-
-  <section class="panel col" id="tab-guide" data-tab="guide" aria-label="사용법" hidden>
-  <div class="steps">
-    <h2 class="sec">이렇게 써요</h2>
-    <ol>
-      <li><b>추가</b>: 아래 가운데 <b>+</b>를 눌러 월세·통신비·구독을 넣어요. 자주 쓰는 서비스는 고르기만 하면 가격이 채워져요.</li>
-      <li><b>도장</b>: 헬스장·배달처럼 횟수를 기록하는 건 쓴 날 <b>홈</b>이나 <b>달력</b>에서 도장을 찍어요.</li>
-      <li><b>확인</b>: <b>홈</b>에서 한 달 고정비와 챙길 것을, <b>목록</b>에서 항목별 1번 비용을 봐요.</li>
-      <li><b>줄이기</b>: 안 쓰는 구독은 ‘해지했어요’를 누르면 아낀 돈이 쌓여요.</li>
-    </ol>
-  </div>
-  <details class="help">
-    <summary>‘횟수 기록’과 ‘고정 지출’은 뭐가 달라요?</summary>
-    <p><b>횟수 기록</b>은 헬스장, 배달 멤버십, OTT처럼 <b>쓴 만큼 값을 하는 것</b>이에요. 쓴 날 달력에 도장을 찍으면 1번에 얼마 냈는지, 본전까지 몇 번 남았는지 알려줘요.</p>
-    <p><b>고정 지출</b>은 월세, 통신비, 클라우드, 멤버십처럼 <b>쓰든 안 쓰든 나가는 돈</b>이에요. 도장 없이 한 달·하루 금액만 보여주고 합계에 더해져요.</p>
-  </details>
-  <details class="help">
-    <summary>본전은 어떻게 정하나요?</summary>
-    <p>본전은 <b>구독 없이 그때그때 돈 내고 썼다면 냈을 금액</b>이 기준이에요. 추가할 때 “따로 사면 1번에 얼마?”에 넣으면 됩니다.</p>
-    <p>예: 헬스장 1년권 <b>60만 원</b>, 일일권 <b>1만 5천 원</b> → <b>40번</b> 가면 본전.</p>
-    <p>예: 배민클럽 월 <b>3,990원</b>, 1번 주문 때 아끼는 배달비 <b>약 3,000원</b> → 이번 달 <b>2번</b> 시키면 본전.</p>
-  </details>
-  <details class="help">
-    <summary>‘아낀 돈’은 어떻게 계산해요?</summary>
-    <p><b>해지</b>: ‘해지했어요’를 누른 날부터 그 구독의 하루 금액이 매일 아낀 돈으로 쌓여요.</p>
-    <p><b>본전 넘김</b>: 결제 기간마다 (따로 샀을 때 금액 − 실제 낸 금액)이 플러스면 그만큼 아낀 걸로 쳐요. 올해 결제 기간만 더해요.</p>
-  </details>
-  <details class="help">
-    <summary>운동 이용권(1년·3개월·1개월)은 어떻게 계산해요?</summary>
-    <p>한 번 결제한 이용권은 <b>결제한 날부터 기간이 끝날 때까지</b>를 한 덩어리로 봐요. 1번 비용은 결제 금액 ÷ 그 기간에 찍은 도장 수이고, 한 달 고정비에는 결제 금액 ÷ 개월 수가 들어가요.</p>
-    <p>끝나기 14일 전부터 ‘챙길 것’에 재등록을 물어봐요. 재등록하면 같은 설정으로 다음 기간이 이어지고, 지난 기간 결과와 비교해서 보여줘요. 끝난 이용권은 아래 ‘끝난 이용권’에 모여요.</p>
-    <p>매달 자동으로 빠져나가는 헬스장이면 결제 방식을 ‘매달 자동결제’로 고르세요. 매달 도장 수가 0부터 다시 시작해요.</p>
-  </details>
-
-  <div class="note" id="storeNote">불러오는 중…</div>
-  <div class="backup" id="backup" hidden>
-    <button class="btn sm" type="button" id="expBtn">백업 파일 저장</button>
-    <label class="btn sm" for="impFile">백업 불러오기</label>
-    <input type="file" id="impFile" accept="application/json,.json" hidden>
-    <span>기록은 이 휴대폰에만 저장돼요. 기기를 바꾸기 전에 백업해 두세요.</span>
-  </div>
-  <div class="note" id="installTip" hidden><b>홈 화면에 추가</b>하면 앱처럼 쓸 수 있어요. 아이폰은 사파리 공유 버튼 → ‘홈 화면에 추가’, 안드로이드는 크롬 메뉴 → ‘홈 화면에 추가’.</div>
+    <p class="small" id="installTip" hidden><b>홈 화면에 추가</b>하면 앱처럼 쓸 수 있어요. 아이폰은 사파리 공유 버튼 → ‘홈 화면에 추가’, 안드로이드는 크롬 메뉴 → ‘홈 화면에 추가’.</p>
   </section>
 </div>
 
 <nav class="tabbar" aria-label="화면 이동">
   <div class="tabs">
-    <button class="tab" type="button" data-go="home"><svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 11l8-7 8 7v9h-5v-6H9v6H4z'/></svg><span>홈</span></button>
-    <button class="tab" type="button" data-go="list"><svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M8 6h12M8 12h12M8 18h12'/><circle cx='4' cy='6' r='1'/><circle cx='4' cy='12' r='1'/><circle cx='4' cy='18' r='1'/></svg><span>목록</span></button>
-    <button class="tab add" type="button" id="addBtn" aria-label="추가"><span class="ic"><svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 5v14M5 12h14'/></svg></span><span>추가</span></button>
-    <button class="tab" type="button" data-go="cal"><svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><rect x='3' y='5' width='18' height='16' rx='2'/><path d='M3 10h18M8 3v4M16 3v4'/></svg><span>달력</span></button>
-    <button class="tab" type="button" data-go="guide"><svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><circle cx='12' cy='12' r='9'/><path d='M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01'/></svg><span>사용법</span></button>
+    <button class="tab" type="button" data-go="home"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>홈</button>
+    <button class="tab" type="button" data-go="list"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>목록</button>
+    <button class="tab add" type="button" data-act="openAdd" aria-label="추가"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></button>
+    <button class="tab" type="button" data-go="cal"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>달력</button>
+    <button class="tab" type="button" data-go="save"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M17 7.5c0-1.9-2.2-3-5-3s-5 1.2-5 3.2c0 4.6 10 2.4 10 7 0 2-2.2 3.3-5 3.3s-5-1.2-5-3"/></svg>절약</button>
   </div>
 </nav>
 
-<div class="sheet" id="sheet" hidden>
-  <form id="form" novalidate>
-    <h2 id="formTitle">추가하기</h2>
-    <div id="presetBox" style="display:flex;flex-direction:column;gap:10px">
-      <div class="cats" id="cats" role="group" aria-label="분류"></div>
-      <div class="presets" id="presets"></div>
-      <p class="pnote">가격은 2026년 10월에 찾아본 정가예요. ‘확인 필요’는 최신 가격을 못 찾은 것이니 실제 결제 금액으로 고쳐 주세요.</p>
-      <hr class="divider">
-    </div>
-    <div class="field"><span>어떻게 볼까요?</span>
-      <div class="modes" role="radiogroup" aria-label="보는 방식">
-        <label><input type="radio" name="mode" id="modeCount" value="count" checked><b>횟수 기록</b><small>쓴 날 도장을 찍어요. 1번에 얼마인지, 몇 번 더 써야 본전인지 알려줘요. 헬스장·배달·OTT</small></label>
-        <label><input type="radio" name="mode" id="modeFlat" value="flat"><b>고정 지출</b><small>월세·통신비·멤버십처럼 쓰든 안 쓰든 나가는 돈. 한 달·하루 금액만 봐요.</small></label>
-      </div>
-    </div>
-    <label class="field"><span>이름</span><input id="fName" maxlength="40" placeholder="예: 월세, 휴대폰 요금, 헬스장" required></label>
-    <div class="two">
-      <label class="field"><span>지금 내는 금액 (원)</span><input id="fPrice" inputmode="numeric" placeholder="10,900" required></label>
-      <label class="field"><span>결제 방식</span><select id="fPlan"></select></label>
-    </div>
-    <div class="two">
-      <label class="field"><span>결제한 날</span><input id="fStart" type="date" required><small id="startHelp">이 날짜마다 새 결제 기간으로 계산돼요.</small></label>
-      <label class="field" id="refField"><span>따로 사면 1번에 얼마? (선택)</span><input id="fRef" inputmode="numeric" placeholder="예: 일일권 15,000"><small>본전 기준이에요.</small></label>
-    </div>
-    <label class="check"><input type="checkbox" id="fPromo"> 할인·무료체험 중이에요</label>
-    <div class="promobox" id="promoBox" hidden>
-      <div class="two">
-        <label class="field"><span>할인 끝나는 날</span><input id="fPromoEnd" type="date"></label>
-        <label class="field"><span>끝나면 내는 금액 (원)</span><input id="fAfter" inputmode="numeric" placeholder="3,990"></label>
-      </div>
-      <small class="pnote">무료체험이면 ‘지금 내는 금액’에 0을 넣으세요. 끝나기 14일 전부터 ‘챙길 것’에 알려드리고, 끝나는 날부터 금액이 자동으로 바뀌어요.</small>
-    </div>
-    <div class="field"><span id="inkTitle">도장</span>
-      <div class="inks" id="inks"></div>
-      <label class="field" id="labelField" style="max-width:200px"><small>도장 글자 (2~3자)</small><input id="fLabel" maxlength="3" placeholder="헬스"></label>
-    </div>
-    <p class="err" id="fErr" hidden></p>
-    <div class="formact">
-      <button type="button" class="btn" id="cancelBtn">취소</button>
-      <button type="submit" class="btn primary">저장</button>
-    </div>
-  </form>
-</div>
-
+<div class="page" id="detailPage" hidden role="dialog" aria-label="상세"><div class="page-in" id="detailBody"></div><div class="cta" id="detailCta" hidden><div class="cta-in" id="detailCtaIn"></div></div></div>
+<div class="page white" id="addPage" hidden role="dialog" aria-label="추가"><div class="page-in" id="addBody"></div><div class="cta" id="addCta" hidden><div class="cta-in"><button type="button" id="addSave">추가하기</button></div></div></div>
+<div class="sheet" id="savedSheet" hidden><div class="sheet-in" role="dialog" aria-label="올해 아낀 돈 내역" id="savedBody"></div></div>
 <div class="toast" id="toast" hidden><span id="toastMsg"></span><button type="button" id="toastUndo" hidden>되돌리기</button></div>
 
 <script>
 (() => {
-  // ---------- presets: 2026-10 조사 정가. price null = 직접 입력, ref = 1번 쓸 때 따로 내면 드는 돈 ----------
+  // ---------- 서비스 목록 (2026-10 조사 정가. price null = 직접 입력, ref = 1번 따로 낼 때 금액) ----------
   const CATS = [
-    { id: "home", name: "주거", unit: "회", mode: "flat", items: [
-      { name: "월세", price: null, label: "월세" },
-      { name: "관리비", price: null, label: "관리" },
-      { name: "대출 이자", price: null, label: "이자" },
-      { name: "전기·가스", price: null, label: "공과", note: "평균 금액으로" } ] },
-    { id: "tel", name: "통신", unit: "회", mode: "flat", items: [
-      { name: "휴대폰 요금", price: null, label: "폰" },
-      { name: "알뜰폰 요금", price: null, label: "알뜰" },
-      { name: "인터넷", price: null, label: "인터" },
-      { name: "IPTV", price: null, label: "TV" },
+    { id: "home", name: "주거", unit: "회", mode: "flat", emoji: "🏠", emojis: ["🏠", "🧾", "⚡"], items: [
+      { name: "월세", price: null, label: "월세" }, { name: "관리비", price: null, label: "관리", emoji: "🧾" },
+      { name: "대출 이자", price: null, label: "이자", emoji: "🏦" }, { name: "전기·가스", price: null, label: "공과", emoji: "⚡", note: "평균 금액으로" } ] },
+    { id: "tel", name: "통신", unit: "회", mode: "flat", emoji: "📱", emojis: ["📱", "🌐", "📺"], items: [
+      { name: "휴대폰 요금", price: null, label: "폰" }, { name: "알뜰폰 요금", price: null, label: "알뜰" },
+      { name: "인터넷", price: null, label: "인터", emoji: "🌐" }, { name: "IPTV", price: null, label: "TV", emoji: "📺" },
       { name: "통신사 구독 (T우주·유독 등)", price: null, label: "통구" } ] },
-    { id: "ins", name: "보험", unit: "회", mode: "flat", items: [
-      { name: "실손보험", price: null, label: "실손" },
-      { name: "자동차보험", price: null, plan: "recurring:12", label: "자보", note: "1년 금액으로" },
+    { id: "ins", name: "보험", unit: "회", mode: "flat", emoji: "🛡️", emojis: ["🛡️", "🚗", "🏥"], items: [
+      { name: "실손보험", price: null, label: "실손" }, { name: "자동차보험", price: null, plan: "recurring:12", label: "자보", emoji: "🚗", note: "1년 금액으로" },
       { name: "기타 보험", price: null, label: "보험" } ] },
-    { id: "move", name: "교통·이동", unit: "회", mode: "count", items: [
-      { name: "기후동행패스", price: 62000, label: "기동", ref: 1550, note: "청년 할인 별도 · 1회 1,550 기준" },
+    { id: "move", name: "교통·이동", unit: "회", mode: "count", emoji: "🚲", emojis: ["🚲", "🚗", "🅿️"], items: [
       { name: "따릉이 1년 정기권 (1시간)", price: 30000, plan: "pass:12", label: "따릉", ref: 1000, note: "1시간권 1,000 기준" },
-      { name: "정기 주차권", price: null, label: "주차", mode: "flat" },
-      { name: "쏘카패스", price: null, label: "쏘카" } ] },
-    { id: "ai", name: "AI", unit: "일", mode: "flat", items: [
-      { name: "ChatGPT Plus", price: 29000, label: "GPT", note: "$20 + 부가세 환산" },
-      { name: "ChatGPT Go", price: 15000, label: "GO" },
-      { name: "ChatGPT Pro", price: 290000, label: "GPT", note: "$200 + 부가세 환산" },
-      { name: "Claude Pro", price: 29000, label: "CL", note: "$20 + 부가세 환산" },
-      { name: "Claude Max", price: 145000, label: "CL", note: "$100 + 부가세 환산" },
-      { name: "Google AI Pro", price: 29000, label: "GEM" },
-      { name: "Google AI Plus", price: 11000, label: "GEM", note: "프로모션가" },
-      { name: "Perplexity Pro", price: 29000, label: "PPL", note: "$20 + 부가세 환산" },
-      { name: "Cursor Pro", price: 29000, label: "CUR", note: "$20 + 부가세 환산" },
-      { name: "Midjourney Basic", price: 14500, label: "MJ", note: "$10 + 부가세 환산" } ] },
-    { id: "music", name: "음악", unit: "일", mode: "flat", items: [
-      { name: "멜론", price: 10900, label: "멜론", note: "확인 필요" },
-      { name: "지니뮤직", price: 10900, label: "지니", note: "확인 필요" },
-      { name: "FLO", price: 10900, label: "플로", note: "확인 필요" },
-      { name: "스포티파이", price: 11990, label: "스포" },
-      { name: "유튜브 뮤직", price: 11990, label: "유뮤" },
-      { name: "Apple Music", price: 8900, label: "AM", note: "확인 필요" } ] },
-    { id: "video", name: "영상", unit: "편", mode: "count", items: [
-      { name: "유튜브 프리미엄", price: 14900, label: "유튜", note: "iOS 앱 결제 19,500", mode: "flat" },
-      { name: "유튜브 프리미엄 라이트", price: 8500, label: "유라", mode: "flat" },
-      { name: "넷플릭스 광고형", price: 5500, label: "넷플", ref: 3500, note: "확인 필요" },
-      { name: "넷플릭스 스탠다드", price: 13500, label: "넷플", ref: 3500, note: "확인 필요" },
-      { name: "넷플릭스 프리미엄", price: 17000, label: "넷플", ref: 3500, note: "확인 필요" },
-      { name: "티빙 광고형", price: 5500, label: "티빙", ref: 3500 },
-      { name: "티빙 베이직", price: 9500, label: "티빙", ref: 3500 },
-      { name: "티빙 스탠다드", price: 13500, label: "티빙", ref: 3500 },
-      { name: "티빙 프리미엄", price: 17000, label: "티빙", ref: 3500 },
-      { name: "디즈니+ 스탠다드", price: 9900, label: "디즈", ref: 3500, note: "확인 필요" },
-      { name: "웨이브 베이직", price: 7900, label: "웨이", note: "확인 필요" },
-      { name: "왓챠 베이직", price: 7900, label: "왓챠", ref: 3500 },
-      { name: "왓챠 프리미엄", price: 12900, label: "왓챠", ref: 3500 },
-      { name: "Apple TV+", price: null, label: "ATV", note: "금액 직접 입력" },
+      { name: "정기 주차권", price: null, label: "주차", mode: "flat", emoji: "🅿️" }, { name: "쏘카패스", price: null, label: "쏘카", emoji: "🚗" } ] },
+    { id: "ai", name: "AI", unit: "일", mode: "flat", emoji: "AI", emojis: ["AI", "🤖", "✨"], items: [
+      { name: "ChatGPT Plus", price: 29000, label: "GPT", note: "$20 + 부가세 환산" }, { name: "ChatGPT Go", price: 15000, label: "GO" },
+      { name: "ChatGPT Pro", price: 290000, label: "GPT", note: "$200 + 부가세 환산" }, { name: "Claude Pro", price: 29000, label: "CL", note: "$20 + 부가세 환산" },
+      { name: "Claude Max", price: 145000, label: "CL", note: "$100 + 부가세 환산" }, { name: "Google AI Pro", price: 29000, label: "GEM" },
+      { name: "Google AI Plus", price: 11000, label: "GEM", note: "프로모션가" }, { name: "Perplexity Pro", price: 29000, label: "PPL", note: "$20 + 부가세 환산" },
+      { name: "Cursor Pro", price: 29000, label: "CUR", note: "$20 + 부가세 환산" }, { name: "Midjourney Basic", price: 14500, label: "MJ", note: "$10 + 부가세 환산" } ] },
+    { id: "music", name: "음악", unit: "일", mode: "flat", emoji: "🎧", emojis: ["🎧", "🎵", "🎤"], items: [
+      { name: "멜론", price: 10900, label: "멜론", note: "확인 필요" }, { name: "지니뮤직", price: 10900, label: "지니", note: "확인 필요" },
+      { name: "FLO", price: 10900, label: "플로", note: "확인 필요" }, { name: "스포티파이", price: 11990, label: "스포" },
+      { name: "유튜브 뮤직", price: 11990, label: "유뮤" }, { name: "Apple Music", price: 8900, label: "AM", note: "확인 필요" } ] },
+    { id: "video", name: "영상", unit: "편", mode: "count", emoji: "🎬", emojis: ["🎬", "🍿", "📺"], items: [
+      { name: "유튜브 프리미엄", price: 14900, label: "유튜", note: "iOS 앱 결제 19,500", mode: "flat", emoji: "📺" },
+      { name: "유튜브 프리미엄 라이트", price: 8500, label: "유라", mode: "flat", emoji: "📺" },
+      { name: "넷플릭스 광고형", price: 5500, label: "넷플", ref: 3500, note: "확인 필요" }, { name: "넷플릭스 스탠다드", price: 13500, label: "넷플", ref: 3500, note: "확인 필요" },
+      { name: "넷플릭스 프리미엄", price: 17000, label: "넷플", ref: 3500, note: "확인 필요" }, { name: "티빙 광고형", price: 5500, label: "티빙", ref: 3500 },
+      { name: "티빙 베이직", price: 9500, label: "티빙", ref: 3500 }, { name: "티빙 스탠다드", price: 13500, label: "티빙", ref: 3500 },
+      { name: "티빙 프리미엄", price: 17000, label: "티빙", ref: 3500 }, { name: "디즈니+ 스탠다드", price: 9900, label: "디즈", ref: 3500, note: "확인 필요" },
+      { name: "웨이브 베이직", price: 7900, label: "웨이", note: "확인 필요" }, { name: "왓챠 베이직", price: 7900, label: "왓챠", ref: 3500 },
+      { name: "왓챠 프리미엄", price: 12900, label: "왓챠", ref: 3500 }, { name: "Apple TV+", price: null, label: "ATV" },
       { name: "쿠팡플레이 프리미엄 패스", price: 3900, label: "쿠플" } ] },
-    { id: "shop", name: "쇼핑", unit: "주문", mode: "count", items: [
-      { name: "쿠팡 와우", price: 7890, label: "와우", ref: 3000, note: "무료배송 1회 ≈ 3,000" },
-      { name: "컬리멤버스", price: 1900, label: "컬리", mode: "flat" } ] },
-    { id: "member", name: "멤버십", unit: "회", mode: "flat", items: [
+    { id: "shop", name: "쇼핑", unit: "주문", mode: "count", emoji: "🛒", emojis: ["🛒", "📦", "🛍️"], items: [
+      { name: "쿠팡 와우", price: 7890, label: "와우", ref: 3000, note: "무료배송 1회 ≈ 3,000", emoji: "📦" },
+      { name: "컬리멤버스", price: 1900, label: "컬리", mode: "flat", emoji: "🥬" } ] },
+    { id: "member", name: "멤버십", unit: "회", mode: "flat", emoji: "🎟️", emojis: ["🎟️", "💳", "⭐"], items: [
       { name: "네이버플러스 멤버십", price: 4900, label: "네플", note: "연간 결제 시 월 3,900" },
       { name: "토스 프라임", price: 5900, label: "토프", note: "월 최대 12,000P 적립" },
       { name: "신세계 유니버스 클럽", price: 30000, plan: "recurring:12", label: "유니", note: "연회비, 확인 필요" } ] },
-    { id: "food", name: "배달", unit: "주문", mode: "count", items: [
+    { id: "food", name: "배달", unit: "주문", mode: "count", emoji: "🍔", emojis: ["🍔", "🍕", "🛵"], items: [
       { name: "배민클럽", price: 3990, label: "배민", ref: 3000, note: "배달비 1회 ≈ 3,000" },
       { name: "요기패스X", price: 2900, label: "요기", ref: 3000, note: "확인 필요" } ] },
-    { id: "game", name: "게임", unit: "일", mode: "flat", items: [
-      { name: "Xbox Game Pass Ultimate", price: null, label: "XGP", note: "금액 직접 입력 (미국 $22.99)" },
-      { name: "PlayStation Plus", price: null, label: "PS+", note: "금액 직접 입력" },
+    { id: "game", name: "게임", unit: "일", mode: "flat", emoji: "🎮", emojis: ["🎮", "🕹️", "👾"], items: [
+      { name: "Xbox Game Pass Ultimate", price: null, label: "XGP" }, { name: "PlayStation Plus", price: null, label: "PS+" },
       { name: "Nintendo Switch Online", price: 19900, plan: "recurring:12", label: "NSO", note: "12개월, 확인 필요" } ] },
-    { id: "work", name: "업무", unit: "일", mode: "flat", items: [
-      { name: "Microsoft 365 Personal", price: 12500, label: "MS", note: "연간 125,000" },
-      { name: "Adobe Creative Cloud 모든 앱", price: 78100, label: "Ad" },
-      { name: "Notion Plus", price: 14500, label: "NT", note: "$10 + 부가세 환산" },
-      { name: "Canva Pro", price: null, label: "CV", note: "금액 직접 입력 ($12.99)" },
-      { name: "Dropbox Plus", price: null, label: "DB", note: "금액 직접 입력" } ] },
-    { id: "study", name: "공부·독서", unit: "일", mode: "count", items: [
-      { name: "밀리의 서재", price: 9900, label: "밀리", note: "확인 필요" },
-      { name: "리디셀렉트", price: 4900, label: "리디", note: "확인 필요" },
-      { name: "윌라 오디오북", price: 9900, label: "윌라", note: "확인 필요" },
-      { name: "듀오링고 슈퍼", price: null, label: "듀오", note: "금액 직접 입력" },
-      { name: "스픽", price: null, label: "스픽", note: "금액 직접 입력" },
-      { name: "클래스101+", price: null, label: "101", note: "금액 직접 입력" } ] },
-    { id: "fit", name: "운동", unit: "회", mode: "count", items: [
+    { id: "work", name: "업무", unit: "일", mode: "flat", emoji: "💼", emojis: ["💼", "🖥️", "📝"], items: [
+      { name: "Microsoft 365 Personal", price: 12500, label: "MS", note: "연간 125,000" }, { name: "Adobe Creative Cloud 모든 앱", price: 78100, label: "Ad" },
+      { name: "Notion Plus", price: 14500, label: "NT", note: "$10 + 부가세 환산" }, { name: "Canva Pro", price: null, label: "CV" },
+      { name: "Dropbox Plus", price: null, label: "DB" } ] },
+    { id: "study", name: "공부·독서", unit: "일", mode: "count", emoji: "📚", emojis: ["📚", "🦉", "🎓"], items: [
+      { name: "밀리의 서재", price: 9900, label: "밀리", note: "확인 필요" }, { name: "리디셀렉트", price: 4900, label: "리디", note: "확인 필요" },
+      { name: "윌라 오디오북", price: 9900, label: "윌라", emoji: "🎧", note: "확인 필요" }, { name: "듀오링고 슈퍼", price: null, label: "듀오", emoji: "🦉" },
+      { name: "스픽", price: null, label: "스픽", emoji: "🗣️" }, { name: "클래스101+", price: null, label: "101", emoji: "🎓" } ] },
+    { id: "fit", name: "운동", unit: "회", mode: "count", emoji: "🏋️", emojis: ["🏋️", "🧘", "🏃"], items: [
       { name: "헬스장 1년권", price: 600000, plan: "pass:12", label: "헬스", ref: 15000, note: "금액은 예시 · 일일권 15,000" },
       { name: "헬스장 3개월권", price: 200000, plan: "pass:3", label: "헬스", ref: 15000, note: "금액은 예시" },
-      { name: "필라테스 3개월", price: 450000, plan: "pass:3", label: "필라", ref: 50000, note: "금액은 예시" },
-      { name: "클라이밍 1개월", price: null, plan: "pass:1", label: "클밍", ref: 25000, note: "일일권 25,000 기준" },
-      { name: "요가 3개월", price: null, plan: "pass:3", label: "요가", ref: 25000 },
-      { name: "수영장 1개월", price: 80000, plan: "pass:1", label: "수영", ref: 6000, note: "금액은 예시 · 자유수영 1회" } ] },
-    { id: "life", name: "생활", unit: "회", mode: "count", items: [
-      { name: "커피 정기권", price: null, label: "커피" },
-      { name: "세탁 구독", price: null, label: "세탁" },
-      { name: "정수기 렌탈", price: null, label: "정수", mode: "flat" },
-      { name: "안마의자 렌탈", price: null, label: "안마", mode: "flat" },
-      { name: "공기청정기 렌탈", price: null, label: "공청", mode: "flat" } ] },
-    { id: "cloud", name: "클라우드", unit: "일", mode: "flat", items: [
-      { name: "iCloud+ 200GB", price: 4400, label: "iC" },
-      { name: "Google One 100GB", price: 2400, label: "G1" } ] },
-    { id: "etc", name: "직접 입력", unit: "회", mode: "count", items: [] }
+      { name: "필라테스 3개월", price: 450000, plan: "pass:3", label: "필라", ref: 50000, emoji: "🧘", note: "금액은 예시" },
+      { name: "클라이밍 1개월", price: null, plan: "pass:1", label: "클밍", ref: 25000, emoji: "🧗" },
+      { name: "요가 3개월", price: null, plan: "pass:3", label: "요가", ref: 25000, emoji: "🧘" },
+      { name: "수영장 1개월", price: 80000, plan: "pass:1", label: "수영", ref: 6000, emoji: "🏊", note: "금액은 예시" } ] },
+    { id: "life", name: "생활", unit: "회", mode: "count", emoji: "☕", emojis: ["☕", "🧺", "💧"], items: [
+      { name: "커피 정기권", price: null, label: "커피" }, { name: "세탁 구독", price: null, label: "세탁", emoji: "🧺" },
+      { name: "정수기 렌탈", price: null, label: "정수", mode: "flat", emoji: "💧" }, { name: "안마의자 렌탈", price: null, label: "안마", mode: "flat", emoji: "💺" },
+      { name: "공기청정기 렌탈", price: null, label: "공청", mode: "flat", emoji: "🌬️" } ] },
+    { id: "cloud", name: "클라우드", unit: "일", mode: "flat", emoji: "☁️", emojis: ["☁️", "💾", "🗂️"], items: [
+      { name: "iCloud+ 200GB", price: 4400, label: "iC" }, { name: "Google One 100GB", price: 2400, label: "G1" } ] },
+    { id: "etc", name: "직접 입력", unit: "일", mode: "count", emoji: "📌", emojis: ["📌", "⭐", "💡"], items: [] }
   ];
-  const catOf = id => CATS.find(c => c.id === id);
+  const GROUPS = [
+    { name: "주거 · 통신 · 보험", sub: "월세, 관리비, 휴대폰, 인터넷", em: "🏠", t: 6, cats: ["home", "tel", "ins"] },
+    { name: "영상 · 음악", sub: "넷플릭스, 티빙, 멜론, 스포티파이", em: "🎬", t: 0, cats: ["video", "music"] },
+    { name: "쇼핑 · 배달 · 멤버십", sub: "쿠팡 와우, 배민클럽, 네이버플러스", em: "🛒", t: 4, cats: ["shop", "food", "member"] },
+    { name: "운동 · 이용권 · 교통", sub: "헬스장, 필라테스, 수영장, 따릉이", em: "🏋️", t: 1, cats: ["fit", "move"] },
+    { name: "AI · 업무 · 클라우드", sub: "ChatGPT, Claude, iCloud+", em: "✨", t: 3, cats: ["ai", "work", "cloud"] },
+    { name: "공부 · 생활 · 게임", sub: "밀리의 서재, 정수기 렌탈, 게임 패스", em: "📚", t: 2, cats: ["study", "life", "game"] }
+  ];
+  const POPULAR = ["월세", "휴대폰 요금", "넷플릭스 스탠다드", "유튜브 프리미엄", "쿠팡 와우", "배민클럽", "헬스장 1년권", "ChatGPT Plus"];
+  const MEMBERSHIPS = [{ name: "네이버플러스 멤버십", price: 4900, label: "네플" }, { name: "쿠팡 와우", price: 7890, label: "와우" },
+    { name: "통신사 요금제", price: null, label: "통신" }, { name: "직접 입력", price: null, label: "멤버" }];
+  const catOf = id => CATS.find(c => c.id === id) || CATS.at(-1);
+  const allPresets = () => CATS.flatMap(c => c.items.map((p, i) => ({ ...p, cat: c.id, key: `${c.id}:${i}` })));
 
-  // ---------- dates ----------
+  // ---------- 날짜·돈 ----------
   const pad2 = n => String(n).padStart(2, "0");
   const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
   const parse = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
   const todayStr = () => ymd(new Date());
   const addMonths = (s, n) => {
-    const d = parse(s), day = d.getDate();
-    const t = new Date(d.getFullYear(), d.getMonth() + n, 1);
+    const d = parse(s), day = d.getDate(), t = new Date(d.getFullYear(), d.getMonth() + n, 1);
     t.setDate(Math.min(day, new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate()));
     return ymd(t);
   };
@@ -551,17 +451,22 @@ details.gone[open] > summary{border-bottom:1px solid var(--line)}
   const daysBetween = (a, b) => Math.round((parse(b) - parse(a)) / 86400000);
   const md = s => `${+s.slice(5, 7)}월 ${+s.slice(8)}일`;
   const DOW = ["일", "월", "화", "수", "목", "금", "토"];
-
   const won = v => isFinite(v) ? "₩" + Math.round(v).toLocaleString("ko-KR") : "—";
-  const planName = it => it.kind === "recurring"
-    ? (it.months === 1 ? "매달" : it.months === 12 ? "매년" : `${it.months}개월마다`)
+  const isDate = s => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const $ = id => document.getElementById(id);
+  const josa = (w, a, b) => { const c = String(w).replace(/[)\]\s]+$/, "").slice(-1).charCodeAt(0); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 ? a : b; };
+  const VERB = { "회": ["갔어요", "안 갔어요", "가면"], "편": ["봤어요", "안 봤어요", "보면"], "주문": ["시켰어요", "안 시켰어요", "시키면"], "일": ["썼어요", "안 썼어요", "쓰면"] };
+  const verbs = it => VERB[it.unit] || VERB["일"];
+  const shortName = it => (it.via ? it.service || it.name : it.name).replace(/\s*\(예시\)\s*/g, "").trim();
+  const stampName = it => shortName(it).replace(/\s+(광고형|베이직|스탠다드|프리미엄|라이트|\d+개월권?|\d+년권)$/, "");
+  const planName = it => it.kind === "recurring" ? (it.months === 1 ? "매달" : it.months === 12 ? "매년" : `${it.months}개월마다`)
     : (it.months === 12 ? "1년권" : it.months === 24 ? "2년권" : `${it.months}개월권`);
 
-  // ---------- core math ----------
+  // ---------- 계산 ----------
   const priceAt = (it, d) => it.promoEnd && d >= it.promoEnd ? it.after : it.price;
   const monthlyOf = (it, d = todayStr()) => priceAt(it, d) / it.months;
   const usesIn = (it, s, e) => it.uses.filter(d => d >= s && d < e).length;
-
   function analyze(it, today = todayStr()) {
     const months = it.months;
     let pStart, pEnd, state = "active";
@@ -577,75 +482,65 @@ details.gone[open] > summary{border-bottom:1px solid var(--line)}
       pStart = it.start; pEnd = addMonths(it.start, months);
       if (today < pStart) state = "upcoming"; else if (today >= pEnd) state = "ended";
     }
-    const price = priceAt(it, it.kind === "pass" ? it.start : (state === "upcoming" ? it.start : today));
+    const price = priceAt(it, it.kind === "pass" || state === "upcoming" ? it.start : today);
     const totalDays = Math.max(1, daysBetween(pStart, pEnd));
-    const daily = price / totalDays;
     const uses = usesIn(it, pStart, pEnd);
     const elapsed = state === "upcoming" ? 0 : Math.min(totalDays, daysBetween(pStart, today) + 1);
     const breakEven = it.ref > 0 ? Math.ceil(price / it.ref) : null;
-    return {
-      price, pStart, pEnd, totalDays, daily, monthly: price / months, uses, elapsed, remaining: totalDays - elapsed, state, breakEven,
-      perUse: uses ? price / uses : price, nextPerUse: price / (uses + 1), spent: daily * elapsed,
-      left: breakEven != null ? Math.max(0, breakEven - uses) : null
-    };
+    return { price, pStart, pEnd, totalDays, daily: price / totalDays, monthly: price / months, uses, elapsed, remaining: totalDays - elapsed, state, breakEven,
+      perUse: uses ? price / uses : price, nextPerUse: price / (uses + 1), spent: price / totalDays * elapsed, left: breakEven != null ? Math.max(0, breakEven - uses) : null };
   }
+  const periodWord = it => it.kind === "pass" ? "지금까지" : it.months === 1 ? "이번 달" : "이번 기간";
+  const lastGap = (it, t) => { const past = it.uses.filter(d => d <= t); return daysBetween(past.length ? past.at(-1) : it.start, t); };
+  const eligible = (it, d) => it.mode === "count" && it.status === "active" && d >= it.start && (it.kind !== "pass" || d < addMonths(it.start, it.months));
+  const passEnded = (it, t = todayStr()) => it.kind === "pass" && t >= addMonths(it.start, it.months);
+  const renewedFrom = it => items.find(x => x.prevId === it.id);
+  const promoDue = (it, t = todayStr()) => it.status === "active" && it.promoEnd && t < it.promoEnd && it.promoAck !== it.promoEnd && daysBetween(t, it.promoEnd) <= 14;
 
-  // Money saved this calendar year: cancellations accrue daily, and each period's 본전 surplus counts once.
-  function savings(today = todayStr()) {
-    const y0 = today.slice(0, 4) + "-01-01";
-    let cancel = 0, gain = 0, nCancel = 0;
-    for (const it of items) {
-      if (it.status === "cancelled" && it.cancelledAt) {
-        const from = it.cancelledAt > y0 ? it.cancelledAt : y0;
-        const days = Math.max(0, daysBetween(from, today));
-        if (it.cancelledAt.slice(0, 4) === today.slice(0, 4)) nCancel++;
-        cancel += days * monthlyOf(it, it.cancelledAt) * 12 / 365;
-      }
-      if (it.mode !== "count" || !(it.ref > 0)) continue;
-      const step = it.kind === "recurring" ? it.months : null;
-      for (let k = 0, s = it.start; s <= today && k < 400; k++) {
-        const e = addMonths(it.start, step ? (k + 1) * step : it.months);
-        if (e > y0) gain += Math.max(0, it.ref * usesIn(it, s, e) - priceAt(it, s));
-        if (!step) break;
-        s = e;
-      }
-    }
-    return { cancel, gain, nCancel, total: cancel + gain };
-  }
-
-  function verdict(it, a) {
-    const period = it.kind === "recurring" ? (it.months === 1 ? "이번 달" : "이번 결제 기간") : "이용 기간";
-    if (a.state === "upcoming") return { cls: "idle", chip: "시작 전", text: `${md(a.pStart)}부터 시작해요.` };
-    if (a.state === "ended") return { cls: "idle", chip: "끝남", text: `기간이 끝났어요. 도장 ${a.uses}개, 1번에 <b>${won(a.perUse)}</b> 냈어요.` };
-    if (a.breakEven != null) {
-      if (a.left === 0) return { cls: "good", chip: "본전 달성", text: `본전 넘었어요. 따로 냈을 때보다 <b>${won(it.ref * a.uses - a.price)}</b> 아꼈어요.` };
-      return { cls: a.uses ? "warn" : "bad", chip: `${a.left}번 남음`,
-        text: `본전까지 도장 <b>${a.left}개</b> 더. ${period}이 <b>${a.remaining}일</b> 남았어요.${a.left > a.remaining ? " 남은 날보다 많아서 빠듯해요." : ""}` };
-    }
-    if (!a.uses) return { cls: "bad", chip: "도장 0", text: `${period}에 도장이 없어요. 하루 <b>${won(a.daily)}</b>씩 그냥 나가고 있어요.` };
-    return { cls: "idle", chip: `도장 ${a.uses}`, text: `하루 <b>${won(a.daily)}</b>씩 나가요. 도장이 늘수록 1번 값이 내려가요.` };
-  }
-
-  // 해지 추천: 30일 도장 0, 또는 지난 기간·이번 기간 모두 본전 미달(이번 기간 절반 이상 지남)
   function cancelReason(it, a, t = todayStr()) {
-    if (it.kind !== "recurring" || it.status !== "active" || a.state !== "active") return null;
+    if (it.mode !== "count" || it.kind !== "recurring" || it.status !== "active" || a.state !== "active") return null;
     if (it.keepUntil && t < it.keepUntil) return null;
-    if (it.mode !== "count") return null;
-    if (daysBetween(it.start, t) >= 30 && usesIn(it, addDays(t, -29), addDays(t, 1)) === 0) return "최근 30일 동안 도장이 하나도 없어요.";
+    const nm = shortName(it);
+    if (daysBetween(it.start, t) >= 30 && usesIn(it, addDays(t, -29), addDays(t, 1)) === 0)
+      return { title: `${nm}${josa(nm, "을", "를")} 30일째 ${verbs(it)[1]}`, why: "최근 30일 동안 도장이 없어요" };
     if (it.ref > 0) {
       const ps = addMonths(a.pStart, -it.months);
       if (ps >= it.start) {
         const pu = usesIn(it, ps, a.pStart), be = Math.ceil(priceAt(it, ps) / it.ref);
-        if (pu < be && a.left > 0 && a.elapsed >= a.totalDays / 2) return `지난 기간에도 본전을 못 뽑았고(${pu}/${be}번), 이번에도 아직이에요.`;
+        if (pu < be && a.left > 0 && a.elapsed >= a.totalDays / 2) return { title: `${nm} 본전을 두 번 연속 못 뽑았어요`, why: `지난 기간 ${pu}/${be}번, 이번에도 아직이에요` };
       }
     }
     return null;
   }
-  const promoDue = (it, t = todayStr()) => it.status === "active" && it.promoEnd && t < it.promoEnd && it.promoAck !== it.promoEnd && daysBetween(t, it.promoEnd) <= 14;
-  const renewedFrom = it => items.find(x => x.prevId === it.id);
-  const passEnded = (it, t = todayStr()) => it.kind === "pass" && t >= addMonths(it.start, it.months);
+  function leakList(t = todayStr()) {
+    return counted().map(it => ({ it, a: analyze(it, t) }))
+      .filter(({ it, a }) => it.kind === "recurring" && a.state === "active" && a.uses === 0 && daysBetween(it.start, t) >= 7)
+      .map(x => ({ ...x, gap: lastGap(x.it, t), amt: x.a.monthly })).sort((p, q) => q.amt - p.amt);
+  }
+  function savingsDetail(t = todayStr()) {
+    const y0 = t.slice(0, 4) + "-01-01", cancel = [], gain = [];
+    for (const it of items) {
+      if (it.status === "cancelled" && it.cancelledAt) {
+        const from = it.cancelledAt > y0 ? it.cancelledAt : y0, days = Math.max(0, daysBetween(from, t));
+        const amt = days * monthlyOf(it, it.cancelledAt) * 12 / 365;
+        if (it.cancelledAt.slice(0, 4) === t.slice(0, 4) || amt > 0) cancel.push({ it, amt, days });
+      }
+      if (it.mode !== "count" || !(it.ref > 0)) continue;
+      const step = it.kind === "recurring" ? it.months : null;
+      let g = 0, u = 0;
+      for (let k = 0, s = it.start; s <= t && k < 400; k++) {
+        const e = addMonths(it.start, step ? (k + 1) * step : it.months);
+        if (e > y0) { const uu = usesIn(it, s, e), v = it.ref * uu - priceAt(it, s); if (v > 0) { g += v; u += uu; } }
+        if (!step) break;
+        s = e;
+      }
+      if (g > 0) gain.push({ it, amt: g, uses: u });
+    }
+    const sum = a => a.reduce((s, x) => s + x.amt, 0);
+    return { cancel, gain, cancelSum: sum(cancel), gainSum: sum(gain), total: sum(cancel) + sum(gain) };
+  }
 
-  // ---------- storage ----------
+  // ---------- 저장 ----------
   const LS_KEY = "bonjeon-items-v1";
   let store = null, items = [], loading = true;
   const localStore = {
@@ -666,259 +561,505 @@ details.gone[open] > summary{border-bottom:1px solid var(--line)}
       async del(id) { await col.doc(id).delete(); }
     };
   }
-  const isDate = s => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
   const autoLabel = name => (String(name).replace(/\(.*?\)|\s/g, "").slice(0, 2) || "구독");
   const normalize = r => {
-    const name = String(r.name || "이름 없음");
-    const promoEnd = isDate(r.promoEnd) ? r.promoEnd : "";
+    const name = String(r.name || "이름 없음"), cat = catOf(String(r.cat || "etc")).id, promoEnd = isDate(r.promoEnd) ? r.promoEnd : "";
     return {
-      id: r.id, name, cat: String(r.cat || "etc"), kind: r.kind === "pass" ? "pass" : "recurring",
-      // 예전 '적립금' 방식은 고정 지출로 옮겨요.
+      id: r.id, name, cat, kind: r.kind === "pass" ? "pass" : "recurring",
       mode: r.mode === "flat" || r.mode === "points" ? "flat" : "count",
-      prevId: typeof r.prevId === "string" ? r.prevId : "", renewAck: isDate(r.renewAck) ? r.renewAck : "",
       price: Math.max(0, Number(r.price) || 0), months: Math.max(1, Number(r.months) || 1),
       start: isDate(r.start) ? r.start : todayStr(), ref: Math.max(0, Number(r.ref) || 0),
       promoEnd, after: promoEnd ? Math.max(0, Number(r.after) || 0) : 0, promoAck: isDate(r.promoAck) ? r.promoAck : "",
       status: r.status === "cancelled" ? "cancelled" : "active", cancelledAt: isDate(r.cancelledAt) ? r.cancelledAt : "",
-      keepUntil: isDate(r.keepUntil) ? r.keepUntil : "",
-      unit: String(r.unit || "회"), uses: Array.isArray(r.uses) ? [...new Set(r.uses.filter(isDate))].sort() : [],
-      createdAt: Number(r.createdAt) || 0, color: Number.isInteger(r.color) ? ((r.color % 8) + 8) % 8 : 0,
-      label: String(r.label || autoLabel(name)).slice(0, 3)
+      keepUntil: isDate(r.keepUntil) ? r.keepUntil : "", prevId: typeof r.prevId === "string" ? r.prevId : "", renewAck: isDate(r.renewAck) ? r.renewAck : "",
+      via: typeof r.via === "string" ? r.via.slice(0, 40) : "", service: typeof r.service === "string" ? r.service.slice(0, 40) : "",
+      unit: VERB[r.unit] ? r.unit : catOf(cat).unit, uses: Array.isArray(r.uses) ? [...new Set(r.uses.filter(isDate))].sort() : [],
+      createdAt: Number(r.createdAt) || 0, color: ((Number(r.color) | 0) % 8 + 8) % 8,
+      label: String(r.label || autoLabel(name)).slice(0, 3),
+      emoji: typeof r.emoji === "string" && r.emoji.trim() ? r.emoji.trim().slice(0, 8) : catOf(cat).emoji
     };
   };
-  const save = it => store.put(it).catch(() => toast("저장하지 못했어요. 연결을 확인하고 다시 눌러 주세요."));
+  const save = it => store.put(it).catch(() => toast("저장하지 못했어요. 연결을 확인하고 다시 해 주세요."));
 
-  // ---------- render helpers ----------
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const stamp = (it, extra = "") => `<span class="st c${it.color} ${extra}" aria-hidden="true">${esc(it.label)}</span>`;
+  // ---------- 고르기 ----------
   const sorted = () => [...items].sort((x, y) => x.createdAt - y.createdAt);
   const live = () => sorted().filter(it => it.status === "active");
   const counted = () => live().filter(it => it.mode === "count");
   const flats = () => live().filter(it => it.mode === "flat");
   const gone = () => sorted().filter(it => it.status === "cancelled");
-  const endedPasses = () => live().filter(it => passEnded(it));
-  const showCards = () => live().filter(it => it.mode !== "flat" && !passEnded(it));
-  let confirmId = null, popKey = null;
-  const openDetails = new Set();
-  let viewMonth = todayStr().slice(0, 7), selDay = todayStr();
+  const find = id => items.find(x => x.id === id);
+  const monthlyTotal = () => live().reduce((s, it) => { const a = analyze(it); return a.state === "active" ? s + a.monthly : s; }, 0);
 
-  function promoLine(it) {
-    if (!it.promoEnd) return "";
-    const t = todayStr();
-    if (t >= it.promoEnd) return `<div class="meta">할인 끝남 · ${md(it.promoEnd)}부터 ${won(it.after)}</div>`;
-    return `<div class="promo">할인 D-${daysBetween(t, it.promoEnd)} · ${md(it.promoEnd)}부터 ${won(it.price)} → ${won(it.after)}</div>`;
+  // ---------- 화면 조각 ----------
+  const isText = e => /^[A-Za-z0-9+]{1,4}$/.test(e);
+  const mark = it => isText(it.emoji) ? `<span class="tmark">${esc(it.emoji)}</span>` : esc(it.emoji);
+  const av = (it, cls = "") => `<span class="av t${it.color} ${cls}" aria-hidden="true">${esc(it.label)}</span>`;
+  let popKey = "";
+  function stampBtn(it, d) {
+    const t = todayStr(), on = it.uses.includes(d), dis = d > t || !eligible(it, d);
+    const pop = popKey === it.id + d ? " pop" : "";
+    return `<button type="button" class="stampbtn" data-stamp="${esc(it.id)}" data-day="${d}" aria-pressed="${on}" ${dis ? "disabled" : ""} aria-label="${esc(shortName(it))} ${on ? "도장 지우기" : "도장 찍기"}">
+      <span class="sb-c t${it.color}${on ? " on" : ""}${pop}">${on ? mark(it) : esc(it.label)}</span>
+      <span class="sb-l${on ? " on" : ""}">${on ? "찍었어요" : esc(stampName(it))}</span></button>`;
   }
-
-  function renderSum() {
-    let day = 0, month = 0, behind = 0;
-    for (const it of live()) {
-      const a = analyze(it);
-      if (a.state !== "active") continue;
-      day += a.daily; month += a.monthly;
-      if (it.mode === "count" && (a.left ? a.left > 0 : a.uses === 0)) behind++;
-    }
-    const nc = counted().filter(it => !passEnded(it)).length, nf = flats().length;
-    $("mMonth").textContent = won(month);
-    $("mDay").textContent = won(day);
-    $("mCount").textContent = `${nc + nf}개`;
-    $("mCountSub").textContent = nc + nf ? `횟수 기록 ${nc} · 고정 지출 ${nf}` : "";
-    $("mBehind").textContent = `${behind}개`;
-    $("mBehind").classList.toggle("alert", behind > 0);
-    const s = savings();
-    const y = todayStr().slice(0, 4);
-    $("saved").innerHTML = s.total > 0
-      ? `<span>${y}년 아낀 돈</span><b>${won(s.total)}</b><span>해지 ${s.nCancel}건 ${won(s.cancel)} · 본전 넘김 ${won(s.gain)}</span>`
-      : `<span>${y}년 아낀 돈 ₩0 · 안 쓰는 구독을 해지하거나 본전을 넘기면 여기에 쌓여요.</span>`;
+  function taskHtml(it, title, sub, btns, note) {
+    return `<div class="task" data-id="${esc(it.id)}"><div class="task-h">${av(it)}<div><b>${esc(title)}</b><span class="sub">${esc(sub)}</span></div></div>
+      <div class="task-b">${btns.map(([act, l, s], i) => `<button type="button" class="tbtn${i === 1 ? " pri" : ""}" data-act="${act}"><b>${esc(l)}</b><span>${esc(s)}</span></button>`).join("")}</div>
+      ${note ? `<p class="note">${esc(note)}</p>` : ""}</div>`;
   }
-
-  function renderTodo() {
-    const t = todayStr(), cards = [];
+  function buildTasks(t = todayStr()) {
+    const out = [];
     for (const it of live()) {
+      const a = analyze(it, t), nm = shortName(it);
       if (promoDue(it, t)) {
-        const d = daysBetween(t, it.promoEnd), diff = (it.after - it.price) / it.months;
-        cards.push({ urgent: d <= 3, d, html: `<div class="tcard${d <= 3 ? " bad" : ""}" data-id="${esc(it.id)}">
-          <div class="tx"><b>${esc(it.name)}</b> 할인이 <span class="n">${d === 0 ? "오늘" : `D-${d}`}</span>에 끝나요.
-            <small>${md(it.promoEnd)}부터 ${won(it.price)} → ${won(it.after)}${diff > 0 ? ` (한 달 +${won(diff)})` : ""}. 계속 쓸지 지금 정하세요.</small></div>
-          <div class="ac"><button class="btn sm" type="button" data-act="cancel">해지했어요</button><button class="btn sm ghost" type="button" data-act="promoOk">계속 쓸게요</button></div></div>` });
+        const d = daysBetween(t, it.promoEnd);
+        out.push({ d, short: `${nm} 할인`, html: taskHtml(it, `${nm} 할인이 ${d === 0 ? "오늘" : d + "일 뒤"} 끝나요`, `${md(it.promoEnd)}부터 ${won(it.price)} → ${won(it.after)}`,
+          [["promoOk", "계속 쓰기", `다음 달부터 ${won(it.after)}`], ["cancel", "해지했어요", `한 달 ${won(it.after / it.months)} 아껴요`]], `해지는 ${nm} 앱이나 홈페이지에서 한 다음 눌러 주세요`) });
       }
-      const a = analyze(it, t);
       if (it.kind === "pass" && a.state === "active" && a.remaining <= 14 && it.renewAck !== a.pEnd && !renewedFrom(it)) {
-        const left = a.remaining;
-        cards.push({ d: left, html: `<div class="tcard" data-id="${esc(it.id)}">
-          <div class="tx"><b>${esc(it.name)}</b> 이용권이 <span class="n">${left === 0 ? "오늘" : `D-${left}`}</span>에 끝나요.
-            <small>이번 기간 도장 ${a.uses}개, 1번에 ${won(a.perUse)}${it.ref ? ` (본전 기준 ${won(it.ref)})` : ""}. 재등록하면 ${md(a.pEnd)}부터 이어져요.</small></div>
-          <div class="ac"><button class="btn sm" type="button" data-act="renew">재등록</button><button class="btn sm ghost" type="button" data-act="noRenew">안 할게요</button></div></div>` });
+        out.push({ d: a.remaining, short: `${nm} 재등록`, html: taskHtml(it, `${nm} 이용권이 ${a.remaining === 0 ? "오늘 끝나요" : a.remaining + "일 남았어요"}`,
+          `이번 기간 ${a.uses}번 · 1번 ${won(a.perUse)}`, [["noRenew", "안 할게요", "이번엔 끝낼게요"], ["renew", "재등록", `${md(a.pEnd)}부터 이어서`]]) });
       }
       const why = cancelReason(it, a, t);
-      if (why) cards.push({ urgent: false, d: 99, html: `<div class="tcard bad" data-id="${esc(it.id)}">
-          <div class="tx"><b>${esc(it.name)}</b> 해지를 생각해 보세요. 1년이면 <span class="n">${won(monthlyOf(it) * 12)}</span> 아껴요.
-            <small>${why}</small></div>
-          <div class="ac"><button class="btn sm" type="button" data-act="cancel">해지했어요</button><button class="btn sm ghost" type="button" data-act="keep">계속 쓸게요</button></div></div>` });
+      if (why) out.push({ d: 99, short: `${nm} 해지 추천`, html: taskHtml(it, why.title, `${planName(it)} ${won(a.price)} · 1년이면 ${won(monthlyOf(it) * 12)}`,
+        [["keep", "계속 쓰기", "이번 기간은 안 물어봐요"], ["cancel", "해지했어요", `1년 ${won(monthlyOf(it) * 12)} 아껴요`]]) });
     }
-    cards.sort((a, b) => a.d - b.d);
-    $("todoNone").hidden = !!cards.length;
-    $("todo").innerHTML = cards.map(c => c.html).join("");
+    return out.sort((x, y) => x.d - y.d);
   }
 
+  // ---------- 홈 ----------
+  let homeMsg = "", todoOpen = false;
+  function emptyHtml() {
+    return `<section class="card empty"><h2>매달 나가는 돈을 넣어 보세요</h2>
+      <p>월세·통신비 같은 고정비와 헬스장·넷플릭스 같은 구독을 넣고, 쓴 날 도장을 찍으면 1번에 얼마인지 알려줘요.</p>
+      <div class="rowb"><button class="btn pri" type="button" data-act="sample">예시로 둘러보기</button><button class="btn" type="button" data-act="openAdd">바로 추가하기</button></div></section>`;
+  }
+  function renderHome() {
+    const t = todayStr(), dt = parse(t), el = $("homeBody");
+    $("homeDate").textContent = `${dt.getMonth() + 1}월 ${dt.getDate()}일 ${DOW[dt.getDay()]}요일`;
+    if (loading) return;
+    if (!items.length) { el.innerHTML = emptyHtml(); return; }
+    const st = counted().filter(it => eligible(it, t));
+    let h = `<section class="card"><div><h2 class="h2b">오늘 썼어요?</h2><p class="sub">누르면 색이 채워지고 도장이 쾅 찍혀요</p></div>`;
+    h += st.length ? `<div class="sgrid" id="homeStamps">${st.map(it => stampBtn(it, t)).join("")}</div>` : `<p class="sub">‘쓸 때마다 도장 찍기’를 켠 항목이 여기에 나와요.</p>`;
+    if (homeMsg) h += `<p class="msg" id="homeMsg">${esc(homeMsg)}</p>`;
+    h += `</section>`;
+    const leaks = leakList(t), leakSum = leaks.reduce((s, x) => s + x.amt, 0), sv = savingsDetail(t);
+    const lt = leaks[0];
+    h += `<section class="card"><div class="sumrow"><div><span class="lbl">이번 달 새는 돈</span><span class="big${leakSum ? " bad" : ""}" id="leakSum">${won(leakSum)}</span>
+      <span class="sub">${lt ? esc(`${shortName(lt.it)}${josa(shortName(lt.it), "을", "를")} ${lt.gap}일째 ${verbs(lt.it)[1]}${leaks.length > 1 ? ` 외 ${leaks.length - 1}개` : ""}`) : "이번 달은 새는 돈이 없어요"}</span></div>
+      <button class="link" type="button" data-go="save">절약 탭 ›</button></div>
+      <div class="sumfoot"><span>한 달 고정비 <b id="monthTotal">${won(monthlyTotal())}</b></span>
+      <button class="link" type="button" data-act="savedSheet">올해 아낀 돈&nbsp;<b class="good" id="savedTotal">${won(sv.total)}</b>&nbsp;›</button></div></section>`;
+    const tasks = buildTasks(t);
+    h += `<section class="card"><h2 class="h2">할 일 ${tasks.length}</h2>`;
+    if (!tasks.length) h += `<p class="sub">지금 챙길 일은 없어요. 할인 종료, 이용권 재등록, 해지 추천이 생기면 여기에 떠요.</p>`;
+    h += (todoOpen ? tasks : tasks.slice(0, 2)).map(x => x.html).join("");
+    if (tasks.length > 2 && !todoOpen) h += `<button type="button" class="more" data-act="todoMore">${esc(tasks[2].short)}${tasks.length > 3 ? ` 외 ${tasks.length - 3}개` : ""} 더 보기 ⌄</button>`;
+    h += `</section>`;
+    el.innerHTML = h;
+  }
+
+  // ---------- 목록 ----------
+  let listFilter = "all";
+  const wasteScore = a => a.uses === 0 ? 1e12 + a.price : a.perUse;
+  function countRow(it) {
+    const t = todayStr(), a = analyze(it, t), v = verbs(it);
+    let ds = "", cls = "", bar = "";
+    if (a.state === "upcoming") ds = `${md(a.pStart)}부터 시작해요`;
+    else if (a.uses === 0 && lastGap(it, t) >= 7) { ds = `${lastGap(it, t)}일째 ${v[1]}`; cls = "bad"; }
+    else if (it.ref > 0) {
+      if (a.left > 0) { ds = `${a.left}번 더 ${v[2]} 본전`; bar = `<span class="bar"><i style="width:${Math.min(100, a.uses / a.breakEven * 100)}%"></i></span>`; }
+      else { ds = `본전 넘었어요 · ${won(it.ref * a.uses - a.price)} 아낌`; cls = "good"; }
+    } else ds = `${periodWord(it)} ${a.uses}번 ${v[0]}`;
+    if (it.promoEnd && t < it.promoEnd) ds += ` · 할인 중`;
+    return `<button type="button" class="row" data-open="${esc(it.id)}">${av(it)}<span class="mid"><span class="nm">${esc(it.name)}</span><span class="ds ${cls}">${esc(ds)}</span>${bar}</span>
+      <span class="rt"><b>${won(a.uses ? a.perUse : a.price)}</b><span>1번에</span></span></button>`;
+  }
+  function flatRow(it, gone) {
+    const t = todayStr(), a = analyze(it, t);
+    const ds = gone ? `${it.cancelledAt ? md(it.cancelledAt) : ""} 해지 · 한 달 ${won(monthlyOf(it, it.cancelledAt || t))}`
+      : `${planName(it)} ${won(a.price)}${it.promoEnd && t < it.promoEnd ? " · 할인 중" : ""}${a.state === "upcoming" ? " · 시작 전" : ""}`;
+    const rt = gone ? `<b class="good">${won(Math.max(0, daysBetween(it.cancelledAt || t, t)) * monthlyOf(it, it.cancelledAt || t) * 12 / 365)}</b><span>아낌</span>`
+      : `<b>${won(a.monthly)}</b><span>한 달</span>`;
+    return `<button type="button" class="row" data-open="${esc(it.id)}">${av(it)}<span class="mid"><span class="nm">${esc(it.name)}</span><span class="ds">${esc(ds)}</span></span><span class="rt">${rt}</span></button>`;
+  }
+  function endedRow(it) {
+    const a = analyze(it);
+    return `<button type="button" class="row" data-open="${esc(it.id)}">${av(it)}<span class="mid"><span class="nm">${esc(it.name)}</span>
+      <span class="ds">${md(it.start)}–${md(addDays(a.pEnd, -1))} · 도장 ${a.uses}개${renewedFrom(it) ? " · 재등록함" : ""}</span></span><span class="rt"><b>${won(a.perUse)}</b><span>1번에</span></span></button>`;
+  }
+  function renderList() {
+    const el = $("listBody");
+    if (loading) return;
+    const c = counted().filter(it => !passEnded(it)), f = flats(), ended = counted().filter(it => passEnded(it)), g = gone();
+    $("listSub").textContent = items.length ? `한 달에 ${won(monthlyTotal())} · ${c.length + f.length}개` : "매달 나가는 돈을 한 줄씩 봐요";
+    if (!items.length) { el.innerHTML = emptyHtml(); return; }
+    let h = `<div class="chips" role="group" aria-label="보기">${[["all", "전체"], ["count", `횟수 기록 ${c.length}`], ["flat", `금액만 확인 ${f.length}`]]
+      .map(([k, l]) => `<button type="button" class="chip" data-filter="${k}" aria-pressed="${listFilter === k}">${l}</button>`).join("")}</div>`;
+    if (listFilter !== "flat") {
+      const rows = c.map(it => ({ it, a: analyze(it) })).sort((p, q) => wasteScore(q.a) - wasteScore(p.a));
+      h += `<section class="card"><div class="ch"><div><h2 class="h2">횟수 기록</h2><p class="sub">쓴 날 도장 찍는 것</p></div><span class="side">아까운 순</span></div>
+        <div class="rows">${rows.length ? rows.map(r => countRow(r.it)).join("") : `<p class="sub">아직 없어요.</p>`}</div></section>`;
+    }
+    if (listFilter !== "count") {
+      h += `<section class="card"><div class="ch"><div><h2 class="h2">금액만 확인</h2><p class="sub">도장 없이 매달 나가는 것</p></div><span class="side">한 달 ${won(f.reduce((s, it) => s + analyze(it).monthly, 0))}</span></div>
+        <div class="rows">${f.length ? f.map(it => flatRow(it)).join("") : `<p class="sub">아직 없어요.</p>`}</div></section>`;
+    }
+    if (listFilter === "all" && ended.length) h += `<section class="card"><details class="fold"><summary><b>끝난 이용권 ${ended.length}</b><span class="small">기간별 결과</span></summary><div class="rows">${ended.map(endedRow).join("")}</div></details></section>`;
+    if (listFilter === "all" && g.length) h += `<section class="card"><details class="fold" id="goneFold"><summary><b>해지한 것 ${g.length}</b><span>한 달 ${won(g.reduce((s, it) => s + monthlyOf(it, it.cancelledAt || todayStr()), 0))} 아끼는 중</span></summary><div class="rows">${g.map(it => flatRow(it, true)).join("")}</div></details></section>`;
+    el.innerHTML = h;
+  }
+
+  // ---------- 달력 ----------
+  let viewMonth = todayStr().slice(0, 7), selDay = todayStr(), calFilter = "all";
+  function dayMarks(list) {
+    const shown = list.slice(0, 3).map(it => `<span>${mark(it)}</span>`).join("");
+    return `<span class="mk">${shown}${list.length > 3 ? `<small>+${list.length - 3}</small>` : ""}</span>`;
+  }
   function renderCal() {
-    const [y, m] = viewMonth.split("-").map(Number);
-    $("monTitle").textContent = `${y}년 ${m}월`;
-    const first = new Date(y, m - 1, 1), dim = new Date(y, m, 0).getDate(), t = todayStr();
+    const el = $("calBody");
+    if (loading) return;
+    const [y, m] = viewMonth.split("-").map(Number), t = todayStr();
+    const first = new Date(y, m - 1, 1), dim = new Date(y, m, 0).getDate();
+    const src = counted();
+    const inMonth = it => it.uses.filter(d => d.startsWith(viewMonth)).length;
+    const shown = calFilter === "all" ? src : src.filter(it => it.id === calFilter);
     const byDay = {};
-    let monthStamps = 0;
-    for (const it of sorted().filter(x => x.mode === "count" && x.status === "active")) for (const d of it.uses) if (d.startsWith(viewMonth)) { (byDay[d] ||= []).push(it); monthStamps++; }
-    $("monCount").innerHTML = counted().length ? `이번 달 도장 <b>${monthStamps}</b>개` : "";
-    let html = DOW.map((d, i) => `<div class="dow${i === 0 ? " sun" : ""}">${d}</div>`).join("");
-    for (let i = 0; i < first.getDay(); i++) html += `<div class="blank"></div>`;
+    for (const it of shown) for (const d of it.uses) if (d.startsWith(viewMonth)) (byDay[d] ||= []).push(it);
+    const total = shown.reduce((s, it) => s + inMonth(it), 0);
+    let h = `<header class="top calhead"><div><h1>${m}월 도장 ${total}개</h1><p>모든 기록을 한 달력에 모았어요</p></div>
+      <div class="navs"><button class="navbtn" type="button" data-act="prevM" aria-label="이전 달">‹</button><button class="navbtn" type="button" data-act="nextM" aria-label="다음 달">›</button></div></header>`;
+    if (!src.length) { el.innerHTML = h + `<section class="card"><p class="sub">‘쓸 때마다 도장 찍기’를 켠 항목을 추가하면 여기에 도장이 모여요.</p></section>`; return; }
+    if (calFilter !== "all" && !find(calFilter)) calFilter = "all";
+    h += `<div class="chips" role="group" aria-label="서비스별로 보기"><button type="button" class="chip" data-cfilter="all" aria-pressed="${calFilter === "all"}">전체 ${src.reduce((s, it) => s + inMonth(it), 0)}</button>
+      ${src.map(it => `<button type="button" class="chip" data-cfilter="${esc(it.id)}" aria-pressed="${calFilter === it.id}"><span aria-hidden="true">${mark(it)}</span>${esc(src.filter(x => x.label === it.label).length > 1 ? stampName(it) : it.label)} ${inMonth(it)}</button>`).join("")}</div>`;
+    let g = DOW.map((d, i) => `<span class="dow${i === 0 ? " sun" : ""}">${d}</span>`).join("");
+    for (let i = 0; i < first.getDay(); i++) g += `<span></span>`;
     for (let day = 1; day <= dim; day++) {
       const d = `${viewMonth}-${pad2(day)}`, list = byDay[d] || [], dow = (first.getDay() + day - 1) % 7;
-      const shown = list.slice(0, 4).map(it => stamp(it, popKey === it.id + d ? "pop" : "")).join("");
-      const cls = ["day", dow === 0 ? "sun" : "", d === t ? "today" : "", d > t ? "future" : "", d === selDay ? "sel" : ""].join(" ");
-      html += `<button type="button" class="${cls}" data-day="${d}" aria-label="${m}월 ${day}일, 도장 ${list.length}개" aria-pressed="${d === selDay}">
-        <span class="d">${day}</span><span class="stamps">${shown}${list.length > 4 ? `<span class="more">+${list.length - 4}</span>` : ""}</span></button>`;
+      const cls = ["dbtn", dow === 0 ? "sun" : "", d === t ? "today" : "", d > t ? "future" : "", d === selDay ? "sel" : ""].join(" ");
+      g += `<button type="button" class="${cls}" data-pick="${d}" aria-label="${m}월 ${day}일 도장 ${list.length}개" aria-pressed="${d === selDay}"><span class="n">${day}</span>${list.length ? dayMarks(list) : ""}</button>`;
     }
-    $("cal").innerHTML = html;
-    renderPad();
+    h += `<section class="card" style="padding:14px 10px 10px"><div class="cal">${g}</div></section>`;
+    const sd = parse(selDay), pads = src.filter(it => eligible(it, selDay) || it.uses.includes(selDay));
+    h += `<section class="card"><div class="ch"><h2 class="h2">${sd.getMonth() + 1}월 ${sd.getDate()}일 ${DOW[sd.getDay()]}요일${selDay === t ? " · 오늘" : ""}</h2><span class="side">누르면 찍거나 지워요</span></div>
+      ${selDay > t ? `<p class="sub">아직 오지 않은 날이에요.</p>` : pads.length ? `<div class="sgrid">${pads.map(it => stampBtn(it, selDay)).join("")}</div>` : `<p class="sub">이 날짜에 쓸 수 있는 항목이 없어요.</p>`}</section>`;
+    el.innerHTML = h;
   }
 
-  function renderPad() { renderPadInto($("pad"), selDay); }
-  function renderPadInto(el, d) {
-    const dt = parse(d), t = todayStr();
-    const label = `${dt.getMonth() + 1}월 ${dt.getDate()}일 ${DOW[dt.getDay()]}요일`;
-    if (!counted().length) { el.innerHTML = `<div class="pad-head"><strong>${label}</strong><span>‘횟수 기록’으로 추가한 항목이 있으면 여기서 도장을 찍어요.</span></div>`; return; }
-    const future = d > t;
-    // 기간권은 고른 날짜가 그 이용 기간 안에 있을 때만 보여줘요(재등록한 이전·다음 기간이 겹치지 않게).
-    const list = counted().filter(it => it.kind !== "pass" || (d >= it.start && d < addMonths(it.start, it.months)));
-    if (!list.length) { el.innerHTML = `<div class="pad-head"><strong>${label}</strong><span>이 날짜에 쓸 수 있는 이용권이 없어요.</span></div>`; return; }
-    const btns = list.map(it => {
-      const on = it.uses.includes(d), before = d < it.start;
-      const a = analyze(it);
-      const sub = future ? "아직 오지 않은 날" : before ? "결제 전 날짜" : on ? "도장 찍음 · 누르면 취소" : `찍으면 1번에 ${won(a.nextPerUse)}`;
-      return `<button type="button" class="pbtn" data-stamp="${esc(it.id)}" data-day="${d}" aria-pressed="${on}" ${future || before ? "disabled" : ""}>
-        ${stamp(it, popKey === it.id + d ? "pop" : "")}<span class="t"><b>${esc(it.name)}</b><small>${sub}</small></span></button>`;
-    }).join("");
-    el.innerHTML = `<div class="pad-head"><strong>${label}${d === t ? " · 오늘" : ""}</strong><span>쓴 것을 눌러 도장을 찍으세요</span></div><div class="padgrid">${btns}</div>`;
+  // ---------- 절약 ----------
+  function renderSave() {
+    const el = $("saveBody");
+    if (loading) return;
+    if (!items.length) { el.innerHTML = emptyHtml(); return; }
+    const t = todayStr(), sv = savingsDetail(t), leaks = leakList(t);
+    const recs = live().map(it => ({ it, a: analyze(it, t) })).map(x => ({ ...x, why: cancelReason(x.it, x.a, t) })).filter(x => x.why);
+    let h = `<section class="card"><span class="lbl">올해 아낀 돈</span><span class="hero good">${won(sv.total)}</span><span class="sub">1월 1일부터 오늘까지 · 해지 ${won(sv.cancelSum)} · 본전 넘김 ${won(sv.gainSum)}</span>
+      <button class="btn sm" type="button" data-act="savedSheet" style="align-self:flex-start">내역 보기</button></section>`;
+    const leakSum = leaks.reduce((s, x) => s + x.amt, 0);
+    h += `<section class="card"><div class="ch"><div><h2 class="h2">이번 달 새는 돈</h2><p class="sub">이번 결제 기간에 한 번도 안 쓴 것</p></div><span class="big${leakSum ? " bad" : ""}" style="font-size:20px">${won(leakSum)}</span></div>
+      <div class="rows">${leaks.length ? leaks.map(x => `<button type="button" class="row" data-open="${esc(x.it.id)}">${av(x.it)}<span class="mid"><span class="nm">${esc(x.it.name)}</span><span class="ds bad">${x.gap}일째 ${verbs(x.it)[1]}</span></span><span class="rt"><b>${won(x.amt)}</b><span>한 달</span></span></button>`).join("") : `<p class="sub">이번 달은 새는 돈이 없어요.</p>`}</div></section>`;
+    if (recs.length) h += `<section class="card"><h2 class="h2">해지 추천 ${recs.length}</h2>${recs.map(x => taskHtml(x.it, x.why.title, x.why.why, [["keep", "계속 쓰기", "이번 기간은 안 물어봐요"], ["cancel", "해지했어요", `1년 ${won(monthlyOf(x.it) * 12)} 아껴요`]])).join("")}</section>`;
+    const g = gone();
+    if (g.length) h += `<section class="card"><h2 class="h2">해지한 것 ${g.length}</h2><div class="rows">${g.map(it => flatRow(it, true)).join("")}</div></section>`;
+    el.innerHTML = h;
   }
 
-  const confirmBox = it => confirmId === it.id ? `<div class="confirm"><span>‘${esc(it.name)}’과 기록을 모두 지울까요? 아낀 돈 기록도 사라져요.</span>
-      <button class="btn" type="button" data-act="nodel">취소</button><button class="btn danger" type="button" data-act="yesdel">삭제</button></div>` : "";
+  // ---------- 아낀 돈 내역 창 ----------
+  function openSaved() {
+    const sv = savingsDetail();
+    const row = (it, title, sub, amt) => `<div class="row">${av(it)}<span class="mid"><span class="nm">${esc(title)}</span><span class="ds">${esc(sub)}</span></span><span class="rt"><b class="good">${won(amt)}</b></span></div>`;
+    $("savedBody").innerHTML = `<span class="grab"></span>
+      <div><span class="lbl">올해 아낀 돈</span><span class="hero good">${won(sv.total)}</span><span class="sub">1월 1일부터 오늘까지 아낀 돈이에요</span></div>
+      <div><div class="sec-h"><span>해지해서 아낀 돈</span><span>${won(sv.cancelSum)}</span></div>
+        <div class="rows">${sv.cancel.length ? sv.cancel.map(x => row(x.it, `${shortName(x.it)} 해지`, `${md(x.it.cancelledAt)} 해지 · ${x.days}일 동안 안 나갔어요`, x.amt)).join("") : `<p class="sub">아직 해지한 게 없어요.</p>`}</div></div>
+      <div><div class="sec-h"><span>본전 넘겨서 아낀 돈</span><span>${won(sv.gainSum)}</span></div>
+        <div class="rows">${sv.gain.length ? sv.gain.map(x => row(x.it, shortName(x.it), `올해 ${x.uses}번 · 따로 샀을 때보다`, x.amt)).join("") : `<p class="sub">본전 기준 금액을 넣은 항목이 본전을 넘기면 여기에 쌓여요.</p>`}</div></div>
+      <div class="foot"><span><b>해지</b> · 해지한 날부터 하루 금액이 매일 쌓여요</span><span><b>본전 넘김</b> · 따로 샀을 때 금액에서 낸 금액을 뺀 만큼이에요</span></div>
+      <button class="btn pri" type="button" data-act="closeSheet" style="height:56px;font-size:17px">확인</button>`;
+    $("savedSheet").hidden = false; lock();
+  }
 
-  function card(it) {
-    const a = analyze(it), v = verdict(it, a);
-    const valCls = a.state !== "active" ? "" : a.breakEven != null ? (a.left ? (a.uses ? "warn" : "bad") : "good") : (a.uses ? "" : "bad");
-    const period = it.kind === "recurring" ? (it.months === 1 ? "이번 달" : "이번 기간") : "지금까지";
-    const bar = a.breakEven != null && a.state === "active"
-      ? `<div class="bar ${a.left ? "" : "good"}" aria-label="본전 진행 ${a.uses}/${a.breakEven}"><i style="width:${Math.min(100, a.uses / a.breakEven * 100)}%"></i></div>` : "";
-    const pace = it.kind === "pass" && a.state !== "ended"
-      ? `<div class="pace">${[1, 2, 3].map(w => `<span>주 ${w}번 가면 1번에 <b>${won(a.price / Math.max(1, Math.round(a.totalDays / 7 * w)))}</b></span>`).join("")}</div>` : "";
-    const prev = it.prevId && find(it.prevId);
-    const prevLine = prev ? (() => { const pa = analyze(prev); return `<div class="prev">지난 기간 도장 <b>${pa.uses}개</b> · 1번에 <b>${won(pa.perUse)}</b>${a.uses ? ` → 지금 ${won(a.perUse)}` : ""}</div>`; })() : "";
-    return `<article class="card" data-id="${esc(it.id)}">
-      <div class="c-head">${stamp(it)}<div class="nm"><h3>${esc(it.name)}</h3><div class="meta">${planName(it)} ${won(a.price)}${it.ref ? ` · 본전 기준 1번 ${won(it.ref)}` : ""}</div>${promoLine(it)}</div>
-        <span class="chip ${v.cls}">${esc(v.chip)}</span></div>
-      <div class="fare">
-        <div class="lab">${a.uses ? `${period} 도장 ${a.uses}개, 1번에` : "도장 0개라 1번에"}</div>
-        <div class="val num ${valCls}">${won(a.perUse)}</div>
-        ${a.state === "active" ? `<div class="sub">도장 하나 더 찍으면 <b>${won(a.nextPerUse)}</b></div>` : ""}
+  // ---------- 상세 ----------
+  let detailId = null, detailMonth = "", delAsk = false;
+  function openDetail(id) { detailId = id; detailMonth = todayStr().slice(0, 7); delAsk = false; $("detailPage").hidden = false; lock(); renderDetail(); $("detailPage").scrollTop = 0; }
+  function closeDetail() { $("detailPage").hidden = true; $("detailCta").hidden = true; detailId = null; unlock(); }
+  function renderDetail() {
+    const it = find(detailId); if (!it) return closeDetail();
+    const t = todayStr(), a = analyze(it, t), v = verbs(it);
+    let h = `<div class="pagehead"><button class="iconbtn" type="button" data-act="closeDetail" aria-label="뒤로"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button class="btn sm" type="button" data-act="edit" style="background:none;color:var(--sub)">수정</button></div>`;
+    h += `<div class="dtop"><span class="who">${av(it, "")}<span>${esc(it.name)}</span></span>`;
+    if (it.mode === "count") {
+      h += `<span class="lbl" style="margin-top:10px">${periodWord(it)} ${a.uses}번, 1번에</span><span class="hero" id="dPer">${won(a.uses ? a.perUse : a.price)}</span>`;
+      h += `<span class="lbl">${it.ref > 0 ? (a.left > 0 ? `따로 내면 1번 ${won(it.ref)} 기준으로 <b>${a.left}번 더</b> ${v[2]} 본전이에요` : `본전 넘었어요. 따로 냈을 때보다 <b class="good">${won(it.ref * a.uses - a.price)}</b> 아꼈어요`)
+        : it.via ? `${esc(it.via)} 금액을 ${esc(shortName(it))} ${v[0].replace("요", "")}던 횟수로 나눠요` : `하루 ${won(a.daily)}씩 나가요`}</span></div>`;
+      if (it.ref > 0 && a.state !== "upcoming") {
+        h += `<section class="card"><div class="ch"><b style="font-size:14px">본전까지</b><span class="side">${a.uses} / ${a.breakEven}번</span></div><span class="bar lg"><i style="width:${Math.min(100, a.uses / a.breakEven * 100)}%"></i></span>
+          ${it.kind === "pass" ? `<span class="sub">주 2번 ${v[2]} 1번에 ${won(a.price / Math.max(1, Math.round(a.totalDays / 7 * 2)))}까지 내려가요</span>` : ""}</section>`;
+      }
+      const [y, m] = detailMonth.split("-").map(Number), first = new Date(y, m - 1, 1), dim = new Date(y, m, 0).getDate();
+      const cnt = it.uses.filter(d => d.startsWith(detailMonth)).length;
+      let g = DOW.map((d, i) => `<span class="dow${i === 0 ? " sun" : ""}">${d}</span>`).join("");
+      for (let i = 0; i < first.getDay(); i++) g += `<span></span>`;
+      for (let day = 1; day <= dim; day++) {
+        const d = `${detailMonth}-${pad2(day)}`, on = it.uses.includes(d), ok = d <= t && (eligible(it, d) || on);
+        g += `<button type="button" class="dbtn${on ? " on" : ""}${d === t ? " today" : ""}${d > t ? " future" : ""}" ${ok ? `data-stamp="${esc(it.id)}" data-day="${d}"` : "disabled"} aria-pressed="${on}" aria-label="${m}월 ${day}일${on ? " 도장 찍음" : ""}"><span class="n">${day}</span></button>`;
+      }
+      h += `<section class="card mcal"><div class="ch"><h2 class="h2">${m}월 · ${cnt}번</h2><div class="navs"><button class="navbtn" type="button" data-act="dPrev" aria-label="이전 달" style="background:var(--field)">‹</button><button class="navbtn" type="button" data-act="dNext" aria-label="다음 달" style="background:var(--field)">›</button></div></div>
+        <p class="sub" style="margin-top:-6px">날짜를 누르면 도장을 찍거나 지워요</p><div class="cal">${g}</div></section>`;
+    } else {
+      h += `<span class="lbl" style="margin-top:10px">한 달에</span><span class="hero">${won(a.monthly)}</span><span class="lbl">하루 ${won(a.daily)} · 1년이면 ${won(a.monthly * 12)}</span></div>`;
+    }
+    if (it.status === "cancelled") {
+      const saved = Math.max(0, daysBetween(it.cancelledAt || t, t)) * monthlyOf(it, it.cancelledAt || t) * 12 / 365;
+      h += `<div class="banner"><span>${it.cancelledAt ? md(it.cancelledAt) : ""}에 해지했어요 · 지금까지 ${won(saved)} 아꼈어요</span><button class="btn sm" type="button" data-act="restore">다시 쓰기</button></div>`;
+    }
+    const period = it.kind === "pass" ? `${md(it.start)} – ${md(addDays(a.pEnd, -1))}` : it.months === 12 ? `매년 ${md(it.start)}` : `매달 ${+it.start.slice(8)}일`;
+    h += `<section class="card tight"><div class="info">
+      <div><span>결제 금액</span><b>${won(a.price)} · ${planName(it)}</b></div>
+      <div><span>${it.kind === "pass" ? "이용 기간" : "결제일"}</span><b>${period}</b></div>
+      ${it.via ? `<div><span>포함된 멤버십</span><b>${esc(it.via)}</b></div>` : ""}
+      ${it.promoEnd ? `<div><span>할인</span><b>${t < it.promoEnd ? `${md(it.promoEnd)}까지 · 그다음 ${won(it.after)}` : `${md(it.promoEnd)}에 끝남`}</b></div>` : ""}
+      ${it.ref > 0 ? `<div><span>본전 기준</span><b>1번 ${won(it.ref)}</b></div>` : ""}
+      <div><span>${periodWord(it) === "지금까지" ? "지금까지" : periodWord(it)} 나간 돈</span><b>${won(a.spent)}</b></div></div></section>`;
+    if (delAsk) h += `<div class="confirm"><span>‘${esc(it.name)}’과 기록을 모두 지울까요? 아낀 돈 기록도 사라져요.</span><div class="rowb"><button class="btn sm" type="button" data-act="nodel">취소</button><button class="btn sm danger" type="button" data-act="yesdel">삭제</button></div></div>`;
+    h += `<div class="acts">${it.status === "active" && it.kind === "recurring" ? `<button class="textbtn" type="button" data-act="cancel">해지했어요</button>` : ""}
+      ${it.kind === "pass" && !renewedFrom(it) && it.status === "active" ? `<button class="textbtn" type="button" data-act="renew">재등록</button>` : ""}
+      <button class="textbtn" type="button" data-act="del" style="color:var(--bad)">삭제</button></div>`;
+    $("detailBody").innerHTML = `<div data-id="${esc(it.id)}" style="display:flex;flex-direction:column;gap:12px">${h}</div>`;
+    const cta = it.mode === "count" && eligible(it, t);
+    $("detailCta").hidden = !cta;
+    if (cta) { const on = it.uses.includes(t); $("detailCtaIn").innerHTML = `<button type="button" class="${on ? "sec" : ""}" data-stamp="${esc(it.id)}" data-day="${t}">${on ? "오늘 도장 지우기" : "오늘 도장 찍기"}</button>`; }
+  }
+
+  // ---------- 추가 ----------
+  let add = { step: 1, q: "", group: null, editing: null, preset: null, cat: "etc" };
+  function openAdd(editing) {
+    add = { step: editing ? 2 : 1, q: "", group: null, editing: editing || null, preset: null, cat: editing ? editing.cat : "etc" };
+    $("addPage").hidden = false; lock(); renderAdd(); $("addPage").scrollTop = 0;
+    if (!editing) setTimeout(() => $("q")?.focus(), 30);
+  }
+  function closeAdd() { $("addPage").hidden = true; $("addCta").hidden = true; unlock(); }
+  const presetSub = p => `${p.price == null ? "금액 직접 입력" : (p.plan?.startsWith("pass") ? "" : p.plan === "recurring:12" ? "연 " : "월 ") + won(p.price)}${p.note ? ` · ${p.note}` : ""}`;
+  const presetRow = p => `<button type="button" class="prow" data-preset="${p.key}"><span class="em" aria-hidden="true">${isText(p.emoji || catOf(p.cat).emoji) ? `<span class="tmark" style="font-size:22px">${esc(p.emoji || catOf(p.cat).emoji)}</span>` : esc(p.emoji || catOf(p.cat).emoji)}</span><span class="tx"><b>${esc(p.name)}</b><span>${esc(presetSub(p))}</span></span><span class="small">›</span></button>`;
+  function renderAdd() {
+    if (add.step === 2) return renderForm();
+    $("addCta").hidden = true;
+    const head = `<div class="pagehead"><button class="iconbtn" type="button" data-act="closeAdd" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
+    let browse;
+    if (add.group != null) {
+      const g = GROUPS[add.group];
+      browse = `<button class="link" type="button" data-act="groupBack">‹ 분류로 찾기</button><h2 class="h2">${esc(g.name)}</h2>
+        ${g.cats.map(cid => { const c = catOf(cid); return `<p class="catttl">${esc(c.name)}</p>${allPresets().filter(p => p.cat === cid).map(presetRow).join("")}`; }).join("")}`;
+    } else {
+      const pops = POPULAR.map(n => allPresets().find(p => p.name === n)).filter(Boolean);
+      browse = `<p class="secttl">많이 추가해요</p><div class="pop">${pops.map(p => `<button type="button" data-preset="${p.key}">${esc(p.name)}</button>`).join("")}</div>
+        <p class="secttl">분류로 찾기</p><div>${GROUPS.map((g, i) => `<button type="button" class="grp" data-group="${i}"><span class="ic t${g.t}" aria-hidden="true">${g.em}</span><span class="tx"><b>${esc(g.name)}</b><span>${esc(g.sub)}</span></span><span class="small">›</span></button>`).join("")}</div>`;
+    }
+    $("addBody").innerHTML = `${head}<h1 class="h1">매달 나가는 돈,<br>무엇을 추가할까요?</h1>
+      <label class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="color:var(--mute)"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input type="search" id="q" aria-label="서비스 이름 검색" placeholder="넷플릭스, 월세, 헬스장…" value="${esc(add.q)}" autocomplete="off"></label>
+      <div id="qResults"></div><div id="browse">${browse}</div>
+      <button class="textbtn" type="button" data-act="manual" style="align-self:flex-start">목록에 없어요, 직접 입력할게요</button>`;
+    renderResults();
+  }
+  function renderResults() {
+    const q = add.q.replace(/\s/g, "").toLowerCase(), box = $("qResults"), br = $("browse");
+    if (!box) return;
+    if (!q) { box.innerHTML = ""; br.hidden = false; return; }
+    const res = allPresets().filter(p => p.name.replace(/\s/g, "").toLowerCase().includes(q) || catOf(p.cat).name.includes(q));
+    br.hidden = true;
+    box.innerHTML = res.length ? res.slice(0, 30).map(presetRow).join("") : `<p class="sub">‘${esc(add.q)}’에 맞는 서비스가 없어요. 아래에서 직접 입력해 주세요.</p>`;
+  }
+
+  const fmt = n => n ? Number(n).toLocaleString("ko-KR") : "";
+  const numIn = v => Number(String(v).replace(/[^\d]/g, ""));
+  function formDefaults() {
+    const e = add.editing, p = add.preset;
+    if (e) return { name: e.via ? e.service || e.name : e.name, cat: e.cat, plan: e.kind === "pass" ? "pass" : e.months === 12 ? "r12" : "r1", passM: e.kind === "pass" ? e.months : 12,
+      price: e.price, start: e.start, mode: e.mode, ref: e.ref, label: e.label, emoji: e.emoji, color: e.color, via: e.via, promo: !!e.promoEnd, promoEnd: e.promoEnd, after: e.after, fromPreset: false };
+    const used = new Set(live().map(x => x.color)), color = [1, 4, 0, 3, 2, 5, 6, 7].find(c => !used.has(c)) ?? items.length % 8;
+    if (p) { const c = catOf(p.cat), [k, m] = (p.plan || "recurring:1").split(":");
+      return { name: p.name, cat: p.cat, plan: k === "pass" ? "pass" : m === "12" ? "r12" : "r1", passM: k === "pass" ? +m : 12, price: p.price, start: todayStr(), mode: p.mode || c.mode, ref: p.ref || 0,
+        label: p.label || autoLabel(p.name), emoji: p.emoji || c.emoji, color, via: "", promo: false, promoEnd: "", after: 0, fromPreset: p.price != null }; }
+    return { name: "", cat: "etc", plan: "r1", passM: 12, price: null, start: todayStr(), mode: "count", ref: 0, label: "", emoji: "📌", color, via: "", promo: false, promoEnd: "", after: 0, fromPreset: false };
+  }
+  function renderForm() {
+    const d = formDefaults(), c = catOf(d.cat), emos = [...new Set([d.emoji, ...c.emojis])].slice(0, 4);
+    const viaKnown = MEMBERSHIPS.find(x => x.name === d.via);
+    $("addBody").innerHTML = `<div class="pagehead"><button class="iconbtn" type="button" data-act="${add.editing ? "closeAdd" : "formBack"}" aria-label="뒤로"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button></div>
+      <form id="form" novalidate style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <span style="display:flex;align-items:center;gap:10px"><span class="av t${d.color}" id="fAv">${esc(d.label || autoLabel(d.name) || "?")}</span>
+          <input class="name-in" id="fName" maxlength="40" value="${esc(d.name)}" placeholder="이름 (예: 헬스장, 월세)" aria-label="이름"></span>
+        <h1 class="h1">${add.editing ? "내용을 고칠게요" : "이 금액이 맞나요?"}</h1>
       </div>
-      ${bar}
-      ${prevLine}
-      <div class="say ${v.cls}">${v.text}</div>
-      ${confirmBox(it)}
-      <details class="more" data-more ${openDetails.has(it.id) ? "open" : ""}><summary>자세히 보기</summary>
-        <div class="more-body">
-          <div class="stats">
-            <div><span>하루</span><strong>${won(a.daily)}</strong></div>
-            <div><span>지금까지 나간 돈</span><strong>${won(a.spent)}</strong></div>
-            <div><span>남은 날</span><strong>${a.remaining}일</strong></div>
-          </div>
-          ${pace}
-          ${it.kind === "pass" && !renewedFrom(it) ? `<div class="row"><button class="btn sm" type="button" data-act="renew">미리 재등록하기</button></div>` : ""}
-          <div class="row">
-            <button class="btn ghost" type="button" data-act="edit">수정</button>
-            ${it.kind === "recurring" ? `<button class="btn ghost" type="button" data-act="cancel">해지했어요</button>` : ""}
-            <button class="btn ghost" type="button" data-act="del">삭제</button>
-          </div>
-        </div></details>
-    </article>`;
+      <div class="f"><div class="seg" role="radiogroup" aria-label="결제 방식">
+        <label><input type="radio" name="plan" value="r1" ${d.plan === "r1" ? "checked" : ""}>매달 자동결제</label>
+        <label><input type="radio" name="plan" value="r12" ${d.plan === "r12" ? "checked" : ""}>매년 자동결제</label>
+        <label><input type="radio" name="plan" value="pass" ${d.plan === "pass" ? "checked" : ""}>기간 이용권</label></div>
+        <div id="passBox" style="display:flex;flex-direction:column;gap:8px"><p class="help">기간 이용권은 3개월권·1년권처럼 한 번 내고 정해진 기간만 쓰는 것이에요. 자동으로 다시 결제되지 않아요.</p>
+          <div class="pills" role="radiogroup" aria-label="이용 기간">${[1, 3, 6, 12, 24].map(m => `<label><input type="radio" name="passm" value="${m}" ${d.passM === m ? "checked" : ""}>${m === 12 ? "1년권" : m === 24 ? "2년권" : m + "개월권"}</label>`).join("")}</div></div></div>
+      <div class="f"><label for="fPrice" id="priceLbl">매달 내는 금액</label>
+        <div class="amt"><input id="fPrice" inputmode="numeric" value="${d.price == null ? "" : fmt(d.price) || "0"}" placeholder="0" autocomplete="off"><span>원</span></div>
+        <p class="help" id="priceHelp">${d.fromPreset ? "2026년 10월 정가로 채웠어요. 다르면 고쳐 주세요." : d.price == null && add.preset ? "사람마다 달라서 직접 넣어 주세요." : ""}</p></div>
+      <div class="frows">
+        <div class="frow"><span class="tx"><b id="startLbl">결제일</b><span id="startHelp">이 날짜마다 새로 계산돼요</span></span><input type="date" id="fStart" value="${d.start}" aria-labelledby="startLbl"></div>
+        <div class="frow"><span class="tx"><b>다른 멤버십에 포함돼 있어요</b><span>네이버플러스·통신사 요금제로 받는다면 켜세요</span></span><input type="checkbox" class="sw" role="switch" id="fBundle" ${d.via ? "checked" : ""} aria-label="다른 멤버십에 포함돼 있어요"></div>
+        <div class="box" id="bundleBox">
+          <div class="frow"><span class="tx"><b>어떤 멤버십이에요?</b></span><select id="fVia" aria-label="멤버십">${MEMBERSHIPS.map(x => `<option value="${esc(x.name)}" ${(viaKnown ? viaKnown.name : d.via ? "직접 입력" : "네이버플러스 멤버십") === x.name ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
+          <div class="frow" id="viaNameRow"><span class="tx"><b>멤버십 이름</b></span><input class="inl" id="fViaName" maxlength="30" value="${viaKnown ? "" : esc(d.via)}" placeholder="예: 우주패스" aria-label="멤버십 이름"></div>
+          <div class="frow"><span class="tx"><b id="bundleName"></b><span id="bundleSub"></span></span></div></div>
+        <div class="frow"><span class="tx"><b>쓸 때마다 도장 찍기</b><span id="countSub"></span></span><input type="checkbox" class="sw" role="switch" id="fCount" ${d.mode === "count" ? "checked" : ""} aria-label="쓸 때마다 도장 찍기"></div>
+        <div class="frow" id="emoRow"><span class="tx"><b>도장 모양</b></span><span class="emos" role="radiogroup" aria-label="도장 모양">
+          ${emos.map((e, i) => `<label title="${esc(e)}"><input type="radio" name="emo" value="${esc(e)}" ${i === 0 ? "checked" : ""}>${isText(e) ? `<span class="tmark" style="font-size:20px">${esc(e)}</span>` : esc(e)}</label>`).join("")}
+          <input class="own" id="fEmoji" maxlength="8" placeholder="직접" aria-label="이모지 직접 입력"></span></div>
+        <div class="frow"><span class="tx"><b>할인·무료체험 중</b><span>무료체험이면 금액에 0을 넣으세요</span></span><input type="checkbox" class="sw" role="switch" id="fPromo" ${d.promo ? "checked" : ""} aria-label="할인·무료체험 중"></div>
+        <div class="box" id="promoBox">
+          <div class="frow"><span class="tx"><b>할인 끝나는 날</b></span><input type="date" id="fPromoEnd" value="${d.promoEnd}" aria-label="할인 끝나는 날"></div>
+          <div class="frow"><span class="tx"><b>끝나면 내는 금액</b></span><input class="inl" id="fAfter" inputmode="numeric" value="${d.after ? fmt(d.after) : ""}" placeholder="0원" aria-label="끝나면 내는 금액"></div>
+          <div class="steps" id="promoSteps"></div></div>
+        <details class="more2"><summary>더 설정하기 (본전 기준, 도장 글자, 색) <span aria-hidden="true">⌄</span></summary>
+          <div class="frow" id="refRow"><span class="tx"><b>본전 기준 금액</b><span>따로 사면 1번에 얼마? 예: 일일권</span></span><input class="inl" id="fRef" inputmode="numeric" value="${d.ref ? fmt(d.ref) : ""}" placeholder="없음" aria-label="본전 기준 금액"></div>
+          <div class="frow"><span class="tx"><b>도장 글자</b><span>2~3자</span></span><input class="inl" id="fLabel" maxlength="3" value="${esc(d.label)}" placeholder="${esc(autoLabel(d.name))}" aria-label="도장 글자"></div>
+          <div class="frow"><span class="tx"><b>색</b></span><span class="inks" role="radiogroup" aria-label="색">${[1, 4, 0, 3, 2, 5, 6, 7].map(i => `<label><input type="radio" name="ink" value="${i}" ${d.color === i ? "checked" : ""}><span class="av t${i}">가</span></label>`).join("")}</span></div>
+        </details>
+      </div>
+      <p class="err" id="fErr" hidden></p></form>`;
+    $("addSave").textContent = add.editing ? "저장하기" : "추가하기";
+    $("addCta").hidden = false;
+    formUi();
+  }
+  const fv = id => $(id)?.value ?? "";
+  const planVal = () => document.querySelector('input[name="plan"]:checked')?.value || "r1";
+  function formUi() {
+    if (!$("form")) return;
+    const plan = planVal(), bundle = $("fBundle").checked, count = $("fCount").checked, promo = $("fPromo").checked;
+    $("passBox").hidden = plan !== "pass";
+    $("bundleBox").hidden = !bundle;
+    $("promoBox").hidden = !promo;
+    $("emoRow").hidden = !count;
+    $("refRow").hidden = !count || bundle;
+    $("viaNameRow").hidden = fv("fVia") !== "직접 입력";
+    const price = numIn(fv("fPrice"));
+    $("priceLbl").textContent = (bundle ? (plan === "r12" ? "1년에 내는 멤버십 금액" : "매달 내는 멤버십 금액") : plan === "r12" ? "1년에 내는 금액" : plan === "pass" ? "이용권 금액" : "매달 내는 금액");
+    $("startLbl").textContent = plan === "pass" ? "이용 시작일" : "결제일";
+    $("startHelp").textContent = plan === "pass" ? "이 날부터 기간이 계산돼요" : "이 날짜마다 새로 계산돼요";
+    const via = viaName(), svc = fv("fName").trim() || "서비스";
+    $("bundleName").textContent = `목록에는 ‘${via} (${svc})’로 보여요`;
+    $("bundleSub").textContent = price ? `하루 ${won(price / (plan === "r12" ? 365 : 30))} · 본 날 도장을 찍으면 금액을 횟수로 나눠요` : "본 날 도장을 찍으면 금액을 횟수로 나눠요";
+    const ref = numIn(fv("fRef")), unit = catOf(add.editing?.cat || add.preset?.cat || "etc").unit, vb = VERB[unit] || VERB["일"];
+    $("countSub").textContent = !count ? "끄면 금액만 확인으로 들어가요" : bundle ? "본 날 찍으면 1번에 얼마인지 알려줘요" : ref && price ? `1번 ${won(ref)} 기준 · ${Math.ceil(price / ref)}번 ${vb[2]} 본전` : "쓴 날 찍으면 1번에 얼마인지 알려줘요";
+    if (promo) {
+      const end = fv("fPromoEnd"), after = numIn(fv("fAfter"));
+      $("promoSteps").innerHTML = end ? `<div><span class="n">1</span><span><b>${md(end)} 전까지는 ${won(price)}</b><span>한 달 고정비에 할인 금액으로 들어가요</span></span></div>
+        <div><span class="n">2</span><span><b>${md(addDays(end, -14))}부터 홈 ‘할 일’에 보여요</b><span>끝나기 14일 전 · 계속 쓸지 해지할지 고를 수 있어요</span></span></div>
+        <div><span class="n">3</span><span><b>계속 쓰면 ${md(end)}부터 ${won(after)}</b><span>따로 고치지 않아도 자동으로 바뀌어요</span></span></div>` : "";
+    }
+    const lab = fv("fLabel").trim() || (bundle ? (MEMBERSHIPS.find(x => x.name === fv("fVia"))?.label || autoLabel(via)) : autoLabel(fv("fName"))) || "?";
+    const ink = document.querySelector('input[name="ink"]:checked')?.value ?? 1;
+    $("fAv").textContent = lab; $("fAv").className = `av t${ink}`;
+  }
+  const viaName = () => fv("fVia") === "직접 입력" ? (fv("fViaName").trim() || "멤버십") : fv("fVia");
+  function submitForm() {
+    const plan = planVal(), bundle = $("fBundle").checked, count = $("fCount").checked, promo = $("fPromo").checked;
+    const svc = fv("fName").trim(), priceRaw = fv("fPrice").trim(), price = numIn(priceRaw), start = fv("fStart"), promoEnd = fv("fPromoEnd"), after = numIn(fv("fAfter"));
+    const err = !svc ? "이름을 입력해 주세요." : (!priceRaw || (!price && !promo)) ? "금액을 숫자로 입력해 주세요. 무료체험이면 ‘할인·무료체험 중’을 켜고 0을 넣으세요."
+      : !isDate(start) ? "날짜를 골라 주세요." : promo && !isDate(promoEnd) ? "할인 끝나는 날을 골라 주세요." : promo && !after ? "할인이 끝나면 내는 금액을 넣어 주세요." : "";
+    if (err) { $("fErr").textContent = err; $("fErr").hidden = false; $("fErr").scrollIntoView({ block: "center" }); return; }
+    const e = add.editing, via = bundle ? viaName() : "";
+    const months = plan === "pass" ? Number(document.querySelector('input[name="passm"]:checked')?.value || 12) : plan === "r12" ? 12 : 1;
+    const emoji = fv("fEmoji").trim() || document.querySelector('input[name="emo"]:checked')?.value || catOf(add.cat).emoji;
+    const label = fv("fLabel").trim() || (bundle ? (MEMBERSHIPS.find(x => x.name === fv("fVia"))?.label || autoLabel(via)) : autoLabel(svc));
+    const data = normalize({ ...(e || { id: newId(), uses: [], createdAt: Date.now(), status: "active" }),
+      name: bundle ? `${via} (${svc})` : svc, service: bundle ? svc : "", via, cat: e?.cat || add.preset?.cat || "etc",
+      kind: plan === "pass" ? "pass" : "recurring", months, price, start, mode: count ? "count" : "flat",
+      ref: count && !bundle ? numIn(fv("fRef")) : 0, label, emoji, color: Number(document.querySelector('input[name="ink"]:checked')?.value ?? 1),
+      unit: e?.unit || catOf(add.preset?.cat || "etc").unit,
+      promoEnd: promo ? promoEnd : "", after: promo ? after : 0, promoAck: promo && e?.promoEnd === promoEnd ? e.promoAck : "" });
+    if (e) Object.assign(e, data); else items.push(data);
+    const target = e || data;
+    closeAdd(); save(target); renderAll();
+    if (detailId === target.id) renderDetail();
+    toast(e ? "저장했어요" : count ? `${shortName(target)}${josa(shortName(target), "을", "를")} 추가했어요. 쓴 날 도장을 찍어 보세요` : `${shortName(target)}${josa(shortName(target), "을", "를")} 추가했어요`);
   }
 
-  function endedRow(it) {
-    const a = analyze(it), next = renewedFrom(it);
-    return `<div class="frow" data-id="${esc(it.id)}">
-      <div class="nm"><span class="dot d${it.color}"></span><div><b>${esc(it.name)}</b><small>${md(it.start)}–${md(addDays(a.pEnd, -1))} · ${won(a.price)}${next ? " · 재등록함" : ""}</small></div></div>
-      <div class="v"><span>도장</span><strong>${a.uses}개</strong></div>
-      <div class="v"><span>1번에</span><strong class="${it.ref && a.perUse <= it.ref ? "good" : ""}">${won(a.perUse)}</strong></div>
-      ${confirmBox(it)}
-      <div class="acts">${next ? "" : `<button class="btn ghost" type="button" data-act="renew">재등록</button>`}<button class="btn ghost" type="button" data-act="del">삭제</button></div>
-    </div>`;
+  // ---------- 도장 ----------
+  function toggleStamp(it, d) {
+    const prev = it.uses.slice(), before = analyze(it).perUse, t = todayStr();
+    if (it.uses.includes(d)) { it.uses = it.uses.filter(x => x !== d); popKey = ""; if (d === t) homeMsg = ""; save(it); renderAll(); toast(`${shortName(it)} 도장을 지웠어요`, () => { it.uses = prev; save(it); renderAll(); }); return; }
+    it.uses = [...it.uses, d].sort(); popKey = it.id + d;
+    const a = analyze(it), inPeriod = d >= a.pStart && d < a.pEnd;
+    const msg = inPeriod ? `${shortName(it)} ${periodWord(it) === "지금까지" ? "이번 이용권" : periodWord(it)} ${a.uses}번째! 1번 ${won(before)} → ${won(a.perUse)}` : `${shortName(it)} ${md(d)} 도장을 찍었어요`;
+    if (d === t) homeMsg = msg;
+    save(it); renderAll();
+    toast(msg, () => { it.uses = prev; popKey = ""; homeMsg = ""; save(it); renderAll(); });
   }
 
-  function flatRow(it) {
-    const a = analyze(it);
-    const state = a.state === "upcoming" ? " · 시작 전" : a.state === "ended" ? " · 끝남" : "";
-    return `<div class="frow" data-id="${esc(it.id)}">
-      <div class="nm"><span class="dot d${it.color}"></span><div><b>${esc(it.name)}</b><small>${planName(it)} ${won(a.price)}${state}</small>${promoLine(it)}</div></div>
-      <div class="v"><span>하루</span><strong>${won(a.daily)}</strong></div>
-      <div class="v"><span>한 달</span><strong>${won(a.monthly)}</strong></div>
-      ${confirmBox(it)}
-      <div class="acts"><button class="btn ghost" type="button" data-act="edit">수정</button>${it.kind === "recurring" ? `<button class="btn ghost" type="button" data-act="cancel">해지했어요</button>` : ""}<button class="btn ghost" type="button" data-act="del">삭제</button></div>
-    </div>`;
-  }
-
-  function goneRow(it) {
-    const t = todayStr(), days = Math.max(0, daysBetween(it.cancelledAt || t, t));
-    const saved = days * monthlyOf(it, it.cancelledAt || t) * 12 / 365;
-    return `<div class="frow" data-id="${esc(it.id)}">
-      <div class="nm"><span class="dot d${it.color}"></span><div><b>${esc(it.name)}</b><small>${it.cancelledAt ? md(it.cancelledAt) : ""} 해지 · 한 달 ${won(monthlyOf(it, it.cancelledAt || t))}</small></div></div>
-      <div class="v"><span>해지 후 아낀 돈</span><strong class="good">${won(saved)}</strong></div>
-      <div class="v"><span>1년이면</span><strong>${won(monthlyOf(it, it.cancelledAt || t) * 12)}</strong></div>
-      ${confirmBox(it)}
-      <div class="acts"><button class="btn ghost" type="button" data-act="restore">다시 쓰기</button><button class="btn ghost" type="button" data-act="del">삭제</button></div>
-    </div>`;
-  }
-
-  function render() {
-    renderSum();
-    renderTodo();
-    renderCal();
-    const list = $("list");
-    $("todaySec").hidden = loading || !counted().length;
-    if (!$("todaySec").hidden) renderPadInto($("todayPad"), todayStr());
-    if (loading) { list.innerHTML = ""; $("homeEmpty").innerHTML = ""; return; }
-    $("todoSec").hidden = !items.length;
-    $("homeEmpty").innerHTML = items.length ? "" : emptyHtml();
-    if (!items.length) {
-      list.innerHTML = emptyHtml();
+  // ---------- 항목 동작 ----------
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const snap = it => JSON.parse(JSON.stringify(it));
+  const restoreFrom = (it, s) => { Object.assign(it, s); save(it); renderAll(); };
+  async function itemAction(act, it) {
+    const s = snap(it), t = todayStr(), nm = shortName(it);
+    if (act === "edit") return openAdd(it);
+    if (act === "del") { delAsk = true; return renderDetail(); }
+    if (act === "nodel") { delAsk = false; return renderDetail(); }
+    if (act === "yesdel") {
+      items = items.filter(x => x !== it); closeDetail(); renderAll();
+      try { await store.del(it.id); toast(`‘${nm}’${josa(nm, "을", "를")} 지웠어요`, () => { items.push(it); save(it); renderAll(); }); }
+      catch { items.push(it); renderAll(); toast("지우지 못했어요. 다시 해 주세요."); }
       return;
     }
-    function emptyHtml() { return `<div class="empty">
-        <h2>예시로 먼저 둘러보세요</h2>
-        <p>월세·휴대폰 요금 같은 고정비, 횟수를 기록하는 헬스장·배민클럽·넷플릭스 예시가 들어가요. 할인 종료 알림과 해지 추천도 같이 볼 수 있어요. 다 보고 나면 지우면 됩니다.</p>
-        <div class="row"><button class="btn primary" type="button" data-act="sample">예시 넣어 보기</button>
-        <button class="btn" type="button" data-act="add">바로 추가하기</button></div></div>`; }
-    const c = showCards(), f = flats(), g = gone(), ended = endedPasses();
-    let html = "";
-    if (c.length) html += `<div class="col"><div class="sec-head"><h2 class="sec">횟수 기록</h2><span>쓴 날 도장을 찍는 항목 ${c.length}개</span></div>
-      <div class="grid">${c.map(card).join("")}</div></div>`;
-    if (f.length) {
-      let fm = 0, fd = 0;
-      for (const it of f) { const a = analyze(it); if (a.state === "active") { fm += a.monthly; fd += a.daily; } }
-      const groups = [];
-      for (const it of f) { const name = catOf(it.cat)?.name || "기타"; let gr = groups.find(x => x.name === name); if (!gr) groups.push(gr = { name, rows: [] }); gr.rows.push(it); }
-      html += `<div class="ledger"><div class="ledger-head"><h2 class="sec">고정 지출</h2><span>${f.length}개 · 한 달 ${won(fm)} · 하루 ${won(fd)}</span></div>
-        ${groups.map(gr => `<div class="lgroup">${esc(gr.name)}</div>${gr.rows.map(flatRow).join("")}`).join("")}</div>`;
+    if (act === "cancel") { it.status = "cancelled"; it.cancelledAt = t; save(it); renderAll(); return toast(`${nm} 해지! 1년이면 ${won(monthlyOf(it, t) * 12)} 아껴요`, () => restoreFrom(it, s)); }
+    if (act === "restore") { it.status = "active"; it.cancelledAt = ""; it.keepUntil = ""; save(it); renderAll(); return toast(`${nm}${josa(nm, "을", "를")} 다시 합계에 넣었어요`, () => restoreFrom(it, s)); }
+    if (act === "keep") { it.keepUntil = analyze(it).pEnd; save(it); renderAll(); return toast(`이번 결제 기간에는 다시 묻지 않을게요`, () => restoreFrom(it, s)); }
+    if (act === "promoOk") { it.promoAck = it.promoEnd; save(it); renderAll(); return toast(`알겠어요. ${md(it.promoEnd)}부터 ${won(it.after)}로 계산할게요`, () => restoreFrom(it, s)); }
+    if (act === "noRenew") { it.renewAck = analyze(it).pEnd; save(it); renderAll(); return toast("이번 이용권은 다시 묻지 않을게요", () => restoreFrom(it, s)); }
+    if (act === "renew") {
+      const a = analyze(it), start = t < a.pEnd ? a.pEnd : t;
+      const next = normalize({ ...snap(it), id: newId(), createdAt: Date.now(), start, uses: [], prevId: it.id, promoEnd: "", after: 0, promoAck: "", renewAck: "", keepUntil: "", price: a.price });
+      items.push(next); save(next); renderAll();
+      return toast(`${md(start)}부터 재등록했어요. 금액이 바뀌었으면 ‘수정’에서 고쳐 주세요`, async () => { items = items.filter(x => x !== next); renderAll(); try { await store.del(next.id); } catch {} });
     }
-    if (ended.length) html += `<details class="gone"><summary>끝난 이용권 ${ended.length}개<span>기간별 결과</span></summary>${ended.map(endedRow).join("")}</details>`;
-    if (g.length) {
-      const total = g.reduce((s, it) => s + monthlyOf(it, it.cancelledAt || todayStr()), 0);
-      html += `<details class="gone"><summary>해지한 것 ${g.length}개<span>한 달 ${won(total)}씩 아끼는 중</span></summary>${g.map(goneRow).join("")}</details>`;
-    }
-    list.innerHTML = html;
   }
 
-  // ---------- toast ----------
+  async function loadSamples() {
+    const t = todayStr(), back = n => addDays(t, -n);
+    const s = [
+      { name: "헬스장 1년권 (예시)", cat: "fit", label: "헬스", emoji: "🏋️", color: 1, kind: "pass", price: 600000, months: 12, start: back(60), ref: 15000, unit: "회", uses: [back(58), back(55), back(51), back(44), back(37), back(30), back(21), back(9), back(3)] },
+      { name: "배민클럽 (예시)", cat: "food", label: "배민", emoji: "🍔", color: 4, kind: "recurring", price: 1990, months: 1, start: addMonths(back(20), -5), ref: 3000, unit: "주문", uses: [back(15), back(2)], promoEnd: addDays(t, 6), after: 3990 },
+      { name: "넷플릭스 스탠다드 (예시)", cat: "video", label: "넷플", emoji: "🎬", color: 0, kind: "recurring", price: 13500, months: 1, start: addMonths(back(12), -3), ref: 3500, unit: "편", uses: [back(41), back(47)] },
+      { name: "필라테스 3개월 (예시)", cat: "fit", label: "필라", emoji: "🧘", color: 3, kind: "pass", price: 450000, months: 3, start: addDays(addMonths(t, -3), 10), ref: 50000, unit: "회", uses: [back(70), back(63), back(56), back(42), back(35), back(21), back(14), back(7)] },
+      { name: "월세 (예시)", cat: "home", label: "월세", emoji: "🏠", color: 6, mode: "flat", kind: "recurring", price: 550000, months: 1, start: addMonths(back(24), -10) },
+      { name: "휴대폰 요금 (예시)", cat: "tel", label: "폰", emoji: "📱", color: 2, mode: "flat", kind: "recurring", price: 55000, months: 1, start: addMonths(back(14), -20) },
+      { name: "토스 프라임 (예시)", cat: "member", label: "토프", emoji: "🎟️", color: 1, mode: "flat", kind: "recurring", price: 5900, months: 1, start: addMonths(back(26), -4) },
+      { name: "iCloud+ 200GB (예시)", cat: "cloud", label: "iC", emoji: "☁️", color: 7, mode: "flat", kind: "recurring", price: 4400, months: 1, start: addMonths(back(5), -8) },
+      { name: "밀리의 서재 (예시)", cat: "study", label: "밀리", emoji: "📚", color: 4, kind: "recurring", price: 9900, months: 1, start: addMonths(back(40), -6), status: "cancelled", cancelledAt: back(40) }
+    ].map((r, i) => normalize({ ...r, id: newId() + i, createdAt: Date.now() + i }));
+    items.push(...s); renderAll();
+    for (const it of s) await save(it);
+    toast("예시를 넣었어요. 오늘 쓴 것에 도장을 찍어 보세요");
+  }
+
+  // ---------- 탭 ----------
+  const TABS = ["home", "list", "cal", "save"], TAB_KEY = "bonjeon-tab";
+  let tab = "home";
+  function showTab(name, top) {
+    tab = TABS.includes(name) ? name : "home";
+    document.querySelectorAll(".wrap > .panel").forEach(p => p.hidden = p.dataset.tab !== tab);
+    document.querySelectorAll(".tab[data-go]").forEach(b => b.dataset.go === tab ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+    try { localStorage.setItem(TAB_KEY, tab); } catch {}
+    if (top) window.scrollTo({ top: 0 });
+  }
+  function renderAll() { renderHome(); renderList(); renderCal(); renderSave(); if (detailId && !$("detailPage").hidden) renderDetail(); }
+  let locks = 0;
+  const lock = () => { document.documentElement.classList.add("lock"); };
+  const unlock = () => { if ($("detailPage").hidden && $("addPage").hidden && $("savedSheet").hidden) document.documentElement.classList.remove("lock"); };
+
+  // ---------- 알림 메시지 ----------
   let toastTimer, undoFn = null;
   function toast(msg, undo) {
     $("toastMsg").textContent = msg; undoFn = undo || null;
@@ -927,300 +1068,98 @@ details.gone[open] > summary{border-bottom:1px solid var(--line)}
   }
   $("toastUndo").addEventListener("click", () => { const f = undoFn; $("toast").hidden = true; undoFn = null; f && f(); });
 
-  // ---------- calendar actions ----------
-  const find = id => items.find(x => x.id === id);
-  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  const shiftMonth = n => { const d = new Date(+viewMonth.slice(0, 4), +viewMonth.slice(5) - 1 + n, 1); viewMonth = ymd(d).slice(0, 7); popKey = null; renderCal(); };
-  $("prevM").addEventListener("click", () => shiftMonth(-1));
-  $("nextM").addEventListener("click", () => shiftMonth(1));
-  $("cal").addEventListener("click", e => {
-    const b = e.target.closest("[data-day]"); if (!b) return;
-    selDay = b.dataset.day; popKey = null; renderCal();
-  });
-  const onStamp = e => {
-    const b = e.target.closest("[data-stamp]"); if (!b || b.disabled) return;
-    const it = find(b.dataset.stamp); if (!it) return;
-    const d = b.dataset.day, prev = it.uses.slice(), before = analyze(it).perUse;
-    if (it.uses.includes(d)) {
-      it.uses = it.uses.filter(x => x !== d); popKey = null;
-      render(); save(it);
-      toast(`${it.name} 도장을 지웠어요`, () => { it.uses = prev; render(); save(it); });
-    } else {
-      it.uses = [...it.uses, d].sort(); popKey = it.id + d;
-      render(); save(it);
-      const after = analyze(it).perUse;
-      toast(after < before ? `쾅! ${it.name} 1번에 ${won(before)} → ${won(after)}` : `쾅! ${it.name} 도장을 찍었어요`, () => { it.uses = prev; popKey = null; render(); save(it); });
-    }
-  };
-  $("pad").addEventListener("click", onStamp);
-  $("todayPad").addEventListener("click", onStamp);
-
-  // ---------- item actions (cards, ledger, todo) ----------
-  function snapshot(it) { return JSON.parse(JSON.stringify(it)); }
-  function restoreFrom(it, snap) { Object.assign(it, snap); render(); save(it); }
-  async function itemAction(act, it, b) {
-    const snap = snapshot(it), t = todayStr();
-    if (act === "edit") return openForm(it);
-    if (act === "renew") {
-      const a = analyze(it);
-      const start = t < a.pEnd ? a.pEnd : t;
-      const next = normalize({ ...snapshot(it), id: newId(), createdAt: Date.now(), start, uses: [], prevId: it.id,
-        promoEnd: "", after: 0, promoAck: "", renewAck: "", keepUntil: "", price: a.price });
-      items.push(next); render(); save(next);
-      return toast(`${it.name}을 ${md(start)}부터 재등록했어요. 금액이 바뀌었으면 ‘수정’에서 고쳐 주세요`, async () => {
-        items = items.filter(x => x !== next); render(); try { await store.del(next.id); } catch {}
-      });
-    }
-    if (act === "noRenew") {
-      it.renewAck = analyze(it).pEnd; render(); save(it);
-      return toast("알겠어요. 이번 이용권은 다시 묻지 않을게요", () => restoreFrom(it, snap));
-    }
-    if (act === "del") { confirmId = it.id; return render(); }
-    if (act === "nodel") { confirmId = null; return render(); }
-    if (act === "yesdel") {
-      confirmId = null; items = items.filter(x => x !== it); render();
-      try { await store.del(it.id); toast(`‘${it.name}’을 지웠어요`, () => { items.push(it); render(); save(it); }); }
-      catch { items.push(it); render(); toast("지우지 못했어요. 다시 시도해 주세요."); }
-      return;
-    }
-    if (act === "cancel") {
-      it.status = "cancelled"; it.cancelledAt = t; render(); save(it);
-      return toast(`${it.name} 해지! 1년이면 ${won(monthlyOf(it, t) * 12)} 아껴요`, () => restoreFrom(it, snap));
-    }
-    if (act === "restore") {
-      it.status = "active"; it.cancelledAt = ""; it.keepUntil = ""; render(); save(it);
-      return toast(`${it.name}을 다시 합계에 넣었어요`, () => restoreFrom(it, snap));
-    }
-    if (act === "keep") {
-      it.keepUntil = analyze(it).pEnd; render(); save(it);
-      return toast(`이번 결제 기간(${md(addDays(it.keepUntil, -1))}까지)에는 다시 묻지 않을게요`, () => restoreFrom(it, snap));
-    }
-    if (act === "promoOk") {
-      it.promoAck = it.promoEnd; render(); save(it);
-      return toast(`알겠어요. ${md(it.promoEnd)}부터 ${won(it.after)}로 계산할게요`, () => restoreFrom(it, snap));
-    }
-  }
-  function onItemClick(e) {
-    const b = e.target.closest("button[data-act]"); if (!b) return;
-    const act = b.dataset.act;
-    if (act === "add") return openForm();
+  // ---------- 이벤트 ----------
+  document.addEventListener("click", e => {
+    const el = e.target.closest("[data-stamp],[data-act],[data-go],[data-open],[data-filter],[data-cfilter],[data-pick],[data-preset],[data-group]");
+    if (!el || el.disabled) return;
+    const ds = el.dataset;
+    if (ds.stamp) { const it = find(ds.stamp); if (it) toggleStamp(it, ds.day); return; }
+    if (ds.go) { if (!$("detailPage").hidden) closeDetail(); return showTab(ds.go, true); }
+    if (ds.open) return openDetail(ds.open);
+    if (ds.filter) { listFilter = ds.filter; return renderList(); }
+    if (ds.cfilter) { calFilter = ds.cfilter; return renderCal(); }
+    if (ds.pick) { selDay = ds.pick; return renderCal(); }
+    if (ds.preset) { add.preset = allPresets().find(p => p.key === ds.preset); add.cat = add.preset.cat; add.step = 2; renderAdd(); $("addPage").scrollTop = 0; return; }
+    if (ds.group) { add.group = Number(ds.group); renderAdd(); $("addPage").scrollTop = 0; return; }
+    const act = ds.act;
+    if (act === "openAdd") return openAdd();
+    if (act === "closeAdd") return closeAdd();
+    if (act === "formBack") { add.step = 1; add.preset = null; return renderAdd(); }
+    if (act === "groupBack") { add.group = null; return renderAdd(); }
+    if (act === "manual") { add.preset = null; add.cat = "etc"; add.step = 2; renderAdd(); setTimeout(() => $("fName")?.focus(), 30); return; }
     if (act === "sample") return loadSamples();
-    const it = find(b.closest("[data-id]")?.dataset.id);
-    if (it) itemAction(act, it, b);
-  }
-  $("list").addEventListener("click", onItemClick);
-  $("tab-home").addEventListener("click", e => { if (!e.target.closest("#todayPad")) onItemClick(e); });
-  $("list").addEventListener("toggle", e => {
-    const c = e.target.closest?.(".card");
-    if (c && e.target.matches("[data-more]")) e.target.open ? openDetails.add(c.dataset.id) : openDetails.delete(c.dataset.id);
-  }, true);
-
-  async function loadSamples() {
-    const t = todayStr(), back = n => addDays(t, -n);
-    const s = [
-      { name: "헬스장 1년권 (예시)", cat: "fit", label: "헬스", color: 1, kind: "pass", price: 600000, months: 12, start: back(60), ref: 15000, unit: "회", uses: [back(58), back(55), back(51), back(44), back(37), back(30), back(21), back(9), back(3)] },
-      { name: "배민클럽 (예시)", cat: "food", label: "배민", color: 5, kind: "recurring", price: 1990, months: 1, start: addMonths(back(20), -5), ref: 3000, unit: "주문", uses: [back(15), back(2)], promoEnd: addDays(t, 6), after: 3990 },
-      { name: "넷플릭스 스탠다드 (예시)", cat: "video", label: "넷플", color: 0, kind: "recurring", price: 13500, months: 1, start: addMonths(back(12), -3), ref: 3500, unit: "편", uses: [back(41), back(47)] },
-      { name: "월세 (예시)", cat: "home", label: "월세", color: 7, mode: "flat", kind: "recurring", price: 550000, months: 1, start: addMonths(back(24), -10) },
-      { name: "휴대폰 요금 (예시)", cat: "tel", label: "폰", color: 2, mode: "flat", kind: "recurring", price: 55000, months: 1, start: addMonths(back(14), -20) },
-      { name: "필라테스 3개월 (예시)", cat: "fit", label: "필라", color: 6, kind: "pass", price: 450000, months: 3, start: addDays(addMonths(t, -3), 10), ref: 50000, unit: "회", uses: [back(70), back(63), back(56), back(42), back(35), back(21), back(14), back(7)] },
-      { name: "토스 프라임 (예시)", cat: "member", label: "토프", color: 1, mode: "flat", kind: "recurring", price: 5900, months: 1, start: addMonths(back(26), -4) },
-      { name: "iCloud+ 200GB (예시)", cat: "cloud", label: "iC", color: 3, mode: "flat", kind: "recurring", price: 4400, months: 1, start: addMonths(back(5), -8) },
-      { name: "밀리의 서재 (예시)", cat: "study", label: "밀리", color: 4, kind: "recurring", price: 9900, months: 1, start: addMonths(back(40), -6), status: "cancelled", cancelledAt: back(40) }
-    ].map((r, i) => normalize({ ...r, id: newId() + i, createdAt: Date.now() + i }));
-    items.push(...s); render();
-    for (const it of s) await save(it);
-    toast("예시를 넣었어요. ‘챙길 것’과 달력을 눌러 보세요.");
-  }
-
-  // ---------- form ----------
-  let editing = null, curCat = "home", curPreset = null;
-  const PLANS = [["recurring", 1, "매달 자동결제"], ["recurring", 12, "매년 자동결제"], ["pass", 1, "1개월권 (한 번 결제)"], ["pass", 3, "3개월권 (한 번 결제)"], ["pass", 6, "6개월권 (한 번 결제)"], ["pass", 12, "1년권 (한 번 결제)"], ["pass", 24, "2년권 (한 번 결제)"]];
-  function fillPlans(kind, months) {
-    const list = PLANS.slice();
-    if (kind && !list.some(p => p[0] === kind && p[1] === months)) list.push([kind, months, planName({ kind, months })]);
-    $("fPlan").innerHTML = list.map(([k, m, l]) => `<option value="${k}:${m}">${l}</option>`).join("");
-    $("fPlan").value = `${kind || "recurring"}:${months || 1}`;
-    planHelp();
-  }
-  const planHelp = () => { $("startHelp").textContent = $("fPlan").value.startsWith("pass") ? "이 날부터 이용 기간을 계산해요." : "이 날짜마다 새 결제 기간으로 계산돼요."; };
-  $("fPlan").addEventListener("change", planHelp);
-  const numIn = v => Number(String(v).replace(/[^\d]/g, ""));
-  const fmt = n => n ? n.toLocaleString("ko-KR") : "";
-  ["fPrice", "fRef", "fAfter"].forEach(id => $(id).addEventListener("input", e => {
-    const raw = String(e.target.value).replace(/[^\d]/g, "");
-    e.target.value = raw === "" ? "" : Number(raw).toLocaleString("ko-KR");
-  }));
-
-  const inkVal = () => Number(document.querySelector('input[name="ink"]:checked')?.value || 0);
-  function renderInks(sel) {
-    const lab = $("fLabel").value.trim() || autoLabel($("fName").value);
-    $("inks").innerHTML = [0, 1, 2, 3, 4, 5, 6, 7].map(i =>
-      `<label><input type="radio" name="ink" id="ink${i}" value="${i}" ${i === sel ? "checked" : ""} aria-label="색 ${i + 1}"><span class="st c${i}">${esc(lab)}</span></label>`).join("");
-  }
-  const refreshInkLabels = () => { const lab = $("fLabel").value.trim() || autoLabel($("fName").value); document.querySelectorAll("#inks .st").forEach(s => s.textContent = lab); };
-  $("fLabel").addEventListener("input", refreshInkLabels);
-  $("fName").addEventListener("input", refreshInkLabels);
-
-  const modeVal = () => document.querySelector('input[name="mode"]:checked')?.value === "flat" ? "flat" : "count";
-  function setMode(m) { $(m === "flat" ? "modeFlat" : "modeCount").checked = true; modeUi(); }
-  function modeUi() {
-    const m = modeVal();
-    $("refField").hidden = m !== "count";
-    $("labelField").hidden = m === "flat";
-    $("inkTitle").textContent = m === "count" ? "도장" : "표시 색";
-  }
-  document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", modeUi));
-  const promoUi = () => { $("promoBox").hidden = !$("fPromo").checked; };
-  $("fPromo").addEventListener("change", () => { promoUi(); if ($("fPromo").checked && !$("fPromoEnd").value) $("fPromoEnd").focus(); });
-
-  function renderCats() {
-    $("cats").innerHTML = CATS.map(c => `<button type="button" data-cat="${c.id}" aria-pressed="${c.id === curCat}">${c.name}</button>`).join("");
-    const cat = catOf(curCat);
-    $("presets").innerHTML = cat.items.length ? cat.items.map((p, i) => {
-      const per = p.plan?.startsWith("pass") ? "" : p.plan === "recurring:12" ? "연 " : "월 ";
-      const price = p.price == null ? "금액 직접 입력" : per + won(p.price);
-      return `<button type="button" data-preset="${i}" aria-pressed="${curPreset === p}"><b>${esc(p.name)}</b><small>${price}${p.note && p.note !== "금액 직접 입력" ? ` · ${esc(p.note)}` : ""}</small></button>`;
-    }).join("") : `<p class="pnote" style="grid-column:1/-1">아래에 직접 입력해 주세요.</p>`;
-    if (!editing && !curPreset) setMode(cat.mode);
-  }
-  $("cats").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (!b) return; curCat = b.dataset.cat; curPreset = null; renderCats(); });
-  $("presets").addEventListener("click", e => {
-    const b = e.target.closest("[data-preset]"); if (!b) return;
-    const p = catOf(curCat).items[+b.dataset.preset];
-    curPreset = p;
-    $("fName").value = p.name; $("fPrice").value = p.price == null ? "" : fmt(p.price); $("fRef").value = fmt(p.ref || 0); $("fLabel").value = p.label || "";
-    const [k, m] = (p.plan || "recurring:1").split(":"); fillPlans(k, +m);
-    setMode(p.mode || catOf(curCat).mode);
-    renderCats(); refreshInkLabels();
-    if (p.price == null) $("fPrice").focus();
+    if (act === "savedSheet") return openSaved();
+    if (act === "closeSheet") { $("savedSheet").hidden = true; return unlock(); }
+    if (act === "closeDetail") return closeDetail();
+    if (act === "todoMore") { todoOpen = true; return renderHome(); }
+    if (act === "prevM" || act === "nextM") { const d = new Date(+viewMonth.slice(0, 4), +viewMonth.slice(5) - 1 + (act === "nextM" ? 1 : -1), 1); viewMonth = ymd(d).slice(0, 7); return renderCal(); }
+    if (act === "dPrev" || act === "dNext") { const d = new Date(+detailMonth.slice(0, 4), +detailMonth.slice(5) - 1 + (act === "dNext" ? 1 : -1), 1); detailMonth = ymd(d).slice(0, 7); return renderDetail(); }
+    const holder = el.closest("[data-id]"), it = holder && find(holder.dataset.id);
+    if (it) itemAction(act, it);
   });
-
-  function openForm(it) {
-    editing = it || null;
-    $("formTitle").textContent = it ? "수정하기" : "추가하기";
-    $("presetBox").hidden = !!it;
-    curCat = it?.cat && catOf(it.cat) ? it.cat : "home"; curPreset = null;
-    fillPlans(it?.kind, it?.months);
-    $("fName").value = it?.name || "";
-    $("fPrice").value = it ? (it.price === 0 && it.promoEnd ? "0" : fmt(it.price)) : "";
-    $("fRef").value = it?.ref ? fmt(it.ref) : "";
-    $("fStart").value = it?.start || todayStr();
-    $("fLabel").value = it?.label || "";
-    $("fPromo").checked = !!it?.promoEnd;
-    $("fPromoEnd").value = it?.promoEnd || "";
-    $("fAfter").value = it?.promoEnd ? fmt(it.after) : "";
-    promoUi();
-    renderInks(it ? it.color : items.length % 8);
-    renderCats();
-    if (it) setMode(it.mode);
-    $("fErr").hidden = true;
-    $("sheet").hidden = false;
-    (it ? $("fName") : document.querySelector("#cats button")).focus();
-  }
-  const closeForm = () => { $("sheet").hidden = true; editing = null; };
-  $("addBtn").addEventListener("click", () => openForm());
-  $("cancelBtn").addEventListener("click", closeForm);
-  $("sheet").addEventListener("click", e => { if (e.target === $("sheet")) closeForm(); });
-  document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sheet").hidden) closeForm(); });
-
-  $("form").addEventListener("submit", e => {
-    e.preventDefault();
-    const name = $("fName").value.trim(), priceRaw = $("fPrice").value.trim(), price = numIn(priceRaw), start = $("fStart").value;
-    const promo = $("fPromo").checked, promoEnd = $("fPromoEnd").value, after = numIn($("fAfter").value);
-    const err = !name ? "이름을 입력하거나 위에서 골라 주세요."
-      : (!priceRaw || (!price && !promo)) ? "지금 내는 금액을 숫자로 입력해 주세요. 무료체험이면 ‘할인·무료체험 중’을 켜고 0을 넣으세요."
-      : !start ? "결제한 날을 골라 주세요."
-      : promo && !promoEnd ? "할인 끝나는 날을 골라 주세요."
-      : promo && !after ? "할인이 끝나면 내는 금액을 입력해 주세요." : "";
-    if (err) { $("fErr").textContent = err; $("fErr").hidden = false; return; }
-    const [kind, months] = $("fPlan").value.split(":");
-    const mode = modeVal();
-    const unit = editing?.unit || catOf(curCat)?.unit || "회";
-    const data = normalize({ ...(editing || { id: newId(), uses: [], createdAt: Date.now(), status: "active" }),
-      name, price, start, kind, months: Number(months), mode, cat: editing?.cat || curCat,
-      ref: mode === "count" ? numIn($("fRef").value) : 0, color: inkVal(), label: $("fLabel").value.trim() || autoLabel(name), unit,
-      promoEnd: promo ? promoEnd : "", after: promo ? after : 0, promoAck: promo && editing?.promoEnd === promoEnd ? editing.promoAck : "" });
-    if (editing) Object.assign(editing, data); else items.push(data);
-    const target = editing || data;
-    closeForm(); render(); save(target);
-    toast(mode === "flat" ? "저장했어요. 한 달 고정비에 더했어요." : "저장했어요. 달력에서 도장을 찍어 보세요.");
+  $("savedSheet").addEventListener("click", e => { if (e.target === $("savedSheet")) { $("savedSheet").hidden = true; unlock(); } });
+  $("addSave").addEventListener("click", submitForm);
+  $("addBody").addEventListener("submit", e => { e.preventDefault(); submitForm(); });
+  $("addBody").addEventListener("input", e => {
+    if (e.target.id === "q") { add.q = e.target.value; return renderResults(); }
+    if (["fPrice", "fAfter", "fRef"].includes(e.target.id)) { const raw = String(e.target.value).replace(/[^\d]/g, ""); e.target.value = raw === "" ? "" : Number(raw).toLocaleString("ko-KR"); }
+    if (e.target.id === "fEmoji" && e.target.value) document.querySelectorAll('input[name="emo"]').forEach(r => r.checked = false);
+    formUi();
   });
+  $("addBody").addEventListener("change", e => {
+    if (e.target.id === "fBundle" && e.target.checked) {
+      const m = MEMBERSHIPS.find(x => x.name === fv("fVia"));
+      if (m?.price && (!numIn(fv("fPrice")) || numIn(fv("fPrice")) === add.preset?.price)) $("fPrice").value = fmt(m.price);
+      $("fName").value = fv("fName").replace(/\s+(광고형|베이직|스탠다드|프리미엄)$/, "");
+    }
+    if (e.target.id === "fVia") { const m = MEMBERSHIPS.find(x => x.name === e.target.value); if (m?.price) $("fPrice").value = fmt(m.price); }
+    if (e.target.name === "emo") $("fEmoji").value = "";
+    formUi();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    if (!$("savedSheet").hidden) { $("savedSheet").hidden = true; return unlock(); }
+    if (!$("addPage").hidden) return closeAdd();
+    if (!$("detailPage").hidden) return closeDetail();
+  });
+  addEventListener("hashchange", () => showTab(location.hash.slice(1), true));
 
-  // ---------- backup (기기 저장일 때) ----------
+  // ---------- 백업 ----------
   $("expBtn").addEventListener("click", async () => {
-    const t = todayStr();
-    const blob = new Blob([JSON.stringify({ app: "bonjeon", version: 1, exportedAt: new Date().toISOString(), items }, null, 2)], { type: "application/json" });
-    const filename = `bonjeon-backup-${t}.json`;
-    try {
-      const file = new File([blob], filename, { type: "application/json" });
-      if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "본전 미터 백업" }); return toast("백업 파일을 보냈어요"); }
-    } catch (e) { if (e?.name === "AbortError") return; }
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = filename;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    toast(`${filename}로 저장했어요`);
+    const blob = new Blob([JSON.stringify({ app: "bonjeon", version: 2, exportedAt: new Date().toISOString(), items }, null, 2)], { type: "application/json" });
+    const filename = `bonjeon-backup-${todayStr()}.json`;
+    try { const file = new File([blob], filename, { type: "application/json" }); if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "본전 미터 백업" }); return toast("백업 파일을 보냈어요"); } }
+    catch (err) { if (err?.name === "AbortError") return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000); toast(`${filename}로 저장했어요`);
   });
   $("impFile").addEventListener("change", async e => {
-    const f = e.target.files?.[0]; e.target.value = "";
-    if (!f) return;
+    const f = e.target.files?.[0]; e.target.value = ""; if (!f) return;
     try {
-      const data = JSON.parse(await f.text());
-      const list = Array.isArray(data) ? data : data?.items;
+      const data = JSON.parse(await f.text()), list = Array.isArray(data) ? data : data?.items;
       if (!Array.isArray(list)) throw new Error("format");
       const incoming = list.filter(r => r && typeof r.id === "string").map(normalize);
-      for (const it of incoming) {
-        const i = items.findIndex(x => x.id === it.id);
-        i >= 0 ? items[i] = it : items.push(it);
-        await store.put(it);
-      }
-      render();
-      toast(`${incoming.length}개를 불러왔어요`);
+      for (const it of incoming) { const i = items.findIndex(x => x.id === it.id); i >= 0 ? items[i] = it : items.push(it); await store.put(it); }
+      renderAll(); toast(`${incoming.length}개를 불러왔어요`);
     } catch { toast("백업 파일을 읽지 못했어요. 본전 미터에서 저장한 .json 파일인지 확인해 주세요."); }
   });
 
-  // ---------- tabs ----------
-  const TABS = {
-    home: ["본전 미터", "월세부터 구독까지, 매달 나가는 돈을 한눈에 보고 줄여요."],
-    list: ["목록", "항목별로 1번에 얼마인지, 한 달에 얼마인지 봐요."],
-    cal: ["달력", "날짜를 골라 쓴 것에 도장을 찍어요."],
-    guide: ["사용법", "처음 쓰는 법과 계산 방법이에요."]
-  };
-  const TAB_KEY = "bonjeon-tab";
-  function showTab(name, focus) {
-    if (!TABS[name]) name = "home";
-    document.querySelectorAll(".panel").forEach(p => p.hidden = p.dataset.tab !== name);
-    document.querySelectorAll(".tab[data-go]").forEach(b => b.dataset.go === name ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
-    $("tabTitle").textContent = TABS[name][0];
-    $("tabSub").textContent = TABS[name][1];
-    try { localStorage.setItem(TAB_KEY, name); } catch {}
-    if (focus) window.scrollTo({ top: 0 });
-  }
-  document.querySelector(".tabbar").addEventListener("click", e => {
-    const b = e.target.closest(".tab[data-go]"); if (b) showTab(b.dataset.go, true);
-  });
-  addEventListener("hashchange", () => showTab(location.hash.slice(1), true));
-  showTab((/^#(home|list|cal|guide)$/.test(location.hash) && location.hash.slice(1)) || (() => { try { return localStorage.getItem(TAB_KEY); } catch { return null; } })() || "home");
-
-  // ---------- boot ----------
+  // ---------- 시작 ----------
   async function boot() {
     try { store = await dbStore(); } catch { store = null; }
-    $("storeNote").innerHTML = store ? "<b>내 계정에 저장돼요.</b> 다른 기기에서 열어도 그대로 있고, 나만 볼 수 있어요."
-                                     : "<b>이 기기에만 저장돼요.</b> 서버로 보내지 않아요.";
-    // claude.ai 밖(내 웹사이트)에서는 백업과 홈 화면 안내를 보여줘요.
+    $("storeNote").innerHTML = store ? "<b>내 계정에 저장돼요.</b> 다른 기기에서 열어도 그대로 있고, 나만 볼 수 있어요." : "<b>이 기기에만 저장돼요.</b> 서버로 보내지 않아요.";
     if (!store && !window.claude) {
       $("backup").hidden = false;
       const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
       $("installTip").hidden = standalone || !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
     store = store || localStore;
-    try { items = (await store.all()).map(normalize); }
-    catch { items = []; $("storeNote").textContent = "기록을 불러오지 못했어요. 새로고침해 주세요."; }
+    try { items = (await store.all()).map(normalize); } catch { items = []; toast("기록을 불러오지 못했어요. 새로고침해 주세요."); }
     loading = false;
-    render();
+    renderAll();
   }
-  render();
+  showTab((/^#(home|list|cal|save)$/.test(location.hash) && location.hash.slice(1)) || (() => { try { return localStorage.getItem(TAB_KEY); } catch { return null; } })() || "home");
+  renderAll();
   boot();
 })();
 </script>
