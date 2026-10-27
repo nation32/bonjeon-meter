@@ -347,7 +347,8 @@ details.more2[open] summary{color:var(--sub)}
 .overdict b{font-size:26px;font-weight:800;letter-spacing:-.02em}
 .overdict.bad{background:var(--bad-tint);color:var(--bad)}
 .overdict.good{background:var(--good-tint);color:var(--good)}
-.osum{flex-direction:row;justify-content:space-between;align-items:center}
+.osum{display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid var(--line2);padding-top:12px}
+.osum .lbl{display:block}
 .osum b{display:block;font-size:20px;font-weight:800;color:var(--ink)}
 .ohome{background:linear-gradient(160deg,var(--accent-tint),var(--t1));border-radius:22px;padding:22px;display:grid;grid-template-columns:repeat(4,52px);justify-content:space-between;row-gap:18px}
 .ohome span{width:52px;height:52px;border-radius:13px;background:color-mix(in srgb,var(--ink) 10%,transparent)}
@@ -1255,7 +1256,7 @@ details.more2[open] summary{color:var(--sub)}
     const be = p.ref > 0 ? Math.ceil(price / p.ref) : null, left = be != null ? Math.max(0, be - n) : null;
     const vb = VERB[catOf(p.cat).unit] || VERB["일"];
     let status, tone;
-    if (be != null && left === 0) { status = `본전 넘었어요 · ${won(p.ref * n - price)} 아낌`; tone = "good"; }
+    if (be != null && left === 0) { status = `본전 넘었어요 · 따로 냈을 때보다 ${won(p.ref * n - price)} 아낌`; tone = "good"; }
     else if (be != null) { status = `${left}${cnt} 더 ${vb[2]} 본전`; tone = n === 0 ? "bad" : ""; }
     else { status = n ? `이번 달 ${n}${cnt} ${vb[0]}` : `이번 달 아직 ${vb[1]}`; tone = n ? "" : "bad"; }
     const unrec = be != null ? Math.max(0, price - p.ref * n) : n ? 0 : price;
@@ -1331,13 +1332,24 @@ details.more2[open] summary{color:var(--sub)}
         return;
       }
       const vs = sortWaste(ps.filter(p => modeOf(p) === "count").map(p => ({ p, v: verdictOf(p, onb.uses[p.key] ?? 0) })));
-      const top = vs[0];
-      const hero = top ? `<span class="lbl" style="font-size:16px">지금 제일 아까운 건</span><span class="hero" style="font-size:30px;line-height:1.25">${esc(onbShort(top.p))}, 1번에 ${won(top.v.per)}</span><span class="lbl">${esc(top.v.unrec ? `아직 ${won(top.v.unrec)} 못 뽑았어요 · ${top.v.status}` : top.v.status)}</span>`
+      const top = vs[0], loser = vs.find(x => x.v.unrec > 0);
+      const saved = x => x.p.ref > 0 ? x.p.ref * x.v.n - x.v.price : 0, best = vs.slice().sort((a, b) => saved(b) - saved(a))[0];
+      const basisOf = p => { const u = catOf(p.cat).unit; return p.cat === "fit" ? "일일권" : u === "편" ? "1편 대여" : p.cat === "food" ? "배달비" : p.cat === "shop" ? "배송비" : "1번 값"; };
+      const verbOf = p => (VERB[catOf(p.cat).unit] || VERB["일"]);
+      // 제일 아까운 것이 있으면 그걸, 다 본전이면 제일 많이 아낀 걸 풀어서 보여줘요
+      const why = loser ? (loser.p.ref > 0
+          ? `${won(loser.v.price)} 냈는데 이번 달 ${loser.v.n}${loser.v.cnt} ${verbOf(loser.p)[0]}. 따로 냈다면 ${loser.v.n}${loser.v.cnt} × ${basisOf(loser.p)} ${won(loser.p.ref)} = ${won(loser.p.ref * loser.v.n)}이라, 아직 ${won(loser.v.unrec)} 못 뽑았어요`
+          : `${won(loser.v.price)} 냈는데 이번 달 아직 ${verbOf(loser.p)[1]}`)
+        : best && saved(best) > 0 ? `이번 달 ${best.v.n}${best.v.cnt} ${verbOf(best.p)[0]}. 따로 냈다면 ${best.v.n}${best.v.cnt} × ${basisOf(best.p)} ${won(best.p.ref)} = ${won(best.p.ref * best.v.n)}인데, ${won(best.v.price)}만 냈어요` : "";
+      const hero = loser ? `<span class="lbl" style="font-size:16px">지금 제일 아까운 건</span><span class="hero" style="font-size:30px;line-height:1.25">${esc(onbShort(loser.p))}, 1번에 ${won(loser.v.per)}</span><span class="lbl" id="onbWhy">${esc(why)}</span>`
+        : best && saved(best) > 0 ? `<span class="lbl" style="font-size:16px">지금은 다 본전 뽑고 있어요</span><span class="hero" style="font-size:30px;line-height:1.25">${esc(onbShort(best.p))}, ${won(saved(best))} 아꼈어요</span><span class="lbl" id="onbWhy">${esc(why)}</span>`
+        : top ? `<span class="lbl" style="font-size:16px">이번 달 1번에 드는 돈</span><span class="hero" style="font-size:30px;line-height:1.25">${esc(onbShort(top.p))}, 1번에 ${won(top.v.per)}</span><span class="lbl">${esc(top.v.status)}</span>`
         : `<span class="lbl" style="font-size:16px">고른 ${ps.length}개만 해도 1년이면</span><span class="hero">${won(y)}</span><span class="lbl">한 달 ${won(m)} · 하루 ${won(y / 365)}씩 나가요</span>`;
       el.innerHTML = `<div class="page-in" style="padding-top:env(safe-area-inset-top,0px)">${head}<div class="dtop" id="onbHero">${hero}</div>
         ${vs.length ? `<section class="card"><div class="rows" id="onbBon">${vs.map(({ p, v }) => `<div class="row"><span class="av t${inkOf(p)}" aria-hidden="true">${esc(p.label || autoLabel(p.name))}</span>
           <span class="mid"><span class="nm">${esc(p.name)}</span><span class="ds ${v.tone}">${esc(v.status)}</span></span><span class="rt"><b>${won(v.per)}</b><span>1번에</span></span></div>`).join("")}</div></section>` : ""}
-        ${top ? `<section class="card osum"><span><span class="lbl">한 달 고정비</span><b id="onbMonthTotal">${won(m)}</b></span><span class="lbl" style="text-align:right">1년이면<br><b id="onbYear">${won(y)}</b></span></section>` : ""}</div>
+        ${top ? `<section class="card"><div><h2 class="h2">고른 ${ps.length}개를 모두 합치면</h2><p class="sub">${esc(ps.slice(0, 3).map(onbShort).join(", "))}${ps.length > 3 ? ` 외 ${ps.length - 3}개` : ""}까지 매달 나가는 돈이에요</p></div>
+          <div class="osum"><span><span class="lbl">한 달</span><b id="onbMonthTotal">${won(m)}</b></span><span style="text-align:right"><span class="lbl">1년이면</span><b id="onbYear">${won(y)}</b></span></div></section>` : ""}</div>
         <div class="cta" style="background:linear-gradient(to top,var(--bg) 72%,transparent)"><div class="cta-in onb-cta"><button type="button" data-onb="next">좋아요</button>
           <button type="button" class="textbtn" data-onb="finishAdd">목록에 없는 건 직접 넣을게요</button></div></div>`;
       return;
@@ -1397,7 +1409,8 @@ details.more2[open] summary{color:var(--sub)}
       return onbVerdictBox(presetByKey(k));
     }
     const a = b.dataset.onb;
-    if (a === "next") return onbGo(1);
+    // 마지막 화면(claude.ai나 홈 화면 앱에서는 결과 화면)이면 다음 대신 마쳐요
+    if (a === "next") return onb.pos >= onbFlow().length - 1 ? finishOnb(false) : onbGo(1);
     if (a === "back") return onbGo(-1);
     if (a === "skipAmt") { const k = onbFlow()[onb.pos].slice(1); delete onb.amt[k]; return onbGo(1); }
     if (a === "sample") { closeOnb(); return loadSamples(); }
