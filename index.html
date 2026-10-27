@@ -359,10 +359,11 @@ details.more2[open] summary{color:var(--sub)}
 .osteps .t{font-size:16px;flex:1}
 .osteps .ic{color:var(--i1)}
 
-.opromise{margin:0;display:flex;align-items:center;gap:10px;background:var(--accent-tint);border-radius:14px;padding:13px 16px;font-size:17px;font-weight:800;color:var(--accent-dark);letter-spacing:-.03em}
+.opromise{margin:0;line-height:1.4;display:flex;align-items:center;gap:10px;background:var(--accent-tint);border-radius:14px;padding:13px 16px;font-size:17px;font-weight:800;color:var(--accent-dark);letter-spacing:-.03em}
 .opromise .ic{width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
 .opreview .nm{font-size:16px}
 .otag{font-size:13px;font-weight:800;border-radius:999px;padding:6px 11px;white-space:nowrap;flex:none}
+.otag{color:var(--sub);background:var(--field)}
 .otag.good{color:var(--good);background:var(--good-tint)}.otag.bad{color:var(--bad);background:var(--bad-tint)}.otag.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
 .ptiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .ptile{position:relative;border:0;border-radius:16px;height:86px;background:var(--field);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:4px}
@@ -1231,8 +1232,8 @@ details.more2[open] summary{color:var(--sub)}
     { id: "melon", em: "🎧", name: "멜론", tiers: ["멜론 모바일 스트리밍", "멜론 무제한 듣기", "멜론 무제한 + 오프라인"], def: "멜론 무제한 듣기" },
     { id: "naver", em: "🎟️", name: "네이버플러스", tiers: ["네이버플러스 멤버십", "네이버플러스 멤버십 (연간)"] },
     { id: "icloud", em: "☁️", name: "iCloud+", tiers: ["iCloud+ 50GB", "iCloud+ 200GB", "iCloud+ 2TB", "iCloud+ 6TB"], def: "iCloud+ 200GB" },
-    { id: "millie", em: "📚", name: "밀리의 서재", tiers: ["밀리의 서재"] },
-    { id: "pilates", em: "🧘", name: "필라테스", tiers: ["필라테스 3개월권"] }
+    { id: "phone", em: "📱", name: "휴대폰 요금", tiers: ["휴대폰 요금", "알뜰폰 요금"], q: "휴대폰은 어떤 요금제예요?" },
+    { id: "rent", em: "🏠", name: "월세", tiers: ["월세"] }
   ];
   const ONB_GROUPS = [
     { id: "video", em: "🎬", name: "영상", q: "영상은 어떤 걸 써요?", cats: ["video"] },
@@ -1317,17 +1318,17 @@ details.more2[open] summary{color:var(--sub)}
     if (cur === "intro") {
       const crow = (lab, t, name, sub, tag, cls) => `<div class="row"><span class="av t${t}" aria-hidden="true">${lab}</span><span class="mid"><span class="nm" style="font-weight:700">${name}</span><span class="ds">${sub}</span></span><span class="otag ${cls}">${tag}</span></div>`;
       el.innerHTML = `<div class="page-in onb" style="gap:28px;padding-top:calc(40px + env(safe-area-inset-top,0px))">
-        <div style="display:flex;flex-direction:column;gap:18px"><h1 class="onb-h" style="font-size:30px;line-height:1.35">구독료 모두 합치면<br>하루에 얼마나 나갈까요?</h1>
-          <p class="opromise"><span class="ic">${checkSvg}</span>앞으로 본전 뽑는 구독만 남겨 드릴게요</p></div>
-        <div class="card opreview" aria-label="이렇게 알려 드려요"><span class="lbl">구독 6개, 하루에</span><span class="big" style="font-size:32px">₩2,935</span>
-          <div class="rows">${crow("헬스", 1, "헬스장", "이번 달 3번", "남겨요", "good")}${crow("배민", 4, "배민클럽", "이번 달 2번", "남겨요", "good")}${crow("넷플", 0, "넷플릭스", "이번 달 1번", "정리해요", "bad")}</div></div></div>
-        <div class="cta"><div class="cta-in onb-cta"><span class="small">30초면 돼요 · 가입·계좌 연결 없이</span><button type="button" data-onb="next">내 하루 구독료 계산하기</button><button type="button" class="textbtn" data-onb="sample">예시로 먼저 둘러볼게요</button></div></div>`;
+        <div style="display:flex;flex-direction:column;gap:18px"><h1 class="onb-h" style="font-size:30px;line-height:1.35">통신비, 구독료 모두 합치면<br>하루에 얼마나 나갈까요?</h1>
+          <p class="opromise"><span class="ic">${checkSvg}</span><span>본전 뽑는 것만 남기고,<br>새는 돈은 줄여 드릴게요</span></p></div>
+        <div class="card opreview" aria-label="이렇게 알려 드려요"><span class="lbl">통신비·구독 7개, 하루에</span><span class="big" style="font-size:32px">₩4,743</span>
+          <div class="rows">${crow("헬스", 1, "헬스장", "이번 달 3번", "남겨요", "good")}${crow("배민", 4, "배민클럽", "이번 달 2번", "남겨요", "good")}${crow("넷플", 0, "넷플릭스", "이번 달 1번", "정리해요", "bad")}${crow("폰", 2, "휴대폰 요금", "매달 ₩55,000", "하루 ₩1,808", "")}</div></div></div>
+        <div class="cta"><div class="cta-in onb-cta"><span class="small">30초면 돼요 · 가입·계좌 연결 없이</span><button type="button" data-onb="next">내 하루 고정비 계산하기</button><button type="button" class="textbtn" data-onb="sample">예시로 먼저 둘러볼게요</button></div></div>`;
       return;
     }
     if (cur === "pick") {
       const k = onb.picked.length;
-      el.innerHTML = `<div class="page-in onb onbq">${hd}<div><h1 class="h1">쓰고 있는 구독을<br>모두 골라 주세요</h1><p class="sub" style="margin-top:6px">요금제와 금액은 다음에 확인해요</p></div>
-        <div class="ptiles" role="group" aria-label="자주 쓰는 구독">${TILES.map(t => { const on = tileOn(t);
+      el.innerHTML = `<div class="page-in onb onbq">${hd}<div><h1 class="h1">매달 나가는 걸<br>모두 골라 주세요</h1><p class="sub" style="margin-top:6px">요금제와 금액은 다음에 확인해요</p></div>
+        <div class="ptiles" role="group" aria-label="자주 나가는 돈">${TILES.map(t => { const on = tileOn(t);
           return `<button type="button" class="ptile" data-tile="${t.id}" aria-pressed="${on}"><span class="ce" aria-hidden="true">${emoOf(t.em, 22)}</span><span class="cn">${esc(t.name)}</span><span class="ck">${checkSvg}</span></button>`; }).join("")}</div>
         <button type="button" class="textbtn" data-onb="more" style="align-self:flex-start">여기 없어요 · ${allPresets().length}개에서 찾기</button></div>
         <div class="cta"><div class="cta-in"><button type="button" data-onb="next" ${k ? "" : "disabled"}>${k ? `${k}개 골랐어요` : "하나 이상 골라 주세요"}</button></div></div>`;
@@ -1375,7 +1376,7 @@ details.more2[open] summary{color:var(--sub)}
         return;
       }
       const hasCount = ps.some(p => modeOf(p) === "count");
-      el.innerHTML = `<div class="page-in onb onbq">${hd}<div class="dtop" style="padding:8px 0 0"><span class="lbl" style="font-size:17px">구독 ${ps.length}개를 모두 합치면</span>
+      el.innerHTML = `<div class="page-in onb onbq">${hd}<div class="dtop" style="padding:8px 0 0"><span class="lbl" style="font-size:17px">${ps.length}개를 모두 합치면</span>
           <span class="hero" id="onbDay" style="font-size:44px">하루 ${won(dayOf(m))}</span><span class="lbl" style="font-size:16px">한 달 ${won(m)} · 1년 ${won(m * 12)}</span></div>
         <section class="card opreview" style="padding:6px 18px"><div class="rows">${ps.slice().sort((a, b) => monthlyP(b) - monthlyP(a)).map(p => `<div class="row"><span class="av t${inkOf(p)}" aria-hidden="true">${esc(p.label || autoLabel(p.name))}</span>
           <span class="mid"><span class="nm">${esc(p.name)}</span><span class="ds">한 달 ${won(monthlyP(p))}</span></span><span class="rt"><b>하루 ${won(dayOf(monthlyP(p)))}</b></span></div>`).join("")}</div></section>
