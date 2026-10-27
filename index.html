@@ -329,7 +329,34 @@ details.more2[open] summary{color:var(--sub)}
 .orow[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 7%,transparent)}
 .orow[aria-pressed="true"] .ck{background:var(--accent);box-shadow:none;color:var(--accent-ink)}
 .onbq .catttl{margin:14px 0 2px}
-.demo-btn .e{font-size:34px}
+.opreview{padding:6px 18px;box-shadow:0 6px 24px rgba(27,31,39,.10),0 0 0 1px var(--line)}
+.opill{font-size:13px;font-weight:700;color:var(--accent-dark);background:var(--accent-tint);border-radius:999px;padding:5px 10px;white-space:nowrap}
+.okick{margin:0 0 6px;font-size:14px;font-weight:700;color:var(--accent)}
+.ctiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ctile{position:relative;border:0;border-radius:18px;height:96px;padding:14px;background:var(--field);display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left}
+.ctile .ce{font-size:28px;line-height:1}
+.ctile .cn{font-size:16px;font-weight:600}
+.ctile .ck{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;display:none;place-items:center;background:var(--accent);color:var(--accent-ink)}
+.ctile[aria-pressed="true"]{background:var(--accent-tint);box-shadow:inset 0 0 0 2px var(--accent)}
+.ctile[aria-pressed="true"] .cn{font-weight:700}
+.ctile[aria-pressed="true"] .ck{display:grid}
+.numgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.numbtn{border:0;height:56px;border-radius:16px;background:var(--field);font-size:19px;font-weight:600}
+.numbtn[aria-checked="true"]{background:var(--accent);color:var(--accent-ink);font-weight:800}
+.overdict{border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;background:var(--accent-tint);color:var(--accent-dark);font-size:14px}
+.overdict b{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.overdict.bad{background:var(--bad-tint);color:var(--bad)}
+.overdict.good{background:var(--good-tint);color:var(--good)}
+.osum{flex-direction:row;justify-content:space-between;align-items:center}
+.osum b{display:block;font-size:20px;font-weight:800;color:var(--ink)}
+.ohome{background:linear-gradient(160deg,var(--accent-tint),var(--t1));border-radius:22px;padding:22px;display:grid;grid-template-columns:repeat(4,52px);justify-content:space-between;row-gap:18px}
+.ohome span{width:52px;height:52px;border-radius:13px;background:color-mix(in srgb,var(--ink) 10%,transparent)}
+.ohome .me{background:#16233A;color:#FF5A4E;display:grid;place-items:center;font-size:15px;font-weight:800;box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--accent)}
+.osteps{display:flex;flex-direction:column;gap:14px}
+.osteps > div{display:flex;align-items:center;gap:12px}
+.osteps .n{width:26px;height:26px;border-radius:50%;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;font-size:13px;font-weight:800;flex:none}
+.osteps .t{font-size:16px;flex:1}
+.osteps .ic{color:var(--i1)}
 
 /* tab bar */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--surface);border-top:1px solid var(--line);padding-top:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
@@ -414,77 +441,117 @@ details.more2[open] summary{color:var(--sub)}
 
 <script>
 (() => {
-  // ---------- 서비스 목록 (2026-10 조사 정가. price null = 직접 입력, ref = 1번 따로 낼 때 금액) ----------
+  // ---------- 서비스 목록 (2026-10 조사 정가. price null = 직접 입력, ref = 1번 따로 낼 때 금액, '확인 필요' = 출처마다 달라요) ----------
   const CATS = [
     { id: "home", name: "주거", unit: "회", mode: "flat", emoji: "🏠", emojis: ["🏠", "🧾", "⚡"], items: [
       { name: "월세", price: null, label: "월세" }, { name: "관리비", price: null, label: "관리", emoji: "🧾" },
-      { name: "대출 이자", price: null, label: "이자", emoji: "🏦" }, { name: "전기·가스", price: null, label: "공과", emoji: "⚡", note: "평균 금액으로" } ] },
+      { name: "대출 이자", price: null, label: "이자", emoji: "🏦" }, { name: "전세대출 이자", price: null, label: "전세", emoji: "🏦" },
+      { name: "전기·가스", price: null, label: "공과", emoji: "⚡", note: "평균 금액으로" }, { name: "수도 요금", price: null, label: "수도", emoji: "🚰" },
+      { name: "자동차 할부·리스", price: null, label: "할부", emoji: "🚗" }, { name: "학자금 대출", price: null, label: "학자", emoji: "🎓" } ] },
     { id: "tel", name: "통신", unit: "회", mode: "flat", emoji: "📱", emojis: ["📱", "🌐", "📺"], items: [
       { name: "휴대폰 요금", price: null, label: "폰" }, { name: "알뜰폰 요금", price: null, label: "알뜰" },
-      { name: "인터넷", price: null, label: "인터", emoji: "🌐" }, { name: "IPTV", price: null, label: "TV", emoji: "📺" },
-      { name: "통신사 구독 (T우주·유독 등)", price: null, label: "통구" } ] },
+      { name: "휴대폰 할부금", price: null, label: "할부" }, { name: "인터넷", price: null, label: "인터", emoji: "🌐" },
+      { name: "IPTV", price: null, label: "TV", emoji: "📺" }, { name: "통신사 구독 (T우주·유독 등)", price: null, label: "통구" },
+      { name: "스마트워치 요금", price: null, label: "워치", emoji: "⌚" } ] },
     { id: "ins", name: "보험", unit: "회", mode: "flat", emoji: "🛡️", emojis: ["🛡️", "🚗", "🏥"], items: [
-      { name: "실손보험", price: null, label: "실손" }, { name: "자동차보험", price: null, plan: "recurring:12", label: "자보", emoji: "🚗", note: "1년 금액으로" },
-      { name: "기타 보험", price: null, label: "보험" } ] },
+      { name: "실손보험", price: null, label: "실손" }, { name: "건강·종신보험", price: null, label: "건강", emoji: "🏥" },
+      { name: "자동차보험", price: null, plan: "recurring:12", label: "자보", emoji: "🚗", note: "1년 금액으로" },
+      { name: "펫보험", price: null, label: "펫", emoji: "🐶" }, { name: "기타 보험", price: null, label: "보험" } ] },
     { id: "move", name: "교통·이동", unit: "회", mode: "count", emoji: "🚲", emojis: ["🚲", "🚗", "🅿️"], items: [
       { name: "따릉이 1년 정기권 (1시간)", price: 30000, plan: "pass:12", label: "따릉", ref: 1000, note: "1시간권 1,000 기준" },
-      { name: "정기 주차권", price: null, label: "주차", mode: "flat", emoji: "🅿️" }, { name: "쏘카패스", price: null, label: "쏘카", emoji: "🚗" } ] },
+      { name: "쏘카패스", price: null, label: "쏘카", emoji: "🚗" }, { name: "차량 구독 (쏘픽 등)", price: null, label: "차구", emoji: "🚙", mode: "flat" },
+      { name: "정기 주차권", price: null, label: "주차", mode: "flat", emoji: "🅿️" }, { name: "하이패스·통행료", price: null, label: "통행", mode: "flat", emoji: "🛣️" } ] },
     { id: "ai", name: "AI", unit: "일", mode: "flat", emoji: "AI", emojis: ["AI", "🤖", "✨"], items: [
-      { name: "ChatGPT Plus", price: 29000, label: "GPT", note: "$20 + 부가세 환산" }, { name: "ChatGPT Go", price: 15000, label: "GO" },
-      { name: "ChatGPT Pro", price: 290000, label: "GPT", note: "$200 + 부가세 환산" }, { name: "Claude Pro", price: 29000, label: "CL", note: "$20 + 부가세 환산" },
-      { name: "Claude Max", price: 145000, label: "CL", note: "$100 + 부가세 환산" }, { name: "Google AI Pro", price: 29000, label: "GEM" },
-      { name: "Google AI Plus", price: 11000, label: "GEM", note: "프로모션가" }, { name: "Perplexity Pro", price: 29000, label: "PPL", note: "$20 + 부가세 환산" },
-      { name: "Cursor Pro", price: 29000, label: "CUR", note: "$20 + 부가세 환산" }, { name: "Midjourney Basic", price: 14500, label: "MJ", note: "$10 + 부가세 환산" } ] },
+      { name: "ChatGPT Go", price: 15000, label: "GO" }, { name: "ChatGPT Plus", price: 29000, label: "GPT", note: "$20 + 부가세 환산" },
+      { name: "ChatGPT Pro", price: 290000, label: "GPT", note: "$200 + 부가세 환산" },
+      { name: "Claude Pro", price: 29000, label: "CL", note: "$20 + 부가세 환산" }, { name: "Claude Max", price: 145000, label: "CL", note: "$100 + 부가세 환산" },
+      { name: "Google AI Plus", price: 11000, label: "GEM", note: "확인 필요" }, { name: "Google AI Pro", price: 29000, label: "GEM" },
+      { name: "Perplexity Pro", price: 29000, label: "PPL", note: "$20 + 부가세 환산" }, { name: "Cursor Pro", price: 29000, label: "CUR", note: "$20 + 부가세 환산" },
+      { name: "GitHub Copilot Pro", price: 14000, label: "GH", note: "$10 환산" }, { name: "GitHub Copilot Pro+", price: 54000, label: "GH", note: "$39 환산" },
+      { name: "Midjourney Basic", price: 14500, label: "MJ", note: "$10 + 부가세 환산" }, { name: "SuperGrok", price: null, label: "GRK" },
+      { name: "뤼튼·기타 AI", price: null, label: "AI" } ] },
     { id: "music", name: "음악", unit: "일", mode: "flat", emoji: "🎧", emojis: ["🎧", "🎵", "🎤"], items: [
-      { name: "멜론", price: 10900, label: "멜론", note: "확인 필요" }, { name: "지니뮤직", price: 10900, label: "지니", note: "확인 필요" },
-      { name: "FLO", price: 10900, label: "플로", note: "확인 필요" }, { name: "스포티파이", price: 11990, label: "스포" },
-      { name: "유튜브 뮤직", price: 11990, label: "유뮤" }, { name: "Apple Music", price: 8900, label: "AM", note: "확인 필요" } ] },
+      { name: "멜론 모바일 스트리밍", price: 7590, label: "멜론" }, { name: "멜론 무제한 듣기", price: 8690, label: "멜론", note: "PC 포함" },
+      { name: "멜론 무제한 + 오프라인", price: 11990, label: "멜론" }, { name: "지니뮤직", price: 10900, label: "지니", note: "확인 필요" },
+      { name: "FLO", price: 10900, label: "플로", note: "확인 필요" }, { name: "벅스", price: null, label: "벅스" },
+      { name: "스포티파이 프리미엄", price: 11990, label: "스포", note: "확인 필요" }, { name: "유튜브 뮤직", price: 11990, label: "유뮤" },
+      { name: "Apple Music", price: 8900, label: "AM", note: "확인 필요" } ] },
     { id: "video", name: "영상", unit: "편", mode: "count", emoji: "🎬", emojis: ["🎬", "🍿", "📺"], items: [
+      { name: "넷플릭스 광고형", price: 7000, label: "넷플", ref: 3500, note: "확인 필요" }, { name: "넷플릭스 스탠다드", price: 13500, label: "넷플", ref: 3500 },
+      { name: "넷플릭스 프리미엄", price: 17000, label: "넷플", ref: 3500 },
       { name: "유튜브 프리미엄", price: 14900, label: "유튜", note: "iOS 앱 결제 19,500", mode: "flat", emoji: "📺" },
       { name: "유튜브 프리미엄 라이트", price: 8500, label: "유라", mode: "flat", emoji: "📺" },
-      { name: "넷플릭스 광고형", price: 5500, label: "넷플", ref: 3500, note: "확인 필요" }, { name: "넷플릭스 스탠다드", price: 13500, label: "넷플", ref: 3500, note: "확인 필요" },
-      { name: "넷플릭스 프리미엄", price: 17000, label: "넷플", ref: 3500, note: "확인 필요" }, { name: "티빙 광고형", price: 5500, label: "티빙", ref: 3500 },
-      { name: "티빙 베이직", price: 9500, label: "티빙", ref: 3500 }, { name: "티빙 스탠다드", price: 13500, label: "티빙", ref: 3500 },
-      { name: "티빙 프리미엄", price: 17000, label: "티빙", ref: 3500 }, { name: "디즈니+ 스탠다드", price: 9900, label: "디즈", ref: 3500, note: "확인 필요" },
-      { name: "웨이브 베이직", price: 7900, label: "웨이", note: "확인 필요" }, { name: "왓챠 베이직", price: 7900, label: "왓챠", ref: 3500 },
-      { name: "왓챠 프리미엄", price: 12900, label: "왓챠", ref: 3500 }, { name: "Apple TV+", price: null, label: "ATV" },
-      ] },
+      { name: "티빙 광고형", price: 5500, label: "티빙", ref: 3500 }, { name: "티빙 베이직", price: 9500, label: "티빙", ref: 3500 },
+      { name: "티빙 스탠다드", price: 13500, label: "티빙", ref: 3500 }, { name: "티빙 프리미엄", price: 17000, label: "티빙", ref: 3500 },
+      { name: "디즈니+ 스탠다드", price: 9900, label: "디즈", ref: 3500 }, { name: "디즈니+ 프리미엄", price: 13900, label: "디즈", ref: 3500 },
+      { name: "웨이브 광고형", price: 5500, label: "웨이", ref: 3500 }, { name: "웨이브 베이직", price: 7900, label: "웨이", ref: 3500 },
+      { name: "웨이브 스탠다드", price: 10900, label: "웨이", ref: 3500 }, { name: "웨이브 프리미엄", price: 13900, label: "웨이", ref: 3500 },
+      { name: "왓챠 베이직", price: 7900, label: "왓챠", ref: 3500, note: "확인 필요" }, { name: "왓챠 프리미엄", price: 12900, label: "왓챠", ref: 3500, note: "확인 필요" },
+      { name: "라프텔 베이직", price: 9900, label: "라프", ref: 3500, note: "웹 결제 기준" }, { name: "라프텔 프리미엄", price: 14900, label: "라프", ref: 3500, note: "웹 결제 기준" },
+      { name: "Apple TV+", price: null, label: "ATV" }, { name: "U+모바일tv", price: null, label: "U+" } ] },
     { id: "shop", name: "쇼핑", unit: "주문", mode: "count", emoji: "🛒", emojis: ["🛒", "📦", "🛍️"], items: [
       { name: "쿠팡 와우", price: 7890, label: "와우", ref: 3000, note: "쿠팡플레이 포함 · 무료배송 1회 ≈ 3,000", emoji: "📦" },
-      { name: "컬리멤버스", price: 1900, label: "컬리", mode: "flat", emoji: "🥬" } ] },
+      { name: "컬리멤버스", price: 1900, label: "컬리", mode: "flat", emoji: "🥬", note: "확인 필요" },
+      { name: "카카오 멤버십", price: null, label: "카카", mode: "flat", emoji: "💬" } ] },
     { id: "member", name: "멤버십", unit: "회", mode: "flat", emoji: "🎟️", emojis: ["🎟️", "💳", "⭐"], items: [
-      { name: "네이버플러스 멤버십", price: 4900, label: "네플", note: "연간 결제 시 월 3,900" },
-      { name: "토스 프라임", price: 5900, label: "토프", note: "월 최대 12,000P 적립" },
-      { name: "신세계 유니버스 클럽", price: 30000, plan: "recurring:12", label: "유니", note: "연회비, 확인 필요" } ] },
+      { name: "네이버플러스 멤버십", price: 4900, label: "네플", note: "넷플릭스 등 1개 포함" },
+      { name: "네이버플러스 멤버십 (연간)", price: 46800, plan: "recurring:12", label: "네플", note: "월 3,900꼴" },
+      { name: "토스 프라임", price: 5900, label: "토프", note: "확인 필요" },
+      { name: "신세계 유니버스 클럽", price: 30000, plan: "recurring:12", label: "유니", note: "연회비, 확인 필요" },
+      { name: "Apple One 개인", price: 14900, label: "A1", note: "확인 필요" }, { name: "Apple One 가족", price: 20900, label: "A1", note: "확인 필요" } ] },
     { id: "food", name: "배달", unit: "주문", mode: "count", emoji: "🍔", emojis: ["🍔", "🍕", "🛵"], items: [
       { name: "배민클럽", price: 3990, label: "배민", ref: 3000, note: "배달비 1회 ≈ 3,000" },
       { name: "배민클럽 + 유튜브 프리미엄", price: 15900, label: "배민", note: "유튜브 프리미엄 포함 결합 상품" },
-      { name: "요기패스X", price: 2900, label: "요기", ref: 3000, note: "확인 필요" } ] },
+      { name: "요기패스X", price: 2900, label: "요기", ref: 3000, note: "확인 필요" },
+      { name: "반찬·밀키트 정기배송", price: null, label: "반찬", emoji: "🥘" } ] },
     { id: "game", name: "게임", unit: "일", mode: "flat", emoji: "🎮", emojis: ["🎮", "🕹️", "👾"], items: [
-      { name: "Xbox Game Pass Ultimate", price: null, label: "XGP" }, { name: "PlayStation Plus", price: null, label: "PS+" },
-      { name: "Nintendo Switch Online", price: 19900, plan: "recurring:12", label: "NSO", note: "12개월, 확인 필요" } ] },
+      { name: "Xbox Game Pass Ultimate", price: null, label: "XGP" }, { name: "PlayStation Plus 에센셜", price: null, label: "PS+" },
+      { name: "PlayStation Plus 스페셜", price: null, label: "PS+" }, { name: "PlayStation Plus 디럭스", price: null, label: "PS+" },
+      { name: "Nintendo Switch Online", price: 19900, plan: "recurring:12", label: "NSO", note: "12개월, 확인 필요" },
+      { name: "Apple Arcade", price: null, label: "AA" }, { name: "게임 월정액·패스", price: null, label: "게임" } ] },
     { id: "work", name: "업무", unit: "일", mode: "flat", emoji: "💼", emojis: ["💼", "🖥️", "📝"], items: [
-      { name: "Microsoft 365 Personal", price: 12500, label: "MS", note: "연간 125,000" }, { name: "Adobe Creative Cloud 모든 앱", price: 78100, label: "Ad" },
-      { name: "Notion Plus", price: 14500, label: "NT", note: "$10 + 부가세 환산" }, { name: "Canva Pro", price: null, label: "CV" },
-      { name: "Dropbox Plus", price: null, label: "DB" } ] },
+      { name: "Microsoft 365 Personal", price: 12500, label: "MS", note: "연간 125,000" },
+      { name: "Adobe Creative Cloud 모든 앱", price: 78100, label: "Ad" }, { name: "Adobe 포토샵", price: null, label: "Ps" },
+      { name: "Adobe 라이트룸", price: null, label: "Lr" }, { name: "Notion Plus", price: 14500, label: "NT", note: "$10 + 부가세 환산" },
+      { name: "Canva Pro", price: null, label: "CV" }, { name: "Figma Professional", price: null, label: "FG" },
+      { name: "Zoom Pro", price: null, label: "ZM" }, { name: "Slack Pro", price: null, label: "SL" }, { name: "Evernote", price: null, label: "EV" } ] },
     { id: "study", name: "공부·독서", unit: "일", mode: "count", emoji: "📚", emojis: ["📚", "🦉", "🎓"], items: [
-      { name: "밀리의 서재", price: 9900, label: "밀리", note: "확인 필요" }, { name: "리디셀렉트", price: 4900, label: "리디", note: "확인 필요" },
-      { name: "윌라 오디오북", price: 9900, label: "윌라", emoji: "🎧", note: "확인 필요" }, { name: "듀오링고 슈퍼", price: null, label: "듀오", emoji: "🦉" },
-      { name: "스픽", price: null, label: "스픽", emoji: "🗣️" }, { name: "클래스101+", price: null, label: "101", emoji: "🎓" } ] },
+      { name: "밀리의 서재", price: 11900, label: "밀리", note: "웹 결제 기준" }, { name: "교보 sam 무제한", price: 9900, label: "sam" },
+      { name: "예스24 크레마클럽", price: 5500, label: "크레", note: "확인 필요" }, { name: "리디셀렉트", price: null, label: "리디" },
+      { name: "윌라 오디오북", price: 12900, label: "윌라", emoji: "🎧", note: "앱 결제, 확인 필요" },
+      { name: "스픽 프리미엄 (연간)", price: 129000, plan: "recurring:12", label: "스픽", emoji: "🗣️" },
+      { name: "스픽 프리미엄 플러스 (연간)", price: 239000, plan: "recurring:12", label: "스픽", emoji: "🗣️" },
+      { name: "듀오링고 슈퍼", price: 14000, label: "듀오", emoji: "🦉", note: "확인 필요" }, { name: "말해보카", price: null, label: "보카", emoji: "🗣️" },
+      { name: "산타 토익", price: null, label: "산타", emoji: "📝" }, { name: "링글", price: null, label: "링글", emoji: "🗣️" },
+      { name: "클래스101+", price: null, label: "101", emoji: "🎓" }, { name: "학습지·인강", price: null, label: "학습", emoji: "✏️" },
+      { name: "학원비", price: null, label: "학원", emoji: "🏫", mode: "flat" }, { name: "신문·뉴스 구독", price: null, label: "뉴스", emoji: "📰", mode: "flat" } ] },
     { id: "fit", name: "운동", unit: "회", mode: "count", emoji: "🏋️", emojis: ["🏋️", "🧘", "🏃"], items: [
       { name: "헬스장", price: null, label: "헬스", ref: 15000, note: "매달 자동결제 · 일일권 15,000 기준" },
       { name: "헬스장 3개월권", price: null, plan: "pass:3", label: "헬스", ref: 15000, note: "일일권 15,000 기준" },
       { name: "헬스장 1년권", price: null, plan: "pass:12", label: "헬스", ref: 15000, note: "일일권 15,000 기준" },
+      { name: "PT", price: null, label: "PT", ref: 60000, emoji: "💪" },
       { name: "필라테스 3개월권", price: null, plan: "pass:3", label: "필라", ref: 50000, emoji: "🧘" },
       { name: "요가 3개월권", price: null, plan: "pass:3", label: "요가", ref: 25000, emoji: "🧘" },
       { name: "클라이밍 1개월권", price: null, plan: "pass:1", label: "클밍", ref: 25000, emoji: "🧗" },
-      { name: "수영장 1개월권", price: null, plan: "pass:1", label: "수영", ref: 6000, emoji: "🏊" } ] },
+      { name: "수영장 1개월권", price: null, plan: "pass:1", label: "수영", ref: 6000, emoji: "🏊" },
+      { name: "골프 연습장", price: null, label: "골프", ref: 20000, emoji: "⛳" }, { name: "크로스핏", price: null, label: "크핏", ref: 25000, emoji: "🏃" },
+      { name: "테니스 레슨", price: null, label: "테니", ref: 40000, emoji: "🎾" } ] },
     { id: "life", name: "생활", unit: "회", mode: "count", emoji: "☕", emojis: ["☕", "🧺", "💧"], items: [
-      { name: "커피 정기권", price: null, label: "커피" }, { name: "세탁 구독", price: null, label: "세탁", emoji: "🧺" },
-      { name: "정수기 렌탈", price: null, label: "정수", mode: "flat", emoji: "💧" }, { name: "안마의자 렌탈", price: null, label: "안마", mode: "flat", emoji: "💺" },
-      { name: "공기청정기 렌탈", price: null, label: "공청", mode: "flat", emoji: "🌬️" } ] },
+      { name: "커피 정기권", price: null, label: "커피" }, { name: "세탁 구독 (런드리고 등)", price: null, label: "세탁", emoji: "🧺" },
+      { name: "청소 정기 서비스", price: null, label: "청소", emoji: "🧹" }, { name: "꽃 정기구독", price: null, label: "꽃", emoji: "💐", mode: "flat" },
+      { name: "생수 정기배송", price: null, label: "생수", emoji: "💧", mode: "flat" }, { name: "영양제 정기배송", price: null, label: "영양", emoji: "💊", mode: "flat" },
+      { name: "반려동물 용품 정기배송", price: null, label: "펫", emoji: "🐾", mode: "flat" }, { name: "면도기 정기구독", price: null, label: "면도", emoji: "🪒", mode: "flat" },
+      { name: "정수기 렌탈", price: null, label: "정수", mode: "flat", emoji: "💧" }, { name: "비데 렌탈", price: null, label: "비데", mode: "flat", emoji: "🚽" },
+      { name: "안마의자 렌탈", price: null, label: "안마", mode: "flat", emoji: "💺" }, { name: "공기청정기 렌탈", price: null, label: "공청", mode: "flat", emoji: "🌬️" },
+      { name: "매트리스 렌탈", price: null, label: "매트", mode: "flat", emoji: "🛏️" }, { name: "가전 구독", price: null, label: "가전", mode: "flat", emoji: "📺" },
+      { name: "후원·기부", price: null, label: "후원", mode: "flat", emoji: "💝" } ] },
     { id: "cloud", name: "클라우드", unit: "일", mode: "flat", emoji: "☁️", emojis: ["☁️", "💾", "🗂️"], items: [
-      { name: "iCloud+ 200GB", price: 4400, label: "iC" }, { name: "Google One 100GB", price: 2400, label: "G1" } ] },
+      { name: "iCloud+ 50GB", price: 1100, label: "iC" }, { name: "iCloud+ 200GB", price: 4400, label: "iC" },
+      { name: "iCloud+ 2TB", price: 14000, label: "iC" }, { name: "iCloud+ 6TB", price: 44000, label: "iC" },
+      { name: "Google One 100GB", price: 2400, label: "G1" }, { name: "Google One 2TB", price: null, label: "G1" },
+      { name: "네이버 MYBOX", price: null, label: "MY" }, { name: "Dropbox Plus", price: null, label: "DB" },
+      { name: "Microsoft OneDrive", price: null, label: "OD" }, { name: "비밀번호 관리자 (1Password 등)", price: null, label: "PW", emoji: "🔑" },
+      { name: "VPN", price: null, label: "VPN", emoji: "🛡️" } ] },
     { id: "etc", name: "직접 입력", unit: "일", mode: "count", emoji: "📌", emojis: ["📌", "⭐", "💡"], items: [] }
   ];
   const GROUPS = [
@@ -1124,78 +1191,119 @@ details.more2[open] summary{color:var(--sub)}
     const gone = items.filter(it => it.sample);
     items = items.filter(it => !it.sample); renderAll();
     for (const it of gone) { try { await store.del(it.id); } catch {} }
-    if (!items.length) openOnb("q"); else toast(`예시 ${gone.length}개를 지웠어요`);
+    if (!items.length) openOnb("cats"); else toast(`예시 ${gone.length}개를 지웠어요`);
   }
 
-  // ---------- 처음 화면: 체험 → 질문 하나씩 → 모르는 금액 → 첫 결과 ----------
+  // ---------- 처음 화면: 약속 → 분류 → 서비스 → 모르는 금액 → 본전 질문 → 판정 → 홈 화면에 추가 ----------
   const ONB_KEY = "bonjeon-onboarded";
-  const ONB_QS = [
-    { q: "영상 구독,<br>쓰고 있는 게 있나요?", sub: "쓰는 걸 모두 눌러 주세요", cats: ["video"] },
-    { q: "음악 구독은요?", cats: ["music"] },
-    { q: "쇼핑·배달 멤버십은요?", cats: ["shop", "food", "member"] },
-    { q: "다니는 운동이 있나요?", cats: ["fit"] },
-    { q: "AI나 일할 때 쓰는<br>구독은요?", cats: ["ai", "work"] },
-    { q: "그 밖에 매달<br>나가는 게 있나요?", cats: ["study", "cloud", "game", "life", "move"] },
-    { q: "집·통신·보험으로<br>나가는 돈은요?", cats: ["home", "tel", "ins"] }
+  const ONB_GROUPS = [
+    { id: "video", em: "🎬", name: "영상", q: "영상은 어떤 걸 써요?", cats: ["video"] },
+    { id: "music", em: "🎧", name: "음악", q: "음악은 어떤 걸 들어요?", cats: ["music"] },
+    { id: "food", em: "🍔", name: "배달", q: "배달 멤버십은요?", cats: ["food"] },
+    { id: "shop", em: "🛒", name: "쇼핑·멤버십", q: "쇼핑·멤버십은요?", cats: ["shop", "member"] },
+    { id: "fit", em: "🏋️", name: "운동", q: "어디에 다녀요?", cats: ["fit"] },
+    { id: "ai", em: "AI", name: "AI·업무", q: "AI·업무는 뭘 써요?", cats: ["ai", "work"] },
+    { id: "etc", em: "☁️", name: "클라우드·기타", q: "그 밖에 뭐가 있어요?", cats: ["cloud", "study", "game", "life", "move"] },
+    { id: "home", em: "🏠", name: "집·통신·보험", q: "집·통신·보험은요?", cats: ["home", "tel", "ins"] }
   ];
   // 같은 서비스의 요금제는 하나만 골라요
   const TIERS = [["넷플릭스 광고형", "넷플릭스 스탠다드", "넷플릭스 프리미엄"], ["티빙 광고형", "티빙 베이직", "티빙 스탠다드", "티빙 프리미엄"],
     ["왓챠 베이직", "왓챠 프리미엄"], ["유튜브 프리미엄", "유튜브 프리미엄 라이트"], ["배민클럽", "배민클럽 + 유튜브 프리미엄"],
     ["ChatGPT Go", "ChatGPT Plus", "ChatGPT Pro"], ["Claude Pro", "Claude Max"], ["Google AI Plus", "Google AI Pro"],
-    ["헬스장", "헬스장 3개월권", "헬스장 1년권"], ["휴대폰 요금", "알뜰폰 요금"]];
+    ["헬스장", "헬스장 3개월권", "헬스장 1년권"], ["휴대폰 요금", "알뜰폰 요금"],
+    ["디즈니+ 스탠다드", "디즈니+ 프리미엄"], ["웨이브 광고형", "웨이브 베이직", "웨이브 스탠다드", "웨이브 프리미엄"], ["라프텔 베이직", "라프텔 프리미엄"],
+    ["멜론 모바일 스트리밍", "멜론 무제한 듣기", "멜론 무제한 + 오프라인"], ["네이버플러스 멤버십", "네이버플러스 멤버십 (연간)"], ["Apple One 개인", "Apple One 가족"],
+    ["GitHub Copilot Pro", "GitHub Copilot Pro+"], ["iCloud+ 50GB", "iCloud+ 200GB", "iCloud+ 2TB", "iCloud+ 6TB"], ["Google One 100GB", "Google One 2TB"],
+    ["PlayStation Plus 에센셜", "PlayStation Plus 스페셜", "PlayStation Plus 디럭스"], ["스픽 프리미엄 (연간)", "스픽 프리미엄 플러스 (연간)"]];
   const tierOf = n => TIERS.find(g => g.includes(n)) || [n];
   const CAT_INK = { video: 0, music: 2, shop: 1, food: 4, member: 2, fit: 1, ai: 7, work: 7, study: 4, cloud: 3, game: 5, life: 3, move: 2, home: 6, tel: 2, ins: 1, etc: 7 };
   const NAME_INK = { "유튜브 프리미엄": 5, "유튜브 프리미엄 라이트": 5, "티빙 광고형": 6, "티빙 베이직": 6, "티빙 스탠다드": 6, "티빙 프리미엄": 6, "필라테스 3개월권": 3, "관리비": 7, "인터넷": 3 };
   const inkOf = p => NAME_INK[p.name] ?? CAT_INK[p.cat] ?? 7;
-  let onb = { pos: 0, demo: false, picked: [], amt: {} }, cloud = false;
+  const COUNTER = { "편": ["편", "몇 편 봤어요?"], "주문": ["번", "몇 번 시켰어요?"], "회": ["번", "몇 번 갔어요?"], "일": ["일", "며칠 썼어요?"] };
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let installEvt = null;
+  addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
+  let onb = { pos: 0, groups: [], picked: [], amt: {}, uses: {}, os: isIOS ? "ios" : "android" }, cloud = false;
   const presetByName = n => allPresets().find(p => p.name === n);
+  const presetByKey = k => allPresets().find(p => p.key === k);
   const needsAmount = p => p.price == null;
   const onbPrice = p => p.key in onb.amt ? onb.amt[p.key] : (p.price ?? 0);
   const planOf = p => { const [k, m] = (p.plan || "recurring:1").split(":"); return { kind: k === "pass" ? "pass" : "recurring", months: +m || 1 }; };
+  const modeOf = p => p.mode || catOf(p.cat).mode;
   const onbPicked = () => onb.picked.map(presetByName).filter(Boolean);
   const onbKept = () => onbPicked().filter(p => onbPrice(p) > 0 || (!needsAmount(p) && p.price === 0));
   const onbMonthly = () => onbKept().reduce((s, p) => s + onbPrice(p) / planOf(p).months, 0);
-  const onbFlow = () => ["intro", ...ONB_QS.map((_, i) => "q" + i), ...onbPicked().filter(needsAmount).map(p => "a" + p.key), "result"];
+  const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const onbFlow = () => ["intro", "cats", ...onb.groups.map(g => "s" + g), ...onbPicked().filter(needsAmount).map(p => "a" + p.key),
+    ...onbKept().filter(p => modeOf(p) === "count").map(p => "u" + p.key), "result", ...(window.claude || standalone() ? [] : ["install"])];
   const onbSeen = () => { try { return localStorage.getItem(ONB_KEY) === "1"; } catch { return false; } };
   const markSeen = () => { try { localStorage.setItem(ONB_KEY, "1"); } catch {} };
-  function openOnb(start = "intro") { onb = { pos: start === "q" ? 1 : 0, demo: false, picked: [], amt: {} }; $("onbPage").hidden = false; lock(); renderOnb(); }
+  function openOnb(start = "intro") { onb = { pos: start === "intro" ? 0 : 1, groups: [], picked: [], amt: {}, uses: {}, os: isIOS ? "ios" : "android" }; $("onbPage").hidden = false; lock(); renderOnb(); }
   function closeOnb() { $("onbPage").hidden = true; markSeen(); unlock(); }
   const backSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>`;
   const checkSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
-  const presetEmoji = p => { const e = p.emoji || catOf(p.cat).emoji; return isText(e) ? `<span class="tmark" style="font-size:20px">${esc(e)}</span>` : `<span class="emo">${esc(e)}</span>`; };
+  const shareSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>`;
+  const emoOf = (e, size = 20) => isText(e) ? `<span class="tmark" style="font-size:${size}px">${esc(e)}</span>` : `<span class="emo">${esc(e)}</span>`;
   const priceLine = p => {
     const { kind, months } = planOf(p), extra = /포함/.test(p.note || "") ? ` · ${p.note.split(" · ")[0]}` : "";
     if (p.price == null) return `금액은 다음에 넣어요${extra}`;
     return `${kind === "pass" ? passSfx(months) : months === 12 ? "1년" : "월"} ${won(p.price)}${extra}`;
   };
+  // 본전 판정: 이번 결제 기간에 n번 썼다면
+  function verdictOf(p, n) {
+    const price = onbPrice(p), per = price / Math.max(1, n), cnt = (COUNTER[catOf(p.cat).unit] || COUNTER["일"])[0];
+    const be = p.ref > 0 ? Math.ceil(price / p.ref) : null, left = be != null ? Math.max(0, be - n) : null;
+    const vb = VERB[catOf(p.cat).unit] || VERB["일"];
+    let status, tone;
+    if (be != null && left === 0) { status = `본전 넘었어요 · ${won(p.ref * n - price)} 아낌`; tone = "good"; }
+    else if (be != null) { status = `${left}${cnt} 더 ${vb[2]} 본전`; tone = n === 0 ? "bad" : ""; }
+    else { status = n ? `이번 달 ${n}${cnt} ${vb[0]}` : `이번 달 아직 ${vb[1]}`; tone = n ? "" : "bad"; }
+    const unrec = be != null ? Math.max(0, price - p.ref * n) : n ? 0 : price;
+    return { per, status, tone, n, price, cnt, unrec };
+  }
+  const onbShort = p => p.name.replace(/\s+(광고형|베이직|스탠다드|프리미엄 라이트|프리미엄|라이트)$/, "").replace(/\s\d+(개월권?|년권)$/, "");
+  // 아까운 순: 아직 못 뽑은 돈(낸 돈 - 따로 냈을 때 금액)이 큰 것부터
+  const sortWaste = list => list.slice().sort((a, b) => b.v.unrec - a.v.unrec || b.v.per - a.v.per);
   function renderOnb() {
     const el = $("onbPage"), flow = onbFlow();
-    onb.pos = Math.min(onb.pos, flow.length - 1);
-    const cur = flow[onb.pos];
+    onb.pos = Math.max(0, Math.min(onb.pos, flow.length - 1));
+    const cur = flow[onb.pos], m = onbMonthly();
     el.classList.toggle("white", cur !== "result");
+    const pill = m && cur !== "result" && cur !== "install" ? `<span class="opill" id="onbPill">한 달 ${won(m)}</span>` : `<span style="width:44px"></span>`;
     const head = `<div class="pagehead"><button class="iconbtn" type="button" data-onb="back" aria-label="뒤로">${backSvg}</button>
-      <span class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${flow.length - 1}" aria-valuenow="${onb.pos}"><i style="width:${Math.round(onb.pos / (flow.length - 1) * 100)}%"></i></span><span style="width:44px"></span></div>`;
+      <span class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${flow.length - 1}" aria-valuenow="${onb.pos}"><i style="width:${Math.round(onb.pos / (flow.length - 1) * 100)}%"></i></span>${pill}</div>`;
     if (cur === "intro") {
+      const row = (lab, t, name, st, cls, amt) => `<div class="row"><span class="av t${t}" aria-hidden="true">${lab}</span><span class="mid"><span class="nm">${name}</span><span class="ds ${cls}">${st}</span></span><span class="rt"><b>${amt}</b><span>1번에</span></span></div>`;
       el.innerHTML = `<div class="page-in onb"><span class="onb-brand">본전</span>
-        <h1 class="onb-h">헬스장, 영상 구독 서비스…<br>1번 갈 때마다, 1번 볼 때마다<br>얼마 내고 있을까요?</h1>
-        <div class="demo"><div class="demo-top"><span class="who"><span class="demo-ic" aria-hidden="true"><span class="emo">🏋️</span></span>헬스장 1년권 ₩600,000</span><span class="small" id="demoCnt">${onb.demo ? 10 : 9}번 갔어요</span></div>
-          <div class="demo-mid"><span><span class="lbl">1번에</span><span class="demo-n" id="demoN">${won(600000 / (onb.demo ? 10 : 9))}</span></span>
-            <button type="button" class="demo-btn" data-onb="demo" aria-pressed="${onb.demo}" aria-label="${onb.demo ? "도장 지우기" : "오늘도 갔어요 도장 찍기"}">${onb.demo ? `<span class="e thunk emo">🏋️</span>` : "오늘도<br>갔어요"}</button></div>
-          <p class="demo-msg" id="demoMsg">${onb.demo ? "10번째! ₩66,667 → ₩60,000" : "눌러 보세요"}</p></div></div>
-        <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="next">내 고정비 계산하기</button><button type="button" class="textbtn" data-onb="sample">예시로 먼저 둘러볼게요</button></div></div>`;
+        <h1 class="onb-h" style="font-size:31px">매달 나가는 돈,<br>본전 뽑고 있나요?</h1>
+        <div class="card opreview" aria-label="이런 걸 알려드려요"><div class="rows">
+          ${row("넷플", 0, "넷플릭스", "이번 달 1번 봤어요", "bad", "₩13,500")}
+          ${row("배민", 4, "배민클럽", "1번 더 시키면 본전", "", "₩3,990")}
+          ${row("헬스", 1, "헬스장", "본전 넘었어요 · ₩110,000 아낌", "good", "₩5,833")}</div></div></div>
+        <div class="cta"><div class="cta-in onb-cta"><span class="small">30초 · 가입·계좌 연결 없이</span><button type="button" data-onb="next">내 구독 넣어 보기</button><button type="button" class="textbtn" data-onb="sample">예시로 먼저 둘러볼게요</button></div></div>`;
       return;
     }
-    if (cur[0] === "q") {
-      const Q = ONB_QS[+cur.slice(1)], list = allPresets().filter(p => Q.cats.includes(p.cat)), k = list.filter(p => onb.picked.includes(p.name)).length;
-      const rows = Q.cats.map(c => { const ps = list.filter(p => p.cat === c); if (!ps.length) return "";
-        return `${Q.cats.length > 1 ? `<p class="catttl">${esc(catOf(c).name)}</p>` : ""}<div class="olist" role="group" aria-label="${esc(catOf(c).name)}">${ps.map(p => { const on = onb.picked.includes(p.name);
-          return `<button type="button" class="orow" data-pickp="${esc(p.name)}" aria-pressed="${on}"><span class="em" aria-hidden="true">${presetEmoji(p)}</span><span class="tx"><b>${esc(p.name)}</b><span>${esc(priceLine(p))}</span></span><span class="ck">${checkSvg}</span></button>`; }).join("")}</div>`; }).join("");
-      el.innerHTML = `<div class="page-in onb onbq">${head}<div><h1 class="h1">${Q.q}</h1>${Q.sub ? `<p class="sub" style="margin-top:6px">${Q.sub}</p>` : ""}</div><div>${rows}</div></div>
+    if (cur === "cats") {
+      const k = onb.groups.length;
+      el.innerHTML = `<div class="page-in onb onbq">${head}<div><h1 class="h1">매달 나가는 게<br>어떤 거예요?</h1><p class="sub" style="margin-top:6px">여러 개 골라도 돼요</p></div>
+        <div class="ctiles" role="group" aria-label="분류">${ONB_GROUPS.map(g => { const on = onb.groups.includes(g.id);
+          return `<button type="button" class="ctile" data-group-p="${g.id}" aria-pressed="${on}"><span class="ce" aria-hidden="true">${isText(g.em) ? `<span class="tmark" style="font-size:26px;color:var(--ink)">${g.em}</span>` : `<span class="emo">${g.em}</span>`}</span><span class="cn">${g.name}</span><span class="ck">${checkSvg}</span></button>`; }).join("")}</div>
+        <button type="button" class="textbtn" data-onb="manual" style="align-self:flex-start">찾는 게 없어요, 직접 넣을게요</button></div>
+        <div class="cta"><div class="cta-in"><button type="button" data-onb="next" ${k ? "" : "disabled"}>${k ? "다음" : "하나 이상 골라 주세요"}</button></div></div>`;
+      return;
+    }
+    if (cur[0] === "s") {
+      const g = ONB_GROUPS.find(x => x.id === cur.slice(1)), list = allPresets().filter(p => g.cats.includes(p.cat)), k = list.filter(p => onb.picked.includes(p.name)).length;
+      const rows = g.cats.map(c => { const ps = list.filter(p => p.cat === c); if (!ps.length) return "";
+        return `${g.cats.length > 1 ? `<p class="catttl">${esc(catOf(c).name)}</p>` : ""}<div class="olist" role="group" aria-label="${esc(catOf(c).name)}">${ps.map(p => { const on = onb.picked.includes(p.name);
+          return `<button type="button" class="orow" data-pickp="${esc(p.name)}" aria-pressed="${on}"><span class="em" aria-hidden="true">${emoOf(p.emoji || catOf(p.cat).emoji)}</span><span class="tx"><b>${esc(p.name)}</b><span>${esc(priceLine(p))}</span></span><span class="ck">${checkSvg}</span></button>`; }).join("")}</div>`; }).join("");
+      const gi = onb.groups.indexOf(g.id) + 1;
+      el.innerHTML = `<div class="page-in onb onbq">${head}<div><p class="okick">${isText(g.em) ? g.em : g.em} ${esc(g.name)} · ${gi}/${onb.groups.length}</p><h1 class="h1">${esc(g.q)}</h1></div><div>${rows}</div></div>
         <div class="cta"><div class="cta-in"><button type="button" data-onb="next" class="${k ? "" : "sec"}">${k ? "다음" : "없어요"}</button></div></div>`;
       return;
     }
     if (cur[0] === "a") {
-      const p = allPresets().find(x => x.key === cur.slice(1)), { kind, months } = planOf(p), v = onb.amt[p.key];
+      const p = presetByKey(cur.slice(1)), { kind, months } = planOf(p), v = onb.amt[p.key];
       const q = kind === "pass" ? "얼마 냈어요?" : months === 12 ? "1년에 얼마예요?" : "한 달에 얼마예요?";
       el.innerHTML = `<div class="page-in onb onbq">${head}<h1 class="h1">${esc(p.name)},<br>${q}</h1>
         <div class="amt"><input id="onbAmt" inputmode="numeric" value="${v ? fmt(v) : ""}" placeholder="0" aria-label="${esc(p.name)} 금액" autocomplete="off"><span>원</span></div>
@@ -1204,31 +1312,67 @@ details.more2[open] summary{color:var(--sub)}
       setTimeout(() => $("onbAmt")?.focus(), 30);
       return;
     }
-    const ps = onbKept(), m = onbMonthly(), y = m * 12;
-    const bon = ps.filter(p => (p.mode || catOf(p.cat).mode) === "count" && p.ref > 0);
-    if (!ps.length) {
-      el.innerHTML = `<div class="page-in onb">${head}<h1 class="h1">아직 넣은 게 없어요</h1><p class="sub">아래 ＋에서 언제든 검색해서 넣을 수 있어요</p></div>
-        <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="finishAdd">직접 넣기</button><button type="button" class="textbtn" data-onb="finish">홈으로 갈게요</button></div></div>`;
+    if (cur[0] === "u") {
+      const p = presetByKey(cur.slice(1)), [cnt, q] = COUNTER[catOf(p.cat).unit] || COUNTER["일"], n = onb.uses[p.key];
+      const us = onbKept().filter(x => modeOf(x) === "count"), ui = us.findIndex(x => x.key === p.key) + 1;
+      const short = onbShort(p);
+      el.innerHTML = `<div class="page-in onb onbq">${head}<div><p class="okick">본전 따져 보기 · ${ui}/${us.length}</p><h1 class="h1">이번 달 ${esc(short)},<br>${q}</h1><p class="sub" style="margin-top:6px">대충 골라도 괜찮아요</p></div>
+        <div class="numgrid" role="radiogroup" aria-label="횟수">${[0, 1, 2, 3, 4, 5].map(i => `<button type="button" class="numbtn" data-uses="${i}" role="radio" aria-checked="${n === i}">${i}${cnt}${i === 5 ? " 이상" : ""}</button>`).join("")}</div>
+        <div id="onbVerdict"></div></div>
+        <div class="cta"><div class="cta-in"><button type="button" data-onb="next" ${n == null ? "disabled" : ""}>다음</button></div></div>`;
+      onbVerdictBox(p);
       return;
     }
-    const rows = bon.map(p => {
-      const c = catOf(p.cat), { kind, months } = planOf(p), be = Math.ceil(onbPrice(p) / p.ref);
-      const basis = c.unit === "편" ? `1편 따로 보면 ${won(p.ref)} 기준` : p.cat === "food" ? `배달비 1번 ${won(p.ref)} 기준` : p.cat === "shop" ? `무료배송 1번 ${won(p.ref)} 기준` : p.cat === "fit" ? `일일권 ${won(p.ref)} 기준` : `1번 따로 내면 ${won(p.ref)} 기준`;
-      const per = kind === "recurring" && months === 1 ? "한 달" : months === 12 ? "1년" : `${months}개월`;
-      return `<div class="row"><span class="av t${inkOf(p)}" aria-hidden="true">${esc(p.label || autoLabel(p.name))}</span>
-        <span class="mid"><span class="nm">${esc(p.name)}</span><span class="ds">${esc(basis)}</span></span><span class="cnt">${per} ${be}${c.unit === "편" ? "편" : "번"}</span></div>`;
-    }).join("");
-    el.innerHTML = `<div class="page-in" style="padding-top:env(safe-area-inset-top,0px)">${head}
-      <div class="dtop"><span class="lbl" style="font-size:16px">고른 ${ps.length}개만 해도 1년이면</span><span class="hero" id="onbYear">${won(y)}</span><span class="lbl" id="onbSub">한 달 ${won(m)} · 하루 ${won(y / 365)}씩 나가요</span></div>
-      ${bon.length ? `<section class="card"><div><h2 class="h2">이 ${bon.length}개는 본전을 따져 볼게요</h2><p class="sub">이만큼 쓰면 본전이에요</p></div><div class="rows" id="onbBon">${rows}</div></section>` : ""}</div>
-      <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="finish">${bon.length ? "오늘 쓴 것 도장 찍으러 가기" : "홈으로 가기"}</button>
-        <button type="button" class="textbtn" data-onb="finishAdd">목록에 없는 건 직접 넣을게요</button></div></div>`;
+    if (cur === "result") {
+      const ps = onbKept(), y = m * 12;
+      if (!ps.length) {
+        el.innerHTML = `<div class="page-in onb onbq">${head}<h1 class="h1">아직 넣은 게 없어요</h1><p class="sub">아래 ＋에서 언제든 검색해서 넣을 수 있어요</p></div>
+          <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="finishAdd">직접 넣기</button><button type="button" class="textbtn" data-onb="finish">홈으로 갈게요</button></div></div>`;
+        return;
+      }
+      const vs = sortWaste(ps.filter(p => modeOf(p) === "count").map(p => ({ p, v: verdictOf(p, onb.uses[p.key] ?? 0) })));
+      const top = vs[0];
+      const hero = top ? `<span class="lbl" style="font-size:16px">지금 제일 아까운 건</span><span class="hero" style="font-size:30px;line-height:1.25">${esc(onbShort(top.p))}, 1번에 ${won(top.v.per)}</span><span class="lbl">${esc(top.v.unrec ? `아직 ${won(top.v.unrec)} 못 뽑았어요 · ${top.v.status}` : top.v.status)}</span>`
+        : `<span class="lbl" style="font-size:16px">고른 ${ps.length}개만 해도 1년이면</span><span class="hero">${won(y)}</span><span class="lbl">한 달 ${won(m)} · 하루 ${won(y / 365)}씩 나가요</span>`;
+      el.innerHTML = `<div class="page-in" style="padding-top:env(safe-area-inset-top,0px)">${head}<div class="dtop" id="onbHero">${hero}</div>
+        ${vs.length ? `<section class="card"><div class="rows" id="onbBon">${vs.map(({ p, v }) => `<div class="row"><span class="av t${inkOf(p)}" aria-hidden="true">${esc(p.label || autoLabel(p.name))}</span>
+          <span class="mid"><span class="nm">${esc(p.name)}</span><span class="ds ${v.tone}">${esc(v.status)}</span></span><span class="rt"><b>${won(v.per)}</b><span>1번에</span></span></div>`).join("")}</div></section>` : ""}
+        ${top ? `<section class="card osum"><span><span class="lbl">한 달 고정비</span><b id="onbMonthTotal">${won(m)}</b></span><span class="lbl" style="text-align:right">1년이면<br><b id="onbYear">${won(y)}</b></span></section>` : ""}</div>
+        <div class="cta" style="background:linear-gradient(to top,var(--bg) 72%,transparent)"><div class="cta-in onb-cta"><button type="button" data-onb="next">좋아요</button>
+          <button type="button" class="textbtn" data-onb="finishAdd">목록에 없는 건 직접 넣을게요</button></div></div>`;
+      return;
+    }
+    const ios = onb.os === "ios";
+    const steps = ios ? [["사파리 아래 공유 버튼", shareSvg], ["‘홈 화면에 추가’", ""], ["오른쪽 위 ‘추가’", ""]] : [["크롬 오른쪽 위 ⋮ 메뉴", ""], ["‘홈 화면에 추가’ 또는 ‘앱 설치’", ""], ["‘추가’ 또는 ‘설치’", ""]];
+    el.innerHTML = `<div class="page-in onb onbq">${head}<div><h1 class="h1">홈 화면에 추가하면<br>내일 바로 열려요</h1><p class="sub" style="margin-top:6px">쓴 날 도장 찍으러 올 때 편해요</p></div>
+      <div class="ohome" aria-hidden="true">${"<span></span>".repeat(7)}<span class="me">본전</span></div>
+      <div class="seg" role="radiogroup" aria-label="휴대폰 종류" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <label><input type="radio" name="onbos" value="ios" ${ios ? "checked" : ""}>아이폰</label><label><input type="radio" name="onbos" value="android" ${ios ? "" : "checked"}>안드로이드</label></div>
+      <div class="osteps">${steps.map(([t, ic], i) => `<div><span class="n">${i + 1}</span><span class="t">${t}</span>${ic ? `<span class="ic">${ic}</span>` : ""}</div>`).join("")}</div>
+      ${!ios && installEvt ? `<button type="button" class="btn pri" data-onb="install" style="align-self:flex-start">지금 바로 추가하기</button>` : ""}</div>
+      <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="finish">추가했어요</button><button type="button" class="textbtn" data-onb="finish">나중에 할게요</button></div></div>`;
+  }
+  function onbVerdictBox(p) {
+    const n = onb.uses[p.key], box = $("onbVerdict"); if (!box) return;
+    if (n == null) { box.innerHTML = ""; return; }
+    const v = verdictOf(p, n);
+    const nm = onbShort(p);
+    box.innerHTML = `<div class="overdict ${v.tone}"><span>그럼 지금 ${esc(nm)}${josa(nm, "은", "는")}</span><b>1번에 ${won(v.per)}</b><span>${esc(v.status)}</span></div>`;
+  }
+  // 이번 달 n번 썼다면, 이번 달 1일부터 어제까지 고르게 도장을 넣어요
+  function backfill(n, t) {
+    const first = t.slice(0, 8) + "01", days = daysBetween(first, t), out = [];
+    if (!n) return out;
+    const span = Math.max(1, days), cnt = Math.min(n, days || 1);
+    for (let i = 0; i < cnt; i++) out.push(days ? addDays(first, Math.min(days - 1, Math.floor(i * span / cnt))) : t);
+    return [...new Set(out)].sort();
   }
   async function finishOnb(thenAdd) {
-    const t = todayStr(), ps = onbPicked(), keep = onbKept();
-    const made = keep.map((p, i) => { const c = catOf(p.cat);
-      return normalize({ id: newId() + i, createdAt: Date.now() + i, name: p.name, cat: p.cat, ...planOf(p), price: onbPrice(p), start: t, mode: p.mode || c.mode,
-        ref: p.ref || 0, unit: c.unit, label: p.label || autoLabel(p.name), emoji: p.emoji || c.emoji, color: inkOf(p), status: "active", uses: [] }); });
+    const t = todayStr(), start = t.slice(0, 8) + "01", ps = onbPicked(), keep = onbKept();
+    const made = keep.map((p, i) => { const c = catOf(p.cat), mode = modeOf(p);
+      return normalize({ id: newId() + i, createdAt: Date.now() + i, name: p.name, cat: p.cat, ...planOf(p), price: onbPrice(p), start, mode,
+        ref: p.ref || 0, unit: c.unit, label: p.label || autoLabel(p.name), emoji: p.emoji || c.emoji, color: inkOf(p), status: "active",
+        uses: mode === "count" ? backfill(onb.uses[p.key] ?? 0, t) : [] }); });
     items.push(...made); closeOnb(); showTab("home", true); renderAll();
     const skipped = ps.length - keep.length;
     if (made.length) toast(`${made.length}개를 넣었어요${skipped ? ` · 금액을 안 넣은 ${skipped}개는 뺐어요` : ""}`);
@@ -1236,30 +1380,40 @@ details.more2[open] summary{color:var(--sub)}
     for (const it of made) await save(it);
   }
   const onbGo = d => { onb.pos += d; renderOnb(); $("onbPage").scrollTop = 0; };
-  $("onbPage").addEventListener("click", e => {
-    const b = e.target.closest("[data-onb],[data-pickp]");
+  $("onbPage").addEventListener("click", async e => {
+    const b = e.target.closest("[data-onb],[data-pickp],[data-group-p],[data-uses]");
     if (!b || b.disabled) return;
+    if (b.dataset.groupP) { const g = b.dataset.groupP; onb.groups = onb.groups.includes(g) ? onb.groups.filter(x => x !== g) : ONB_GROUPS.map(x => x.id).filter(x => x === g || onb.groups.includes(x)); return renderOnb(); }
     if (b.dataset.pickp) {
       const n = b.dataset.pickp, on = onb.picked.includes(n);
       onb.picked = onb.picked.filter(x => on ? x !== n : !tierOf(n).includes(x));
       if (!on) onb.picked.push(n);
       return renderOnb();
     }
+    if (b.dataset.uses != null) {
+      const k = onbFlow()[onb.pos].slice(1); onb.uses[k] = +b.dataset.uses;
+      document.querySelectorAll("#onbPage .numbtn").forEach(x => x.setAttribute("aria-checked", x === b));
+      document.querySelector('#onbPage [data-onb="next"]').disabled = false;
+      return onbVerdictBox(presetByKey(k));
+    }
     const a = b.dataset.onb;
-    if (a === "demo") { onb.demo = !onb.demo; return renderOnb(); }
     if (a === "next") return onbGo(1);
     if (a === "back") return onbGo(-1);
     if (a === "skipAmt") { const k = onbFlow()[onb.pos].slice(1); delete onb.amt[k]; return onbGo(1); }
     if (a === "sample") { closeOnb(); return loadSamples(); }
+    if (a === "manual") { closeOnb(); return openAdd(); }
     if (a === "finish") return finishOnb(false);
     if (a === "finishAdd") return finishOnb(true);
+    if (a === "install" && installEvt) { installEvt.prompt(); try { await installEvt.userChoice; } catch {} installEvt = null; return finishOnb(false); }
   });
+  $("onbPage").addEventListener("change", e => { if (e.target.name === "onbos") { onb.os = e.target.value; renderOnb(); } });
   $("onbPage").addEventListener("input", e => {
     if (e.target.id !== "onbAmt") return;
     const raw = String(e.target.value).replace(/[^\d]/g, ""), k = onbFlow()[onb.pos].slice(1);
     e.target.value = raw === "" ? "" : Number(raw).toLocaleString("ko-KR");
     if (raw === "" || raw === "0") delete onb.amt[k]; else onb.amt[k] = Number(raw);
     const nx = document.querySelector('#onbPage [data-onb="next"]'); if (nx) nx.disabled = !onb.amt[k];
+    const pl = $("onbPill"); if (pl) pl.textContent = `한 달 ${won(onbMonthly())}`;
   });
   $("onbPage").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "onbAmt" && onb.amt[onbFlow()[onb.pos].slice(1)]) onbGo(1); });
 
@@ -1307,7 +1461,7 @@ details.more2[open] summary{color:var(--sub)}
     if (act === "groupBack") { add.group = null; return renderAdd(); }
     if (act === "manual") { add.preset = null; add.cat = "etc"; add.step = 2; renderAdd(); setTimeout(() => $("fName")?.focus(), 30); return; }
     if (act === "sample") return loadSamples();
-    if (act === "onbPick") return openOnb("q");
+    if (act === "onbPick") return openOnb("cats");
     if (act === "clearSamples") return clearSamples();
     if (act === "savedSheet") return openSaved();
     if (act === "closeSheet") { $("savedSheet").hidden = true; return unlock(); }
