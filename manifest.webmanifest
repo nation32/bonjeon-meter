@@ -1,7 +1,7 @@
 {
   "name": "본전",
   "short_name": "본전",
-  "description": "월세부터 구독까지, 매달 나가는 돈을 한눈에 보고 줄여요.",
+  "description": "구독·고정비, 쓸 때마다 도장 찍고 본전 뽑기",
   "lang": "ko",
   "start_url": "./",
   "scope": "./",
