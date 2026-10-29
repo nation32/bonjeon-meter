@@ -456,14 +456,34 @@ details.more2[open] summary{color:var(--sub)}
 
 .onb-sub{margin:0;font-size:17px;line-height:1.5;color:var(--sub)}
 .onb-sub b{color:var(--ink)}
-.oblur{padding:18px 20px;gap:4px}
-.oblur .lbl{font-size:15px}
-.ob-n{display:flex;align-items:baseline;gap:6px}
-.ob-n b{font-size:24px;font-weight:800}
-.ob-x{font-size:36px;font-weight:800;letter-spacing:-.03em;color:var(--accent);filter:blur(9px);padding:0 4px;user-select:none}
-.odemo{display:flex;flex-direction:column;gap:8px}
 .otag2{align-self:flex-start;font-size:12px;font-weight:700;color:var(--sub);background:var(--field);border-radius:999px;padding:4px 10px}
-.odemo .scard{padding:16px 16px 14px}
+
+.odemo2{background:var(--surface);border-radius:24px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 28px rgba(27,31,39,.10),0 0 0 1px var(--line)}
+.odemo2.on{box-shadow:0 0 0 2px var(--accent),0 12px 30px rgba(106,77,244,.18)}
+.od-h{display:flex;align-items:center;gap:10px}
+.od-t{display:flex;flex-direction:column;flex:1;min-width:0}
+.od-t b{font-size:16px}
+.od-t span{font-size:13px;color:var(--mute)}
+.od-m{display:flex;align-items:center;gap:12px}
+.od-l{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;font-size:14px;color:var(--sub);word-break:keep-all}
+.od-l b{color:var(--ink)}
+.od-l .od-big{font-size:clamp(24px,8vw,34px);font-weight:800;letter-spacing:-.03em;color:var(--accent);line-height:1.15}
+.od-b{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none}
+.od-b .sbig{width:68px;height:68px}
+.od-hint{font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap}
+.odemo2 .bar.md{height:8px}
+.od-p{font-size:15px;color:var(--sub)}
+.od-p b{color:var(--ink)}
+.od-p s{color:var(--mute)}
+.od-p b.acc{color:var(--accent);font-size:18px}
+
+.odemo2.won{box-shadow:0 0 0 2px var(--good),0 12px 30px rgba(18,131,63,.18)}
+.odemo2.won .od-big{color:var(--good)}
+.odemo2.won .bar i{background:var(--good)}
+.sbig.won{background:var(--good);box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--good)}
+.od-p b.good{color:var(--good)}
+.od-big .emo{display:inline-block;font-size:.8em}
+#onbNote b{color:var(--accent)}
 </style>
 
 <div class="wrap">
@@ -1398,7 +1418,7 @@ details.more2[open] summary{color:var(--sub)}
     installUi(); return ok;
   }
   // key = 지금 보고 있는 화면. 고르기에 따라 화면 순서가 바뀌어도 보던 화면에 그대로 있어요
-  const freshOnb = (start, preview) => ({ key: start, q: "", open: [], picked: [], amt: {}, os: isIOS ? "ios" : "android", preview });
+  const freshOnb = (start, preview) => ({ key: start, demo: [0], q: "", open: [], picked: [], amt: {}, os: isIOS ? "ios" : "android", preview });
   let onb = freshOnb("intro", false), cloud = false;
   const presetByName = n => allPresets().find(p => p.name === n);
   const presetByKey = k => allPresets().find(p => p.key === k);
@@ -1471,6 +1491,26 @@ details.more2[open] summary{color:var(--sub)}
     <span class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${flow.length - 1}" aria-valuenow="${pos}"><i style="width:${Math.round(pos / (flow.length - 1) * 100)}%"></i></span>${show ? `<span class="opill" id="onbPill">하루 ${won(dayOf(m))}</span>` : `<span style="width:44px"></span>`}</div>`;
   const ING = { "회": "가는", "편": "보는", "주문": "시키는", "일": "쓰는" };
   const basisOf = p => p.cat === "fit" ? "일일권" : catOf(p.cat).unit === "편" ? "1편 대여" : p.cat === "food" ? "배달비" : p.cat === "shop" ? "배송비" : "1번 값";
+  // 첫 화면 예시 카드: 헬스장(일일권과 비교)
+  const DEMOS = [
+    { em: "🏋️", name: "헬스장", price: 70000, ref: 15000, uses: 3, unit: "번", basis: "일일권", verb: "가면" }
+  ].map(x => ({ ...x, be: Math.ceil(x.price / x.ref) }));
+  const demoStamp = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v5a3 3 0 0 1-1 2.2V12h4a2 2 0 0 1 2 2v3H4v-3a2 2 0 0 1 2-2h4v-1.8A3 3 0 0 1 9 8z"/><path d="M5 21h14"/></svg>`;
+  function demoCard(i) {
+    const x = DEMOS[i], add = onb.demo[i], n = x.uses + add, left = Math.max(0, x.be - n), won2 = left === 0;
+    const per = x.price / n, prev = x.price / Math.max(1, n - 1), next = x.price / (n + 1), gain = x.ref * n - x.price;
+    const big = won2 ? "본전 달성!" : `본전까지 ${left}${x.unit}${add ? "!" : ""}`;
+    const btn = won2 ? `<button type="button" class="sbig on won" data-odemo="${i}" aria-label="예시 처음으로"><span class="emo">${x.em}</span></button><span class="od-hint">다시 해 보기</span>`
+      : `<button type="button" class="sbig${add ? " on" : ""}" data-odemo="${i}" aria-label="${x.name} 예시 도장 찍어 보기">${add ? `<span class="emo">${x.em}</span>` : demoStamp}</button><span class="od-hint">${add ? "한 번 더!" : "눌러 보세요"}</span>`;
+    const line = won2 ? `1번에 <b class="good">${won(per)}</b> · ${x.basis}보다 싸요. ${won(gain)} 아꼈어요`
+      : add ? `1번에 <s>${won(prev)}</s> → <b class="acc">${won(per)}</b>으로 내려갔어요` : `지금 1번에 ${won(per)} · 오늘 ${x.verb} <b>${won(next)}</b>`;
+    return `<div class="odemo2${add ? " on" : ""}${won2 ? " won" : ""}" data-odcard="${i}">
+      <div class="od-h"><span class="sc-ic sm"><span class="emo">${x.em}</span></span><span class="od-t"><b>${x.name}</b><span>월 ${won(x.price)} · 이번 달 ${n}${x.unit}</span></span><span class="otag2">예시</span></div>
+      <div class="od-m"><span class="od-l"><b class="od-big">${big}${won2 ? ` <span class="emo" aria-hidden="true">🎉</span>` : ""}</b><span>${won2 ? "이제부터는 갈수록 이득이에요" : `${x.basis} <b>${won(x.ref)}</b> 기준<br>${x.be}${x.unit} ${x.verb} 본전`}</span></span>
+        <span class="od-b">${btn}</span></div>
+      <span class="bar md"><i style="width:${Math.min(100, n / x.be * 100)}%"></i></span>
+      <span class="od-p">${line}</span></div>`;
+  }
   function renderOnb() {
     const el = $("onbPage"), flow = onbFlow();
     let pos = flow.indexOf(onb.key);
@@ -1486,19 +1526,14 @@ details.more2[open] summary{color:var(--sub)}
   }
   function onbHtml(cur, hd, m, last) {
     if (cur === "intro") {
-      // 내 하루 금액은 가려서 궁금하게, 아래엔 실제 도장 탭과 같은 카드로 '쓸 때마다 도장'을 보여 줘요
+      // 메시지는 하나: 1번에 얼마 → 본전까지 N번. 예시 도장은 진짜로 눌러 볼 수 있고, 본전까지 찍으면 축하해요 (저장은 안 해요)
+      const won1 = DEMOS.some((x, i) => onb.demo[i] >= x.be - x.uses);
       return `<div class="page-in onb" style="gap:20px;padding-top:calc(28px + env(safe-area-inset-top,0px))">
         <span class="onb-brand">본전</span>
-        <div style="display:flex;flex-direction:column;gap:12px"><h1 class="onb-h" style="font-size:clamp(24px,7.4vw,30px);line-height:1.35;word-break:keep-all">헬스장, 구독료, 통신비<br>하루에 얼마나 나갈까요?</h1>
-          <p class="onb-sub">본전 뽑으려면 <b>몇 번 더 써야 하는지</b><br>알려 드릴게요</p></div>
-        <div class="card opreview oblur" aria-label="내 고정비 하루 금액은 고르면 알려 드려요"><span class="lbl">내 고정비 모두 합쳐서</span>
-          <span class="ob-n"><b>하루에</b><span class="ob-x" aria-hidden="true">4,743</span><b>원</b></span><span class="sub">고르기만 하면 바로 알려 드려요</span></div>
-        <div class="odemo" aria-label="예시: 헬스장 도장 카드"><span class="otag2">그다음엔 쓸 때마다 도장</span>
-          <div class="scard opreview"><div class="sc-h"><span class="sc-ic"><span class="emo">🏋️</span></span>
-            <span class="sc-m"><span class="sc-n">헬스장<small>이번 달 3번</small></span><span class="sc-now">현재 1번에 23,333원</span><span class="sc-nx">오늘 가면<b>17,500원</b></span></span>
-            <span class="sbig" aria-hidden="true">오늘<br>갔어요</span></div>
-            <span class="sc-f"><span class="bar md"><i style="width:60%"></i></span><span>본전까지 2번 · 일일권 15,000원 기준</span></span></div></div></div>
-        <div class="cta"><div class="cta-in onb-cta"><span class="small">1분이면 돼요 · 가입 없이, 기록은 내 휴대폰에만</span><button type="button" data-onb="next">본전 뽑기</button><button type="button" class="textbtn" data-onb="sample">예시로 먼저 둘러볼게요</button></div></div>`;
+        <div style="display:flex;flex-direction:column;gap:12px"><h1 class="onb-h" style="font-size:clamp(24px,7.4vw,30px);line-height:1.35;word-break:keep-all">헬스장, 넷플릭스<br>1번에 얼마 내고 있나요?</h1>
+          <p class="onb-sub">쓸 때마다 도장 찍으면<br><b>본전까지 몇 번 남았는지</b> 알려 드려요</p></div>
+        ${demoCard(0)}</div>
+        <div class="cta"><div class="cta-in onb-cta"><span class="small" id="onbNote">${won1 ? "<b>이제 내 구독으로 해 볼까요?</b>" : "깜빡한 날은 나중에 찍어도 돼요 · 못 뽑으면 해지할지 알려 드려요"}<br>가입 없이, 기록은 내 휴대폰에만 남아요</span><button type="button" data-onb="next">본전 뽑기</button></div></div>`;
     }
     if (cur === "pick") {
       const k = onb.picked.length;
@@ -1576,7 +1611,7 @@ details.more2[open] summary{color:var(--sub)}
   }
   const onbGo = d => { const flow = onbFlow(); onb.key = flow[Math.max(0, Math.min(flow.indexOf(onb.key) + d, flow.length - 1))]; renderOnb(); $("onbPage").scrollTop = 0; };
   $("onbPage").addEventListener("click", async e => {
-    const b = e.target.closest("[data-onb],[data-pickp],[data-svc],[data-ofold],[data-ojump]");
+    const b = e.target.closest("[data-onb],[data-pickp],[data-svc],[data-ofold],[data-ojump],[data-odemo]");
     if (!b || b.disabled) return;
     if (b.dataset.svc) {
       const s = onbServices().flatMap(x => x.list).find(x => x.id === b.dataset.svc);
@@ -1584,6 +1619,16 @@ details.more2[open] summary{color:var(--sub)}
       return refreshPick();
     }
     if (b.dataset.ofold) { onb.open.push(b.dataset.ofold); return refreshPick(); }
+    if (b.dataset.odemo != null) {
+      const i = +b.dataset.odemo, x = DEMOS[i];
+      onb.demo[i] = x.uses + onb.demo[i] >= x.be ? 0 : onb.demo[i] + 1;
+      // 카드만 바꿔요 (화면 전체를 다시 그리지 않게)
+      const card = document.querySelector(`[data-odcard="${i}"]`); card.outerHTML = demoCard(i);
+      const nb = document.querySelector(`[data-odcard="${i}"] .sbig`); if (onb.demo[i]) nb.classList.add("thunk");
+      const won1 = DEMOS.some((y, k) => onb.demo[k] >= y.be - y.uses);
+      $("onbNote").innerHTML = `${won1 ? "<b>이제 내 구독으로 해 볼까요?</b>" : "깜빡한 날은 나중에 찍어도 돼요 · 못 뽑으면 해지할지 알려 드려요"}<br>가입 없이, 기록은 내 휴대폰에만 남아요`;
+      return;
+    }
     if (b.dataset.ojump) { if (onb.q) { onb.q = ""; $("onbQ").value = ""; refreshPick(); } $("og-" + b.dataset.ojump)?.scrollIntoView({ block: "start" }); return; }
     if (b.dataset.pickp) {
       const n = b.dataset.pickp; if (onb.picked.includes(n)) return;
@@ -1660,7 +1705,7 @@ details.more2[open] summary{color:var(--sub)}
     if (act === "closeAdd") return closeAdd();
     if (act === "formBack") { add.step = 1; add.preset = null; return renderAdd(); }
     if (act === "groupBack") { add.group = null; return renderAdd(); }
-    if (act === "manual") { add.preset = null; add.cat = "etc"; add.step = 2; renderAdd(); setTimeout(() => $("fName")?.focus(), 30); return; }
+    if (act === "manual") { add.preset = null; add.cat = "etc"; add.step = 2; renderAdd(); setTimeout(() => { if (!$("addBody").contains(document.activeElement) || document.activeElement.tagName === "BUTTON") $("fName")?.focus(); }, 30); return; }
     if (act === "sample") return loadSamples();
     if (act === "onbPick") return openOnb("pick");
     if (act === "onbPreview") { $("setSheet").hidden = true; return openOnb("intro", true); }
