@@ -544,6 +544,12 @@ details.more2[open] summary{color:var(--sub)}
 .ogb .bar i.bad{background:var(--bad)} .ogb .bar i.good{background:var(--good)}
 .ogb small{font-size:11px;color:var(--mute)}
 @media (max-width:360px){.ogdays{gap:2px}.ogdays i{width:13px;height:13px}.ogp > span{font-size:11px}.ogpanels{gap:2px;padding:8px}}
+.orv-leg{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--sub);margin-top:-2px}
+.orv-leg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.orv-leg i{width:8px;height:8px;border-radius:50%;background:color-mix(in srgb,var(--mute) 55%,transparent)}
+.orv-leg i.acc{background:var(--accent)}
+.orv-d{font-size:14px;color:var(--sub);line-height:1.5}
+.orv.hl .orv-d{color:var(--ink)}
 </style>
 
 <div class="wrap">
@@ -1654,18 +1660,23 @@ details.more2[open] summary{color:var(--sub)}
       const ps = onbKept();
       if (!ps.length) return `<div class="page-in onb onbq">${hd}<h1 class="h1">아직 넣은 게 없어요</h1><p class="sub">내 고정비의 ＋에서 언제든 검색해서 넣을 수 있어요</p></div>
           ${cta(`<button type="button" data-onb="finishAdd">직접 넣기</button>`, `<button type="button" class="textbtn" data-onb="finish">나중에 넣을게요</button>`)}`;
-      // 놀람(매일 얼마) → 그중 본전 뽑을 수 있는 돈 → 도장으로 이어져요
-      const flat = ps.filter(p => modeOf(p) !== "count"), cnt = ps.filter(p => modeOf(p) === "count");
-      const F = flat.reduce((s, p) => s + monthlyP(p), 0), C = cnt.reduce((s, p) => s + monthlyP(p), 0), cups = Math.round(dayOf(m) / 4500);
+      // 놀람(매일 얼마) → 그중 쓸수록 싸지는 돈 → 도장으로 이어져요. 처음 보는 사람도 읽을 수 있는 말로
+      const flat = ps.filter(p => modeOf(p) !== "count"), cnt = ps.filter(p => modeOf(p) === "count").sort((a, b) => (b.cat === "fit") - (a.cat === "fit"));
+      // 두 칸을 더하면 위의 하루 금액과 딱 맞게, 칸마다 먼저 반올림해요
+      const dF = Math.round(dayOf(flat.reduce((s, p) => s + monthlyP(p), 0))), dC = Math.round(dayOf(cnt.reduce((s, p) => s + monthlyP(p), 0))), day = dF + dC;
+      const cups = Math.round(day / 4500), pF = day ? Math.round(dF / day * 100) : 0;
       const ems = l => l.slice(0, 4).map(p => `<span class="em">${emoOf(p.emoji || catOf(p.cat).emoji, 12)}</span>`).join("");
-      const names = l => esc(l.slice(0, 3).map(onbShort).join(" · ") + (l.length > 3 ? ` 외 ${l.length - 3}개` : ""));
-      const box = (cls, title, amt, l, note) => `<div class="orv ${cls}"><div class="orv-h"><span class="orv-t"><span>${title}</span><b>하루 ${won(dayOf(amt))}</b><small>${names(l)}</small></span><span class="orv-e">${ems(l)}</span></div>${note ? `<span class="orv-n">${note}</span>` : ""}</div>`;
-      return `<div class="page-in onb onbq">${hd}<div class="dtop" style="padding:6px 0 0;gap:6px"><span class="lbl" style="font-size:17px">고른 ${ps.length}개를 모두 합치면</span>
-          <span class="hero" id="onbDay" style="font-size:clamp(34px,11vw,44px)">매일 <span class="acc">${won(dayOf(m))}</span></span>
-          <span class="lbl" style="font-size:16px;line-height:1.5">${cups >= 1 ? `아메리카노 <b>${cups}잔</b> 값이 매일 나가고 있어요<br>` : ""}한 달 ${won(m)} · 1년 ${won(m * 12)}</span></div>
-        <div class="orvs">${flat.length && cnt.length ? `<span class="orv-bar"><i style="width:${(F / m * 100).toFixed(1)}%"></i><i class="acc" style="width:${(C / m * 100).toFixed(1)}%"></i></span>` : ""}
-          ${flat.length ? box("", "쓰든 안 쓰든 나가는 돈", F, flat, "") : ""}
-          ${cnt.length ? box("hl", "본전 뽑을 수 있는 돈", C, cnt, "이 돈은 쓸수록 1번 값이 내려가요.<br>잘 안 쓰게 되면 해지할지 알려 드릴게요.") : ""}</div></div>
+      const names = l => esc(l.slice(0, 2).map(onbShort).join(", ") + (l.length > 2 ? ` 외 ${l.length - 2}개` : ""));
+      const ex = cnt[0], exNm = ex ? onbShort(ex) : "", exU = ex ? catOf(ex.cat).unit : "회";
+      const exLine = ex ? `${esc(exNm)}${josa(exNm, "은", "는")} ${{ "회": "갈", "편": "볼", "주문": "시킬" }[exU] || "쓸"} 때마다 1번에 내는 돈이 내려가요` : "";
+      const box = (cls, title, amt, l, desc, note) => `<div class="orv ${cls}"><div class="orv-h"><span class="orv-t"><span>${title}</span><b>하루 ${won(amt)}</b><small>${names(l)}</small></span><span class="orv-e">${ems(l)}</span></div><span class="orv-d">${desc}</span>${note ? `<span class="orv-n">${note}</span>` : ""}</div>`;
+      return `<div class="page-in onb onbq">${hd}<div class="dtop" style="padding:6px 0 0;gap:6px"><span class="lbl" style="font-size:17px">${ps.length}개를 모두 합치면</span>
+          <span class="hero" id="onbDay" style="font-size:clamp(25px,7.8vw,34px);line-height:1.3;word-break:keep-all">매일 <span class="acc">${won(day)}</span>이 나가요</span>
+          <span class="lbl" style="font-size:16px;line-height:1.5">${cups >= 1 ? `아메리카노 <b>${cups}잔</b> 값이에요<br>` : ""}한 달 ${won(m)} · 1년 ${won(m * 12)}</span></div>
+        <div class="orvs">${flat.length && cnt.length ? `<span class="orv-bar" aria-hidden="true"><i style="width:${pF}%"></i><i class="acc" style="width:${100 - pF}%"></i></span>
+          <span class="orv-leg"><span><i></i>그냥 나가는 돈 ${pF}%</span><span><i class="acc"></i>쓸수록 싸지는 돈 ${100 - pF}%</span></span>` : ""}
+          ${flat.length ? box("", "그냥 나가는 돈", dF, flat, "월세·휴대폰처럼 얼마나 쓰든 금액이 같아요", "") : ""}
+          ${cnt.length ? box("hl", "쓸수록 싸지는 돈", dC, cnt, exLine, "안 쓰게 되면 해지할지 알려 드릴게요") : ""}</div></div>
         ${cta(`<button type="button" data-onb="next">${last ? "도장 찍으러 가기" : cnt.length ? "본전 뽑는 법 보기" : "다음"}</button>`)}`;
     }
     if (cur === "guide") {
