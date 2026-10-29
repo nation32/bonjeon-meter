@@ -1442,17 +1442,18 @@ details.more2[open] summary{color:var(--sub)}
     { id: "phone", em: "📱", name: "휴대폰 요금", tiers: ["휴대폰 요금"] },
     { id: "rent", em: "🏠", name: "월세", tiers: ["월세"] }
   ];
-  // 분류: 처음엔 분류만 고르고, 고른 분류마다 한 화면씩 물어요 (자주 쓰는 순서)
+  // 분류: 처음엔 구독 분류만 고르고, 고른 분류마다 한 화면씩 물어요 (자주 쓰는 순서). 고정비는 맨 끝에 모두에게 한 번
   const ONB_GROUPS = [
-    { id: "base", em: "🏠", name: "통신비·월세", ex: "휴대폰 요금, 월세", q: "통신비·월세 중에<br>뭐가 나가요?", sub: "쓰든 안 쓰든 나가는 돈이라 하루 금액만 보여 드려요",
-      names: ["휴대폰 요금", "월세"], note: "관리비·인터넷·보험 같은 건 나중에<br>내 고정비의 ＋에서 넣을 수 있어요" },
     { id: "video", em: "🎬", name: "영상", ex: "넷플릭스, 유튜브, 티빙", q: "영상은 뭘 봐요?", cats: ["video"] },
     { id: "music", em: "🎧", name: "음악", ex: "멜론, 스포티파이", q: "음악은 뭘 들어요?", cats: ["music"] },
     { id: "shop", em: "🛒", name: "쇼핑·멤버십", ex: "쿠팡 와우, 네이버플러스", q: "쇼핑·멤버십은<br>뭘 쓰고 있어요?", cats: ["shop", "member"] },
     { id: "food", em: "🍔", name: "배달", ex: "배민클럽, 요기패스", q: "배달 멤버십은<br>뭘 쓰고 있어요?", cats: ["food"] },
     { id: "fit", em: "🏋️", name: "운동", ex: "헬스장, 필라테스", q: "운동은 어디 다녀요?", cats: ["fit"] },
     { id: "ai", em: "✨", name: "AI·업무", ex: "ChatGPT, Claude", q: "AI·업무는<br>뭘 쓰고 있어요?", cats: ["ai", "work"] },
-    { id: "etc", em: "☁️", name: "클라우드·기타", ex: "iCloud+, 따릉이", q: "그 밖에 뭐가 있어요?", cats: ["cloud", "study", "game", "life", "move"] }
+    { id: "etc", em: "☁️", name: "클라우드·기타", ex: "iCloud+, 따릉이", q: "그 밖에 뭐가 있어요?", cats: ["cloud", "study", "game", "life", "move"] },
+    // 고정비는 구독을 다 고른 뒤 마지막 한 장으로 권해요 (분류 타일에는 없어요)
+    { id: "base", em: "🏠", name: "통신비·월세", kick: "마지막으로", q: "고정비도<br>관리할 수 있어요", sub: "통신비·월세도 넣으면 매일 나가는 돈 전체를 볼 수 있어요",
+      names: ["휴대폰 요금", "월세"], note: "관리비·인터넷·보험은 나중에 내 고정비의 ＋에서 넣을 수 있어요", none: "괜찮아요 · 다음" }
   ];
   const FOLD = 6;
   // 같은 서비스의 요금제는 하나만 골라요. 목록에는 서비스 한 줄로 보이고, 고르면 그 자리에 요금제 칩이 펼쳐져요
@@ -1504,8 +1505,9 @@ details.more2[open] summary{color:var(--sub)}
   const onbKept = () => onbPicked().filter(p => onbPrice(p) > 0 || (!needsAmount(p) && p.price === 0));
   const onbMonthly = () => onbKept().reduce((s, p) => s + monthlyP(p), 0);
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-  const chosenGroups = () => ONB_GROUPS.filter(g => onb.groups.includes(g.id));
-  const onbFlow = () => ["intro", "cats", ...(onb.find ? ["find"] : chosenGroups().map(g => "grp:" + g.id)), ...(onbPicked().some(needsAmount) ? ["amt"] : []), "reveal",
+  const BASE = ONB_GROUPS.find(g => g.id === "base");
+  const chosenGroups = () => ONB_GROUPS.filter(g => onb.groups.includes(g.id) && g !== BASE);
+  const onbFlow = () => ["intro", "cats", ...(onb.find ? ["find"] : [...chosenGroups().map(g => "grp:" + g.id), "grp:base"]), ...(onbPicked().some(needsAmount) ? ["amt"] : []), "reveal",
     ...(onbKept().length ? ["guide"] : []), ...(window.claude || standalone() ? [] : ["install"])];
   const onbSeen = () => { try { return localStorage.getItem(ONB_KEY) === "1"; } catch { return false; } };
   const markSeen = () => { try { localStorage.setItem(ONB_KEY, "1"); } catch {} };
@@ -1565,16 +1567,17 @@ details.more2[open] summary{color:var(--sub)}
     const g = cur.startsWith("grp:") ? ONB_GROUPS.find(x => "grp:" + x.id === cur) : null;
     box.innerHTML = g ? groupListHtml(g) : findListHtml();
     const nx = document.querySelector('#onbPage [data-onb="next"]');
-    if (g) nx.textContent = nextLabel(pickedIn(groupServices(g)));
+    if (g) nx.textContent = nextLabel(pickedIn(groupServices(g)), g);
     else { const k = onb.picked.length; nx.disabled = !k; nx.textContent = k ? `${k}개 골랐어요 · 다음` : "하나 이상 골라 주세요"; }
   }
-  const nextLabel = n => n ? `${n}개 골랐어요 · 다음` : "없어요 · 다음";
+  const nextLabel = (n, g) => n ? `${n}개 골랐어요 · 다음` : g?.none || "없어요 · 다음";
   // 단계 표시: 고르기 → 금액 → 확인 → 사용법. 화면 수가 바뀌어도 막대가 뒤로 가지 않아요
   function stageOf(cur) {
     const gs = chosenGroups(), gi = gs.findIndex(g => "grp:" + g.id === cur);
     if (cur === "cats") return ["1/4 고르기", 8];
     if (cur === "find") return ["1/4 고르기", 30];
-    if (gi >= 0) return ["1/4 고르기", 8 + Math.round(37 * (gi + 1) / (gs.length + 1))];
+    if (gi >= 0) return ["1/4 고르기", 8 + Math.round(37 * (gi + 1) / (gs.length + 2))];
+    if (cur === "grp:base") return ["1/4 고르기", 45];
     return { amt: ["2/4 금액", 55], reveal: ["3/4 확인", 72], guide: ["4/4 사용법", 88], install: ["끝", 100] }[cur] || ["", 0];
   }
   const head = cur => { const [label, pct] = stageOf(cur);
@@ -1628,15 +1631,15 @@ details.more2[open] summary{color:var(--sub)}
     if (cur === "cats") {
       const k = onb.groups.length;
       return `<div class="page-in onb onbq">${hd}<div><h1 class="h1">어떤 데 돈이<br>나가고 있어요?</h1><p class="sub" style="margin-top:6px">고른 것만 차례로 물어볼게요</p></div>
-        <div class="ctiles" role="group" aria-label="분류">${ONB_GROUPS.map(g => { const on = onb.groups.includes(g.id);
+        <div class="ctiles" role="group" aria-label="분류">${ONB_GROUPS.filter(g => g !== BASE).map(g => { const on = onb.groups.includes(g.id);
           return `<button type="button" class="ctile" data-cat="${g.id}" aria-pressed="${on}"><span class="ce" aria-hidden="true">${emoOf(g.em, 22)}</span><span class="cn">${esc(g.name)}</span><span class="cx">${esc(g.ex)}</span><span class="ck">${checkSvg}</span></button>`; }).join("")}</div></div>
         ${cta(`<button type="button" data-onb="next" ${k ? "" : "disabled"}>${k ? `${k}개 골랐어요 · 다음` : "하나 이상 골라 주세요"}</button>`, `<button type="button" class="textbtn" data-onb="find">잘 모르겠어요, 직접 찾을게요</button>`)}`;
     }
     if (cur.startsWith("grp:")) {
-      const gs = chosenGroups(), gi = gs.findIndex(g => "grp:" + g.id === cur), g = gs[gi];
-      return `<div class="page-in onb onbq">${hd}<div><p class="okick">${gi + 1}/${gs.length}</p><h1 class="h1">${g.q}</h1>${g.sub ? `<p class="sub" style="margin-top:6px">${esc(g.sub)}</p>` : ""}</div>
+      const gs = chosenGroups(), gi = gs.findIndex(g => "grp:" + g.id === cur), g = gi >= 0 ? gs[gi] : BASE;
+      return `<div class="page-in onb onbq">${hd}<div><p class="okick">${g.kick || `${gi + 1}/${gs.length}`}</p><h1 class="h1">${g.q}</h1>${g.sub ? `<p class="sub" style="margin-top:6px">${esc(g.sub)}</p>` : ""}</div>
         <div id="onbList">${groupListHtml(g)}</div>${g.note ? `<p class="small" style="margin:0;line-height:1.5">${g.note}</p>` : `<p class="small" style="margin:0">없는 건 나중에 내 고정비의 ＋에서 넣을 수 있어요</p>`}</div>
-        ${cta(`<button type="button" data-onb="next">${nextLabel(pickedIn(groupServices(g)))}</button>`)}`;
+        ${cta(`<button type="button" data-onb="next">${nextLabel(pickedIn(groupServices(g)), g)}</button>`)}`;
     }
     if (cur === "find") {
       const k = onb.picked.length;
@@ -1670,7 +1673,7 @@ details.more2[open] summary{color:var(--sub)}
       const ex = cnt[0], exNm = ex ? onbShort(ex) : "", exU = ex ? catOf(ex.cat).unit : "회";
       const exLine = ex ? `${esc(exNm)}${josa(exNm, "은", "는")} ${{ "회": "갈", "편": "볼", "주문": "시킬" }[exU] || "쓸"} 때마다 1번에 내는 돈이 내려가요` : "";
       const box = (cls, title, amt, l, desc, note) => `<div class="orv ${cls}"><div class="orv-h"><span class="orv-t"><span>${title}</span><b>하루 ${won(amt)}</b><small>${names(l)}</small></span><span class="orv-e">${ems(l)}</span></div><span class="orv-d">${desc}</span>${note ? `<span class="orv-n">${note}</span>` : ""}</div>`;
-      return `<div class="page-in onb onbq">${hd}<div class="dtop" style="padding:6px 0 0;gap:6px"><span class="lbl" style="font-size:17px">${ps.length}개를 모두 합치면</span>
+      return `<div class="page-in onb onbq">${hd}<div class="dtop" style="padding:6px 0 0;gap:6px"><span class="lbl" style="font-size:17px">${ps.length > 1 ? `${ps.length}개를 모두 합치면` : `${esc(onbShort(ps[0]))} 하나로`}</span>
           <span class="hero" id="onbDay" style="font-size:clamp(25px,7.8vw,34px);line-height:1.3;word-break:keep-all">매일 <span class="acc">${won(day)}</span>이 나가요</span>
           <span class="lbl" style="font-size:16px;line-height:1.5">${cups >= 1 ? `아메리카노 <b>${cups}잔</b> 값이에요<br>` : ""}한 달 ${won(m)} · 1년 ${won(m * 12)}</span></div>
         <div class="orvs">${flat.length && cnt.length ? `<span class="orv-bar" aria-hidden="true"><i style="width:${pF}%"></i><i class="acc" style="width:${100 - pF}%"></i></span>
