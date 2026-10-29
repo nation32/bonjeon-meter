@@ -439,20 +439,6 @@ details.more2[open] summary{color:var(--sub)}
 .ogrp .catttl{font-size:15px;color:var(--ink);margin:18px 0 2px}
 .catttl .ok{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-size:12px;padding:0 6px;margin-left:4px}
 .omore{background:none;border:0;color:var(--accent);font-size:14px;font-weight:700;padding:8px 0;width:100%;text-align:left}
-.oguide{display:flex;flex-direction:column;gap:22px}
-.og{display:flex;gap:14px;align-items:flex-start}
-.og > .n{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:14px;font-weight:800;flex:none;margin-top:1px}
-.og > div{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
-.og b{font-size:18px;font-weight:800;line-height:1.4;letter-spacing:-.02em}
-.og > div > span{font-size:14px;color:var(--sub);line-height:1.5}
-.ogdemo{display:flex;align-items:center;gap:12px;background:var(--field);border-radius:18px;padding:12px;margin-top:4px}
-.ogdemo .sbig{width:56px;height:56px;font-size:13px;box-shadow:none}
-.ogsteps{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
-.ogsteps > span{display:flex;flex-direction:column;align-items:center}
-.ogsteps small{font-size:11px;color:var(--mute)}
-.ogsteps b{font-size:14px;font-weight:700;color:var(--sub)}
-.ogsteps .on b{color:var(--accent);font-size:16px;font-weight:800}
-.ogsteps i{font-style:normal;color:var(--mute);font-size:12px}
 
 .onb-sub{margin:0;font-size:17px;line-height:1.5;color:var(--sub)}
 .onb-sub b{color:var(--ink)}
@@ -484,6 +470,80 @@ details.more2[open] summary{color:var(--sub)}
 .od-p b.good{color:var(--good)}
 .od-big .emo{display:inline-block;font-size:.8em}
 #onbNote b{color:var(--accent)}
+
+/* onboarding v7 */
+.ostage{font-size:12px;font-weight:700;color:var(--mute);white-space:nowrap;min-width:44px;text-align:right}
+.okick{margin:0 0 6px;font-size:14px;font-weight:700;color:var(--accent)}
+.ctiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ctile{position:relative;border:0;border-radius:18px;min-height:92px;padding:14px;background:var(--field);display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;text-align:left;gap:2px;min-width:0}
+.ctile .ce{font-size:24px;line-height:1;margin-bottom:auto}
+.ctile .cn{font-size:15px;font-weight:700}
+.ctile .cx{font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.ctile .ck{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;display:none;place-items:center;background:var(--accent);color:var(--accent-ink)}
+.ctile[aria-pressed="true"]{background:var(--accent-tint);box-shadow:inset 0 0 0 2px var(--accent)}
+.ctile[aria-pressed="true"] .cn{font-weight:800}
+.ctile[aria-pressed="true"] .ck{display:grid}
+.osvc{border-radius:16px}
+.osvc.on{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.osvc.on .orow[aria-pressed="true"]{background:none}
+.ochips2{display:flex;flex-wrap:wrap;gap:6px;padding:0 8px 10px 66px}
+.ochip{border:0;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:500;background:var(--surface);color:var(--sub);box-shadow:inset 0 0 0 1px var(--line)}
+.ochip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700;box-shadow:none}
+.oamts{display:flex;flex-direction:column}
+.oamt{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line2)}
+.oamt .em{width:40px;height:40px;border-radius:50%;background:var(--field);display:grid;place-items:center;font-size:20px;flex:none}
+.oamt .tx{display:flex;flex-direction:column;flex:1;min-width:0}
+.oamt .tx b{font-size:16px;font-weight:600}
+.oamt .tx span{font-size:13px;color:var(--mute)}
+.oamt .in{display:flex;align-items:baseline;gap:3px;border-bottom:2px solid var(--line);padding:2px 2px 4px;width:128px;flex:none}
+.oamt .in:focus-within{border-color:var(--accent)}
+.oamt input{border:0;outline:none;background:transparent;font-size:19px;font-weight:800;text-align:right;width:100%;min-width:0;padding:0}
+.oamt .in span{font-size:15px;font-weight:700}
+.hero .acc{color:var(--accent)}
+.orvs{display:flex;flex-direction:column;gap:8px}
+.orv-bar{display:flex;height:10px;border-radius:10px;overflow:hidden;background:var(--line)}
+.orv-bar i{background:color-mix(in srgb,var(--mute) 55%,transparent)}
+.orv-bar i.acc{background:var(--accent)}
+.orv{background:var(--field);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.orv.hl{background:var(--accent-tint);box-shadow:inset 0 0 0 2px var(--accent)}
+.orv-h{display:flex;align-items:center;gap:12px}
+.orv-t{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.orv-t > span{font-size:14px;color:var(--sub)}
+.orv.hl .orv-t > span{color:var(--accent-dark);font-weight:700}
+.orv-t b{font-size:20px;font-weight:800}
+.orv.hl .orv-t b{color:var(--accent)}
+.orv-t small{font-size:12px;color:var(--mute)}
+.orv-e{display:flex;gap:4px;flex:none}
+.orv-e .em{width:28px;height:28px;border-radius:50%;background:var(--surface);display:grid;place-items:center}
+.orv-n{font-size:14px;color:var(--accent-dark);line-height:1.5}
+.og{display:flex;gap:12px}
+.og > .n{width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:13px;font-weight:800;flex:none;margin-top:1px}
+.og > div{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.og > div > b{font-size:18px;font-weight:800;line-height:1.4;letter-spacing:-.02em;word-break:keep-all}
+.og > div > span{font-size:14px;color:var(--sub);line-height:1.5}
+.ogpanels{display:flex;align-items:center;gap:4px;background:var(--field);border-radius:18px;padding:10px;margin-top:4px}
+.ogpanels > i{font-style:normal;color:var(--mute);font-size:14px;padding-bottom:22px}
+.ogp{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.ogp-b{width:100%;height:72px;border-radius:16px;background:var(--surface);display:grid;place-items:center;position:relative}
+.ogp-b .big{font-size:32px}
+.ogp-b .sbig{width:48px;height:48px;box-shadow:0 4px 10px rgba(106,77,244,.35)}
+.ogp-b .tap{position:absolute;right:8px;bottom:2px;font-size:20px}
+.ogp > span{font-size:12px;font-weight:700;color:var(--sub);text-align:center;line-height:1.3}
+.ogdays{display:flex;gap:3px}
+.ogdays > span{display:flex;flex-direction:column;align-items:center;gap:2px}
+.ogdays small{font-size:9px;color:var(--mute)}
+.ogdays i{width:16px;height:16px;border-radius:5px;background:var(--line);display:grid;place-items:center;font-style:normal}
+.ogdays i.on{background:var(--accent-tint)}
+.ogbars{display:flex;flex-direction:column;gap:10px;background:var(--field);border-radius:18px;padding:12px 14px;margin-top:4px}
+.ogb{display:flex;align-items:center;gap:10px}
+.ogb .f{font-size:22px}
+.ogb .m{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ogb .r{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.ogb .r > span{color:var(--sub);white-space:nowrap}
+.ogb b.bad{color:var(--bad)} .ogb b.good{color:var(--good)}
+.ogb .bar i.bad{background:var(--bad)} .ogb .bar i.good{background:var(--good)}
+.ogb small{font-size:11px;color:var(--mute)}
+@media (max-width:360px){.ogdays{gap:2px}.ogdays i{width:13px;height:13px}.ogp > span{font-size:11px}.ogpanels{gap:2px;padding:8px}}
 </style>
 
 <div class="wrap">
@@ -1356,47 +1416,50 @@ details.more2[open] summary{color:var(--sub)}
     const gone = items.filter(it => it.sample);
     items = items.filter(it => !it.sample); renderAll();
     for (const it of gone) { try { await store.del(it.id); } catch {} }
-    if (!items.length) openOnb("pick"); else toast(`예시 ${gone.length}개를 지웠어요`);
+    if (!items.length) openOnb("cats"); else toast(`예시 ${gone.length}개를 지웠어요`);
   }
 
-  // ---------- 처음 화면: 하루에 얼마? → 분류별로 모두 고르기 → 요금제 → 금액 → 하루 금액 공개 → 이렇게 쓰면 돼요 → 홈 화면에 추가 ----------
+  // ---------- 처음 화면: 1번에 얼마? → 분류 고르기 → 분류마다 서비스(요금제는 그 자리에서) → 모르는 금액 한 화면 → 하루 금액 공개 → 이렇게 쓰면 돼요 → 홈 화면에 추가 ----------
   const ONB_KEY = "bonjeon-onboarded";
-  // 자주 쓰는 서비스의 요금제 묶음: 고르면 기본 요금제가 들어가고, 요금제가 여러 개면 다음 화면에서 물어요
+  // 자주 쓰는 서비스의 요금제 묶음: 고르면 기본 요금제가 들어가고, 요금제가 여러 개면 그 자리에서 골라요
   const TILES = [
     { id: "netflix", em: "🎬", name: "넷플릭스", tiers: ["넷플릭스 광고형", "넷플릭스 스탠다드", "넷플릭스 프리미엄"], def: "넷플릭스 스탠다드" },
     { id: "youtube", em: "📺", name: "유튜브 프리미엄", tiers: ["유튜브 프리미엄", "유튜브 프리미엄 라이트"] },
     { id: "wow", em: "📦", name: "쿠팡 와우", tiers: ["쿠팡 와우"] },
     { id: "baemin", em: "🍔", name: "배민클럽", tiers: ["배민클럽", "배민클럽 + 유튜브 프리미엄"] },
-    { id: "gym", em: "🏋️", name: "헬스장", tiers: ["헬스장", "헬스장 3개월권", "헬스장 1년권"], q: "헬스장은 어떻게 결제해요?" },
+    { id: "gym", em: "🏋️", name: "헬스장", tiers: ["헬스장"] },
     { id: "gpt", em: "AI", name: "ChatGPT", tiers: ["ChatGPT Go", "ChatGPT Plus", "ChatGPT Pro"], def: "ChatGPT Plus" },
     { id: "tving", em: "🎬", name: "티빙", tiers: ["티빙 광고형", "티빙 베이직", "티빙 스탠다드", "티빙 프리미엄"], def: "티빙 스탠다드" },
     { id: "melon", em: "🎧", name: "멜론", tiers: ["멜론 모바일 스트리밍", "멜론 무제한 듣기", "멜론 무제한 + 오프라인"], def: "멜론 무제한 듣기" },
     { id: "naver", em: "🎟️", name: "네이버플러스", tiers: ["네이버플러스 멤버십", "네이버플러스 멤버십 (연간)"] },
     { id: "icloud", em: "☁️", name: "iCloud+", tiers: ["iCloud+ 50GB", "iCloud+ 200GB", "iCloud+ 2TB", "iCloud+ 6TB"], def: "iCloud+ 200GB" },
-    { id: "phone", em: "📱", name: "휴대폰 요금", tiers: ["휴대폰 요금", "알뜰폰 요금"], q: "휴대폰은 어떤 요금제예요?" },
+    { id: "phone", em: "📱", name: "휴대폰 요금", tiers: ["휴대폰 요금"] },
     { id: "rent", em: "🏠", name: "월세", tiers: ["월세"] }
   ];
-  // 고르기 화면의 분류 (자주 쓰는 순서)
+  // 분류: 처음엔 분류만 고르고, 고른 분류마다 한 화면씩 물어요 (자주 쓰는 순서)
   const ONB_GROUPS = [
-    { id: "video", em: "🎬", name: "영상", cats: ["video"] },
-    { id: "music", em: "🎧", name: "음악", cats: ["music"] },
-    { id: "shop", em: "🛒", name: "쇼핑·멤버십", cats: ["shop", "member"] },
-    { id: "food", em: "🍔", name: "배달", cats: ["food"] },
-    { id: "fit", em: "🏋️", name: "운동", cats: ["fit"] },
-    { id: "home", em: "🏠", name: "집·통신·보험", cats: ["home", "tel", "ins"] },
-    { id: "ai", em: "AI", name: "AI·업무", cats: ["ai", "work"] },
-    { id: "etc", em: "☁️", name: "클라우드·기타", cats: ["cloud", "study", "game", "life", "move"] }
+    { id: "base", em: "🏠", name: "통신비·월세", ex: "휴대폰 요금, 월세", q: "통신비·월세 중에<br>뭐가 나가요?", sub: "쓰든 안 쓰든 나가는 돈이라 하루 금액만 보여 드려요",
+      names: ["휴대폰 요금", "월세"], note: "관리비·인터넷·보험 같은 건 나중에<br>내 고정비의 ＋에서 넣을 수 있어요" },
+    { id: "video", em: "🎬", name: "영상", ex: "넷플릭스, 유튜브, 티빙", q: "영상은 뭘 봐요?", cats: ["video"] },
+    { id: "music", em: "🎧", name: "음악", ex: "멜론, 스포티파이", q: "음악은 뭘 들어요?", cats: ["music"] },
+    { id: "shop", em: "🛒", name: "쇼핑·멤버십", ex: "쿠팡 와우, 네이버플러스", q: "쇼핑·멤버십은<br>뭘 쓰고 있어요?", cats: ["shop", "member"] },
+    { id: "food", em: "🍔", name: "배달", ex: "배민클럽, 요기패스", q: "배달 멤버십은<br>뭘 쓰고 있어요?", cats: ["food"] },
+    { id: "fit", em: "🏋️", name: "운동", ex: "헬스장, 필라테스", q: "운동은 어디 다녀요?", cats: ["fit"] },
+    { id: "ai", em: "✨", name: "AI·업무", ex: "ChatGPT, Claude", q: "AI·업무는<br>뭘 쓰고 있어요?", cats: ["ai", "work"] },
+    { id: "etc", em: "☁️", name: "클라우드·기타", ex: "iCloud+, 따릉이", q: "그 밖에 뭐가 있어요?", cats: ["cloud", "study", "game", "life", "move"] }
   ];
-  const FOLD = 5;
-  // 같은 서비스의 요금제는 하나만 골라요. 고르기 화면에는 서비스 하나로 보이고, 요금제는 다음 화면에서 물어요
+  const FOLD = 6;
+  // 같은 서비스의 요금제는 하나만 골라요. 목록에는 서비스 한 줄로 보이고, 고르면 그 자리에 요금제 칩이 펼쳐져요
   const TIERS = [...TILES.filter(t => t.tiers.length > 1).map(t => t.tiers), ["왓챠 베이직", "왓챠 프리미엄"], ["Claude Pro", "Claude Max"], ["Google AI Plus", "Google AI Pro"],
     ["디즈니+ 스탠다드", "디즈니+ 프리미엄"], ["웨이브 광고형", "웨이브 베이직", "웨이브 스탠다드", "웨이브 프리미엄"], ["라프텔 베이직", "라프텔 프리미엄"],
     ["Apple One 개인", "Apple One 가족"], ["GitHub Copilot Pro", "GitHub Copilot Pro+"], ["Google One 100GB", "Google One 2TB"],
     ["PlayStation Plus 에센셜", "PlayStation Plus 스페셜", "PlayStation Plus 디럭스"], ["스픽 프리미엄 (연간)", "스픽 프리미엄 플러스 (연간)"]];
   const commonName = ns => { const ws = ns.map(n => n.split(" ")); let k = 0; while (ws.every(w => w[k] && w[k] === ws[0][k])) k++; return ws[0].slice(0, k).join(" ") || ns[0]; };
-  const TIER_INFO = TIERS.map(names => { const t = TILES.find(x => x.tiers === names); return { names, name: t ? t.name : commonName(names), q: t?.q, def: t?.def || names[0] }; });
+  const TIER_INFO = TIERS.map(names => { const t = TILES.find(x => x.tiers === names); return { names, name: t ? t.name : commonName(names), def: t?.def || names[0] }; });
   const tierIdx = n => TIER_INFO.findIndex(g => g.names.includes(n));
   const tierOf = n => { const i = tierIdx(n); return i >= 0 ? TIER_INFO[i].names : [n]; };
+  // 운동은 결제 방식을 그 자리에서 골라요 (0 = 매달 자동결제)
+  const PERIODS = [["매달 결제", 0], ["3개월권", 3], ["6개월권", 6], ["1년권", 12]];
   const CAT_INK = { video: 0, music: 2, shop: 1, food: 4, member: 2, fit: 1, ai: 7, work: 7, study: 4, cloud: 3, game: 5, life: 3, move: 2, home: 6, tel: 2, ins: 1, etc: 7 };
   const NAME_INK = { "유튜브 프리미엄": 5, "유튜브 프리미엄 라이트": 5, "티빙 광고형": 6, "티빙 베이직": 6, "티빙 스탠다드": 6, "티빙 프리미엄": 6, "필라테스 3개월권": 3, "관리비": 7, "인터넷": 3 };
   const inkOf = p => NAME_INK[p.name] ?? CAT_INK[p.cat] ?? 7;
@@ -1418,13 +1481,16 @@ details.more2[open] summary{color:var(--sub)}
     installUi(); return ok;
   }
   // key = 지금 보고 있는 화면. 고르기에 따라 화면 순서가 바뀌어도 보던 화면에 그대로 있어요
-  const freshOnb = (start, preview) => ({ key: start, demo: [0], q: "", open: [], picked: [], amt: {}, os: isIOS ? "ios" : "android", preview });
+  const freshOnb = (start, preview) => ({ key: start, demo: [0], groups: [], find: false, q: "", open: [], picked: [], plan: {}, amt: {}, os: isIOS ? "ios" : "android", preview });
   let onb = freshOnb("intro", false), cloud = false;
   const presetByName = n => allPresets().find(p => p.name === n);
   const presetByKey = k => allPresets().find(p => p.key === k);
   const needsAmount = p => p.price == null;
   const onbPrice = p => p.key in onb.amt ? onb.amt[p.key] : (p.price ?? 0);
-  const planOf = p => { const [k, m] = (p.plan || "recurring:1").split(":"); return { kind: k === "pass" ? "pass" : "recurring", months: +m || 1 }; };
+  const planOf = p => {
+    if (p.cat === "fit" && p.name in onb.plan) { const m = onb.plan[p.name]; return m ? { kind: "pass", months: m } : { kind: "recurring", months: 1 }; }
+    const [k, m] = (p.plan || "recurring:1").split(":"); return { kind: k === "pass" ? "pass" : "recurring", months: +m || 1 };
+  };
   const modeOf = p => p.mode || catOf(p.cat).mode;
   const monthlyP = p => onbPrice(p) / planOf(p).months;
   const dayOf = m => m * 12 / 365;
@@ -1432,11 +1498,9 @@ details.more2[open] summary{color:var(--sub)}
   const onbKept = () => onbPicked().filter(p => onbPrice(p) > 0 || (!needsAmount(p) && p.price === 0));
   const onbMonthly = () => onbKept().reduce((s, p) => s + monthlyP(p), 0);
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-  const onbFlow = () => {
-    const tiers = [...new Set(onb.picked.map(tierIdx).filter(i => i >= 0))];
-    return ["intro", "pick", ...tiers.map(i => "t" + i), ...onbPicked().filter(needsAmount).map(p => "a" + p.key), "reveal",
-      ...(onbKept().length ? ["guide"] : []), ...(window.claude || standalone() ? [] : ["install"])];
-  };
+  const chosenGroups = () => ONB_GROUPS.filter(g => onb.groups.includes(g.id));
+  const onbFlow = () => ["intro", "cats", ...(onb.find ? ["find"] : chosenGroups().map(g => "grp:" + g.id)), ...(onbPicked().some(needsAmount) ? ["amt"] : []), "reveal",
+    ...(onbKept().length ? ["guide"] : []), ...(window.claude || standalone() ? [] : ["install"])];
   const onbSeen = () => { try { return localStorage.getItem(ONB_KEY) === "1"; } catch { return false; } };
   const markSeen = () => { try { localStorage.setItem(ONB_KEY, "1"); } catch {} };
   function openOnb(start = "intro", preview = false) { onb = freshOnb(start, preview); $("onbPage").hidden = false; lock(); renderOnb(); $("onbPage").scrollTop = 0; }
@@ -1446,51 +1510,72 @@ details.more2[open] summary{color:var(--sub)}
   const shareSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>`;
   const searchSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="color:var(--mute);flex:none"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>`;
   const emoOf = (e, size = 20) => isText(e) ? `<span class="tmark" style="font-size:${size}px;color:var(--ink)">${esc(e)}</span>` : `<span class="emo">${esc(e)}</span>`;
-  const priceLine = p => {
-    const { kind, months } = planOf(p), extra = /포함/.test(p.note || "") ? ` · ${p.note.split(" · ")[0]}` : "";
-    if (p.price == null) return `금액은 다음에 넣어요${extra}`;
-    return `${kind === "pass" ? passSfx(months) : months === 12 ? "1년" : "월"} ${won(p.price)}${extra}`;
-  };
+  const priceShort = p => p.price == null ? "" : `${planOf(p).months === 12 ? "1년 " : ""}${won(p.price)}`;
   const onbShort = p => p.name.replace(/\s+(광고형|베이직|스탠다드|프리미엄 라이트|프리미엄|라이트)$/, "").replace(/\s\d+(개월권?|년권)$/, "");
-  // 요금제 화면의 한 줄
-  const orow = p => { const on = onb.picked.includes(p.name);
-    return `<button type="button" class="orow" data-pickp="${esc(p.name)}" role="radio" aria-checked="${on}" aria-pressed="${on}"><span class="em" aria-hidden="true">${emoOf(p.emoji || catOf(p.cat).emoji)}</span><span class="tx"><b>${esc(p.name)}</b><span>${esc(priceLine(p))}</span></span><span class="ck">${checkSvg}</span></button>`; };
-  // 고르기 화면: 분류마다 서비스 목록. 요금제가 여러 개인 서비스는 한 줄로 묶어요
-  function onbServices() {
-    const seen = new Set();
-    return ONB_GROUPS.map(g => ({ g, list: allPresets().filter(p => g.cats.includes(p.cat)).flatMap(p => {
+  // 분류 하나의 서비스 목록. 요금제가 여러 개면 한 줄로, 운동의 'N개월권'도 한 줄로 묶어요
+  function groupServices(g) {
+    const seen = new Set(), base = new Set();
+    const ps = g.names ? g.names.map(presetByName).filter(Boolean) : allPresets().filter(p => g.cats.includes(p.cat));
+    return ps.flatMap(p => {
       const i = tierIdx(p.name);
-      if (i < 0) return [{ id: p.name, name: p.name, names: [p.name], def: p.name, sub: priceLine(p), em: p.emoji || catOf(p.cat).emoji }];
-      if (seen.has(i)) return [];
-      seen.add(i);
-      const ti = TIER_INFO[i], d = presetByName(ti.def) || p;
-      return [{ id: "g" + i, name: ti.name, names: ti.names, def: ti.def, sub: `${priceLine(d)} · 요금제 ${ti.names.length}개`, em: d.emoji || catOf(d.cat).emoji }];
-    }) })).filter(x => x.list.length);
+      if (i >= 0) {
+        if (seen.has(i)) return [];
+        seen.add(i);
+        const ti = TIER_INFO[i], d = presetByName(ti.def) || p, low = Math.min(...ti.names.map(n => presetByName(n)?.price ?? Infinity));
+        return [{ id: "g" + i, name: ti.name, names: ti.names, def: ti.def, sub: isFinite(low) ? `월 ${won(low)}부터` : "", em: d.emoji || catOf(d.cat).emoji, tiers: true }];
+      }
+      if (p.cat === "fit") { const b = onbShort(p); if (base.has(b)) return []; base.add(b); return [{ id: p.name, name: b, names: [p.name], def: p.name, sub: "", em: p.emoji || catOf(p.cat).emoji, period: true }]; }
+      return [{ id: p.name, name: p.name, names: [p.name], def: p.name, sub: priceShort(p) ? `월 ${priceShort(p)}`.replace("월 1년", "1년") : "", em: p.emoji || catOf(p.cat).emoji }];
+    });
   }
+  const allServices = () => ONB_GROUPS.flatMap(groupServices);
   const svcOn = s => s.names.some(n => onb.picked.includes(n));
-  const svcRow = s => { const on = svcOn(s);
-    return `<button type="button" class="orow" data-svc="${esc(s.id)}" role="checkbox" aria-checked="${on}" aria-pressed="${on}"><span class="em" aria-hidden="true">${emoOf(s.em)}</span><span class="tx"><b>${esc(s.name)}</b><span>${esc(s.sub)}</span></span><span class="ck">${checkSvg}</span></button>`; };
-  function pickListHtml() {
-    const groups = onbServices(), q = onb.q.trim().toLowerCase().replace(/\s+/g, "");
+  const tierLabel = (n, base) => { const t = n.startsWith(base) ? n.slice(base.length).trim() : n; return t || n.split(" ").at(-1); };
+  function svcRow(s) {
+    const on = svcOn(s), cur = s.names.find(n => onb.picked.includes(n));
+    let chips = "";
+    if (on && s.tiers) chips = s.names.map(n => { const p = presetByName(n); return `<button type="button" class="ochip" data-tier="${esc(n)}" aria-pressed="${n === cur}">${esc(tierLabel(n, s.name))}${p?.price != null ? ` ${priceShort(p)}` : ""}</button>`; }).join("");
+    if (on && s.period) { const m = planOf(presetByName(cur)); const curM = m.kind === "pass" ? m.months : 0;
+      const opts = PERIODS.some(([, v]) => v === curM) ? PERIODS : [...PERIODS, [passSfx(curM), curM]];
+      chips = opts.map(([l, v]) => `<button type="button" class="ochip" data-period="${esc(cur)}|${v}" aria-pressed="${v === curM}">${l}</button>`).join(""); }
+    return `<div class="osvc${on ? " on" : ""}"><button type="button" class="orow" data-svc="${esc(s.id)}" role="checkbox" aria-checked="${on}" aria-pressed="${on}"><span class="em" aria-hidden="true">${emoOf(s.em)}</span><span class="tx"><b>${esc(s.name)}</b>${s.sub && !on ? `<span>${esc(s.sub)}</span>` : ""}</span><span class="ck">${checkSvg}</span></button>${chips ? `<div class="ochips2" role="group" aria-label="${esc(s.name)} 요금제">${chips}</div>` : ""}</div>`;
+  }
+  function groupListHtml(g) {
+    const list = groupServices(g), open = onb.open.includes(g.id) || list.length <= FOLD + 1;
+    return `<div class="olist">${(open ? list : list.slice(0, FOLD)).map(svcRow).join("")}</div>${open ? "" : `<button type="button" class="omore" data-ofold="${g.id}">더 보기 · ${list.length - FOLD}개</button>`}`;
+  }
+  function findListHtml() {
+    const q = onb.q.trim().toLowerCase().replace(/\s+/g, "");
     if (q) {
-      const hits = groups.flatMap(x => x.list).filter(s => (s.name + s.names.join("")).toLowerCase().replace(/\s+/g, "").includes(q));
+      const hits = allServices().filter(s => (s.name + s.names.join("")).toLowerCase().replace(/\s+/g, "").includes(q));
       return hits.length ? `<div class="olist">${hits.map(svcRow).join("")}</div>` : `<p class="sub" style="padding:12px 0">‘${esc(onb.q.trim())}’는 목록에 없어요. 아래 ‘직접 넣을게요’로 넣어 주세요.</p>`;
     }
-    return groups.map(({ g, list }) => { const open = onb.open.includes(g.id) || list.length <= FOLD + 1, shown = open ? list : list.slice(0, FOLD), k = list.filter(svcOn).length;
-      return `<section class="ogrp" id="og-${g.id}"><p class="catttl">${esc(g.name)}${k ? ` <span class="ok">${k}</span>` : ""}</p><div class="olist" role="group" aria-label="${esc(g.name)}">${shown.map(svcRow).join("")}</div>
-        ${open ? "" : `<button type="button" class="omore" data-ofold="${g.id}">${esc(g.name)} ${list.length - FOLD}개 더 보기</button>`}</section>`; }).join("");
+    return ONB_GROUPS.map(g => `<section class="ogrp" id="og-${g.id}"><p class="catttl">${esc(g.name)}</p>${groupListHtml(g)}</section>`).join("");
   }
-  function refreshPick() {
-    const list = $("onbList"); if (!list) return;
-    list.innerHTML = pickListHtml();
-    const k = onb.picked.length, nx = document.querySelector('#onbPage [data-onb="next"]');
-    nx.disabled = !k; nx.textContent = k ? `${k}개 골랐어요` : "하나 이상 골라 주세요";
-    const pl = $("onbPill"); if (pl) pl.textContent = `하루 ${won(dayOf(onbMonthly()))}`;
+  const pickedIn = list => list.filter(svcOn).length;
+  // 고른 걸 바꿀 때는 목록과 버튼만 바꿔요 (화면이 튀지 않게)
+  function refreshList() {
+    const cur = onb.key, box = $("onbList"); if (!box) return;
+    const g = cur.startsWith("grp:") ? ONB_GROUPS.find(x => "grp:" + x.id === cur) : null;
+    box.innerHTML = g ? groupListHtml(g) : findListHtml();
+    const nx = document.querySelector('#onbPage [data-onb="next"]');
+    if (g) nx.textContent = nextLabel(pickedIn(groupServices(g)));
+    else { const k = onb.picked.length; nx.disabled = !k; nx.textContent = k ? `${k}개 골랐어요 · 다음` : "하나 이상 골라 주세요"; }
   }
-  const head = (flow, pos, show, m) => `<div class="pagehead"><button class="iconbtn" type="button" data-onb="back" aria-label="뒤로">${backSvg}</button>
-    <span class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${flow.length - 1}" aria-valuenow="${pos}"><i style="width:${Math.round(pos / (flow.length - 1) * 100)}%"></i></span>${show ? `<span class="opill" id="onbPill">하루 ${won(dayOf(m))}</span>` : `<span style="width:44px"></span>`}</div>`;
+  const nextLabel = n => n ? `${n}개 골랐어요 · 다음` : "없어요 · 다음";
+  // 단계 표시: 고르기 → 금액 → 확인 → 사용법. 화면 수가 바뀌어도 막대가 뒤로 가지 않아요
+  function stageOf(cur) {
+    const gs = chosenGroups(), gi = gs.findIndex(g => "grp:" + g.id === cur);
+    if (cur === "cats") return ["1/4 고르기", 8];
+    if (cur === "find") return ["1/4 고르기", 30];
+    if (gi >= 0) return ["1/4 고르기", 8 + Math.round(37 * (gi + 1) / (gs.length + 1))];
+    return { amt: ["2/4 금액", 55], reveal: ["3/4 확인", 72], guide: ["4/4 사용법", 88], install: ["끝", 100] }[cur] || ["", 0];
+  }
+  const head = cur => { const [label, pct] = stageOf(cur);
+    return `<div class="pagehead"><button class="iconbtn" type="button" data-onb="back" aria-label="뒤로">${backSvg}</button>
+    <span class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></span><span class="ostage">${label}</span></div>`; };
   const ING = { "회": "가는", "편": "보는", "주문": "시키는", "일": "쓰는" };
-  const basisOf = p => p.cat === "fit" ? "일일권" : catOf(p.cat).unit === "편" ? "1편 대여" : p.cat === "food" ? "배달비" : p.cat === "shop" ? "배송비" : "1번 값";
+  const basisOf = p => p.cat === "fit" ? "일일권" : catOf(p.cat).unit === "편" ? "영화 1편 대여" : p.cat === "food" ? "배달비" : p.cat === "shop" ? "배송비" : "1번 값";
   // 첫 화면 예시 카드: 헬스장(일일권과 비교)
   const DEMOS = [
     { em: "🏋️", name: "헬스장", price: 70000, ref: 15000, uses: 3, unit: "번", basis: "일일권", verb: "가면" }
@@ -1514,16 +1599,15 @@ details.more2[open] summary{color:var(--sub)}
   function renderOnb() {
     const el = $("onbPage"), flow = onbFlow();
     let pos = flow.indexOf(onb.key);
-    if (pos < 0) pos = flow.length - 1;
-    const cur = onb.key = flow[pos], m = onbMonthly(), last = pos === flow.length - 1;
+    if (pos < 0) pos = Math.min(flow.length - 1, flow.indexOf("cats") + 1);
+    const cur = onb.key = flow[pos], last = pos === flow.length - 1;
     const keepY = el.dataset.key === cur ? el.scrollTop : 0;
     el.dataset.key = cur;
     el.classList.add("white");
-    const hd = head(flow, pos, !["intro", "reveal", "guide", "install"].includes(cur), m);
-    el.innerHTML = onbHtml(cur, hd, m, last);
+    el.innerHTML = onbHtml(cur, cur === "intro" ? "" : head(cur), onbMonthly(), last);
     el.scrollTop = keepY;
-    if (cur[0] === "a") setTimeout(() => $("onbAmt")?.focus(), 30);
   }
+  const cta = (main, sub = "") => `<div class="cta"><div class="cta-in onb-cta">${main}${sub}</div></div>`;
   function onbHtml(cur, hd, m, last) {
     if (cur === "intro") {
       // 메시지는 하나: 1번에 얼마 → 본전까지 N번. 예시 도장은 진짜로 눌러 볼 수 있고, 본전까지 찍으면 축하해요 (저장은 안 해요)
@@ -1535,57 +1619,76 @@ details.more2[open] summary{color:var(--sub)}
         ${demoCard(0)}</div>
         <div class="cta"><div class="cta-in onb-cta"><span class="small" id="onbNote">${won1 ? "<b>이제 내 구독으로 해 볼까요?</b>" : "깜빡한 날은 나중에 찍어도 돼요 · 못 뽑으면 해지할지 알려 드려요"}<br>가입 없이, 기록은 내 휴대폰에만 남아요</span><button type="button" data-onb="next">본전 뽑기</button></div></div>`;
     }
-    if (cur === "pick") {
+    if (cur === "cats") {
+      const k = onb.groups.length;
+      return `<div class="page-in onb onbq">${hd}<div><h1 class="h1">어떤 데 돈이<br>나가고 있어요?</h1><p class="sub" style="margin-top:6px">고른 것만 차례로 물어볼게요</p></div>
+        <div class="ctiles" role="group" aria-label="분류">${ONB_GROUPS.map(g => { const on = onb.groups.includes(g.id);
+          return `<button type="button" class="ctile" data-cat="${g.id}" aria-pressed="${on}"><span class="ce" aria-hidden="true">${emoOf(g.em, 22)}</span><span class="cn">${esc(g.name)}</span><span class="cx">${esc(g.ex)}</span><span class="ck">${checkSvg}</span></button>`; }).join("")}</div></div>
+        ${cta(`<button type="button" data-onb="next" ${k ? "" : "disabled"}>${k ? `${k}개 골랐어요 · 다음` : "하나 이상 골라 주세요"}</button>`, `<button type="button" class="textbtn" data-onb="find">잘 모르겠어요, 직접 찾을게요</button>`)}`;
+    }
+    if (cur.startsWith("grp:")) {
+      const gs = chosenGroups(), gi = gs.findIndex(g => "grp:" + g.id === cur), g = gs[gi];
+      return `<div class="page-in onb onbq">${hd}<div><p class="okick">${gi + 1}/${gs.length}</p><h1 class="h1">${g.q}</h1>${g.sub ? `<p class="sub" style="margin-top:6px">${esc(g.sub)}</p>` : ""}</div>
+        <div id="onbList">${groupListHtml(g)}</div>${g.note ? `<p class="small" style="margin:0;line-height:1.5">${g.note}</p>` : `<p class="small" style="margin:0">없는 건 나중에 내 고정비의 ＋에서 넣을 수 있어요</p>`}</div>
+        ${cta(`<button type="button" data-onb="next">${nextLabel(pickedIn(groupServices(g)))}</button>`)}`;
+    }
+    if (cur === "find") {
       const k = onb.picked.length;
-      return `<div class="page-in onb onbq">${hd}<div><h1 class="h1">매달 나가는 걸<br>모두 골라 주세요</h1><p class="sub" style="margin-top:6px">요금제와 금액은 다음에 확인해요</p></div>
+      return `<div class="page-in onb onbq">${hd}<div><h1 class="h1">매달 나가는 걸<br>모두 골라 주세요</h1></div>
         <div class="ostick"><label class="search">${searchSvg}<input id="onbQ" type="search" value="${esc(onb.q)}" placeholder="${allPresets().length}개 중에서 찾기" aria-label="서비스 찾기" autocomplete="off"></label>
           <div class="ochips" role="group" aria-label="분류로 가기">${ONB_GROUPS.map(g => `<button type="button" class="chip" data-ojump="${g.id}">${esc(g.name)}</button>`).join("")}</div></div>
-        <div id="onbList">${pickListHtml()}</div>
+        <div id="onbList">${findListHtml()}</div>
         <button type="button" class="textbtn" data-onb="manual" style="align-self:flex-start">찾는 게 없어요, 직접 넣을게요</button></div>
-        <div class="cta"><div class="cta-in"><button type="button" data-onb="next" ${k ? "" : "disabled"}>${k ? `${k}개 골랐어요` : "하나 이상 골라 주세요"}</button></div></div>`;
+        ${cta(`<button type="button" data-onb="next" ${k ? "" : "disabled"}>${k ? `${k}개 골랐어요 · 다음` : "하나 이상 골라 주세요"}</button>`)}`;
     }
-    if (cur[0] === "t") {
-      const ti = TIER_INFO[+cur.slice(1)], ps = ti.names.map(presetByName).filter(Boolean);
-      return `<div class="page-in onb onbq">${hd}<h1 class="h1">${esc(ti.q || `${ti.name}, 어떤 요금제예요?`)}</h1>
-        <div class="olist" role="radiogroup" aria-label="${esc(ti.name)} 요금제">${ps.map(orow).join("")}</div></div>
-        <div class="cta"><div class="cta-in"><button type="button" data-onb="next">다음</button></div></div>`;
-    }
-    if (cur[0] === "a") {
-      const p = presetByKey(cur.slice(1)), { kind, months } = planOf(p), v = onb.amt[p.key];
-      const q = kind === "pass" ? "얼마 냈어요?" : months === 12 ? "1년에 얼마예요?" : "한 달에 얼마예요?";
-      return `<div class="page-in onb onbq">${hd}<h1 class="h1">${esc(p.name)},<br>${q}</h1>
-        <div class="amt"><input id="onbAmt" inputmode="numeric" value="${v ? fmt(v) : ""}" placeholder="0" aria-label="${esc(p.name)} 금액" autocomplete="off"><span>원</span></div>
-        <p class="sub">모르면 건너뛰고 나중에 넣어도 돼요</p></div>
-        <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="next" ${v ? "" : "disabled"}>다음</button><button type="button" class="textbtn" data-onb="skipAmt">건너뛰기</button></div></div>`;
+    if (cur === "amt") {
+      const ps = onbPicked().filter(needsAmount);
+      const unitOf = p => { const { kind, months } = planOf(p); return kind === "pass" ? `${passSfx(months)} 금액` : months === 12 ? "1년" : "한 달"; };
+      return `<div class="page-in onb onbq">${hd}<div><h1 class="h1">금액만 넣어 주세요</h1><p class="sub" style="margin-top:6px">목록에 없는 금액이에요. 모르면 비워 두세요</p></div>
+        <div class="oamts">${ps.map(p => `<label class="oamt"><span class="em" aria-hidden="true">${emoOf(p.emoji || catOf(p.cat).emoji)}</span><span class="tx"><b>${esc(onbShort(p))}</b><span>${unitOf(p)}</span></span>
+          <span class="in"><input inputmode="numeric" data-amt="${esc(p.key)}" value="${onb.amt[p.key] ? fmt(onb.amt[p.key]) : ""}" placeholder="0" aria-label="${esc(onbShort(p))} ${unitOf(p)}" autocomplete="off"><span>원</span></span></label>`).join("")}</div>
+        <p class="small" style="margin:0">비워 둔 건 빼고 넣어요. 나중에 내 고정비에서 넣을 수 있어요</p></div>
+        ${cta(`<button type="button" data-onb="next">다음</button>`, `<button type="button" class="textbtn" data-onb="skipAmt">다 모르겠어요, 건너뛸게요</button>`)}`;
     }
     if (cur === "reveal") {
       const ps = onbKept();
       if (!ps.length) return `<div class="page-in onb onbq">${hd}<h1 class="h1">아직 넣은 게 없어요</h1><p class="sub">내 고정비의 ＋에서 언제든 검색해서 넣을 수 있어요</p></div>
-          <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="finishAdd">직접 넣기</button><button type="button" class="textbtn" data-onb="finish">나중에 넣을게요</button></div></div>`;
-      return `<div class="page-in onb onbq">${hd}<div class="dtop" style="padding:8px 0 0"><span class="lbl" style="font-size:17px">${ps.length}개를 모두 합치면</span>
-          <span class="hero" id="onbDay" style="font-size:44px">하루 ${won(dayOf(m))}</span><span class="lbl" style="font-size:16px">한 달 ${won(m)} · 1년 ${won(m * 12)}</span></div>
-        <section class="card opreview" style="padding:6px 18px"><div class="rows">${ps.slice().sort((a, b) => monthlyP(b) - monthlyP(a)).map(p => `<div class="row"><span class="av t${inkOf(p)}" aria-hidden="true">${esc(p.label || autoLabel(p.name))}</span>
-          <span class="mid"><span class="nm">${esc(p.name)}</span><span class="ds">한 달 ${won(monthlyP(p))}</span></span><span class="rt"><b>하루 ${won(dayOf(monthlyP(p)))}</b></span></div>`).join("")}</div></section></div>
-        <div class="cta"><div class="cta-in"><button type="button" data-onb="next">${last ? "도장 찍으러 가기" : "다음"}</button></div></div>`;
+          ${cta(`<button type="button" data-onb="finishAdd">직접 넣기</button>`, `<button type="button" class="textbtn" data-onb="finish">나중에 넣을게요</button>`)}`;
+      // 놀람(매일 얼마) → 그중 본전 뽑을 수 있는 돈 → 도장으로 이어져요
+      const flat = ps.filter(p => modeOf(p) !== "count"), cnt = ps.filter(p => modeOf(p) === "count");
+      const F = flat.reduce((s, p) => s + monthlyP(p), 0), C = cnt.reduce((s, p) => s + monthlyP(p), 0), cups = Math.round(dayOf(m) / 4500);
+      const ems = l => l.slice(0, 4).map(p => `<span class="em">${emoOf(p.emoji || catOf(p.cat).emoji, 12)}</span>`).join("");
+      const names = l => esc(l.slice(0, 3).map(onbShort).join(" · ") + (l.length > 3 ? ` 외 ${l.length - 3}개` : ""));
+      const box = (cls, title, amt, l, note) => `<div class="orv ${cls}"><div class="orv-h"><span class="orv-t"><span>${title}</span><b>하루 ${won(dayOf(amt))}</b><small>${names(l)}</small></span><span class="orv-e">${ems(l)}</span></div>${note ? `<span class="orv-n">${note}</span>` : ""}</div>`;
+      return `<div class="page-in onb onbq">${hd}<div class="dtop" style="padding:6px 0 0;gap:6px"><span class="lbl" style="font-size:17px">고른 ${ps.length}개를 모두 합치면</span>
+          <span class="hero" id="onbDay" style="font-size:clamp(34px,11vw,44px)">매일 <span class="acc">${won(dayOf(m))}</span></span>
+          <span class="lbl" style="font-size:16px;line-height:1.5">${cups >= 1 ? `아메리카노 <b>${cups}잔</b> 값이 매일 나가고 있어요<br>` : ""}한 달 ${won(m)} · 1년 ${won(m * 12)}</span></div>
+        <div class="orvs">${flat.length && cnt.length ? `<span class="orv-bar"><i style="width:${(F / m * 100).toFixed(1)}%"></i><i class="acc" style="width:${(C / m * 100).toFixed(1)}%"></i></span>` : ""}
+          ${flat.length ? box("", "쓰든 안 쓰든 나가는 돈", F, flat, "") : ""}
+          ${cnt.length ? box("hl", "본전 뽑을 수 있는 돈", C, cnt, "이 돈은 쓸수록 1번 값이 내려가요.<br>잘 안 쓰게 되면 해지할지 알려 드릴게요.") : ""}</div></div>
+        ${cta(`<button type="button" data-onb="next">${last ? "도장 찍으러 가기" : cnt.length ? "본전 뽑는 법 보기" : "다음"}</button>`)}`;
     }
     if (cur === "guide") {
-      // 고른 것 중 도장 찍는 걸로 예를 들어요 (없으면 헬스장)
-      const ex = onbKept().filter(p => modeOf(p) === "count").sort((a, b) => (b.ref > 0) - (a.ref > 0))[0];
-      const nm = ex ? onbShort(ex) : "헬스장", price = ex ? onbPrice(ex) : 70000, ref = ex ? ex.ref : 15000, vb = ex ? (VERB[catOf(ex.cat).unit] || VERB["일"]) : VERB["회"];
-      const unit = ex && catOf(ex.cat).unit === "편" ? "편" : "번", basis = ex ? basisOf(ex) : "일일권", be = ref > 0 ? Math.ceil(price / ref) : 0;
-      const steps = [1, 2, 3].map(n => `<span class="${n === 3 ? "on" : ""}"><small>${n}${unit}</small><b>${won(price / n)}</b></span>`).join(`<i aria-hidden="true">→</i>`);
+      // 고른 것 중 도장 찍는 걸로 예를 들어요 (없으면 헬스장). 초등학생도 그림만 보고 알 수 있게
+      const ex = onbKept().filter(p => modeOf(p) === "count" && p.ref > 0).sort((a, b) => (b.cat === "fit") - (a.cat === "fit"))[0];
+      const nm = ex ? onbShort(ex) : "헬스장", price = ex ? monthlyP(ex) * (planOf(ex).kind === "pass" ? planOf(ex).months : 1) : 70000, ref = ex ? ex.ref : 15000;
+      const u = ex ? catOf(ex.cat).unit : "회", vb = VERB[u] || VERB["일"], unit = u === "편" ? "편" : "번", basis = ex ? basisOf(ex) : "일일권", be = Math.max(1, Math.ceil(price / ref));
+      const act = { "회": `${esc(nm)}에<br>다녀와요`, "편": `${esc(nm)}${josa(nm, "을", "를")}<br>봐요`, "주문": `배달을<br>시켜요` }[u] || `${esc(nm)}${josa(nm, "을", "를")}<br>써요`;
+      const em = ex ? (ex.emoji || catOf(ex.cat).emoji) : "🏋️";
+      const days = ["월", "화", "수", "목"].map((d, i) => `<span><small>${d}</small><i class="${i === 1 ? "" : "on"}">${i === 1 ? "" : emoOf(em, 10)}</i></span>`).join("");
+      const panel = (top, label) => `<div class="ogp"><div class="ogp-b">${top}</div><span>${label}</span></div>`;
+      const bar = (face, label, amt, pct, cls, note) => `<div class="ogb"><span class="f" aria-hidden="true">${face}</span><span class="m"><span class="r"><b>${label}</b><span>1번에 <b class="${cls}">${won(amt)}</b></span></span><span class="bar md"><i class="${cls}" style="width:${pct}%"></i></span><small>${note}</small></span></div>`;
       return `<div class="page-in onb onbq">${hd}<div><h1 class="h1">이렇게 쓰면 돼요</h1></div>
-        <div class="oguide">
-          <div class="og"><span class="n">1</span><div><b>앞으로 구독·요금제를 쓸 때마다<br>도장 찍어 주세요</b><span>${esc(nm)}${josa(nm, "을", "를")} ${ING[ex ? catOf(ex.cat).unit : "회"] || ING["일"]} 날 ‘오늘 ${vb[0]}’만 누르면 돼요</span>
-            <div class="ogdemo" id="onbDemo"><span class="sbig" aria-hidden="true">오늘<br>${vb[0]}</span><span class="ogsteps">${steps}</span></div></div></div>
-          <div class="og"><span class="n">2</span><div><b>1번에 얼마로 본전 뽑고 있는지<br>알려 드릴게요</b><span>${be ? esc(`${nm}${josa(nm, "은", "는")} ${basis} ${won(ref)}과 비교해요. ${be}${unit} ${vb[2]} 본전이에요`) : esc(`도장이 늘수록 1번 값이 내려가요`)}</span></div></div>
-          <div class="og"><span class="n">3</span><div><b>매달 1일, 본전 못 뽑은 걸<br>정리해 드려요</b><span>리포트 탭에서 해지할지 한 달 더 써 볼지 고르면 돼요</span></div></div>
-        </div></div>
-        <div class="cta"><div class="cta-in"><button type="button" data-onb="next">${last ? "도장 찍으러 가기" : "다음"}</button></div></div>`;
+        <div class="og"><span class="n">1</span><div><b>구독·요금제를 쓸 때마다 도장 찍어요</b><span>버튼 하나만 누르면 끝이에요</span>
+          <div class="ogpanels" aria-hidden="true">${panel(`<span class="big">${emoOf(em, 30)}</span>`, act)}<i>→</i>${panel(`<span class="sbig">${demoStamp}</span><span class="tap">👆</span>`, "도장 버튼을<br>꾹 눌러요")}<i>→</i>${panel(`<span class="ogdays">${days}</span>`, "달력에<br>도장이 남아요")}</div></div></div>
+        <div class="og"><span class="n">2</span><div><b>얼마나 본전 뽑고 있는지 알려 드릴게요</b><span>${!ex || ex.cat === "fit" ? `${esc(nm)}처럼 나에게 좋은 건 더 자주 ${vb[2].replace(/면$/, "")}도록 도와 드릴게요` : `자주 ${{ "회": "갈", "편": "볼", "주문": "시킬" }[u] || "쓸"}수록 1번 값이 내려가요`}</span>
+          <div class="ogbars">${bar("😢", `1${unit} ${vb[2]}`, price, Math.round(100 / be), "bad", `${esc(basis)}(${won(ref)})보다 비싸요`)}${bar("😊", `${be}${unit} ${vb[2]}`, price / be, 100, "good", `${esc(basis)}보다 싸요 · 본전!`)}</div></div></div>
+        <div class="og"><span class="n">3</span><div><b>매달 1일, 본전 못 뽑은 걸 알려 드려요</b><span>계속 쓸지, 해지할지는 직접 정하면 돼요</span></div></div></div>
+        ${cta(`<button type="button" data-onb="next">${last ? "도장 찍으러 가기" : "다음"}</button>`)}`;
     }
     if (installEvt && !installed) return `<div class="page-in onb onbq">${hd}<div><h1 class="h1">본전을 앱으로<br>설치할까요?</h1><p class="sub" style="margin-top:6px">버튼 하나면 홈 화면에 본전 아이콘이 생겨요. 쓴 날 도장 찍으러 올 때 편해요</p></div>
       <div class="ohome" aria-hidden="true">${"<span></span>".repeat(7)}<span class="me">본전</span></div></div>
-      <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="install">앱 설치하기</button><button type="button" class="textbtn" data-onb="finish">나중에 할게요</button></div></div>`;
+      ${cta(`<button type="button" data-onb="install">앱 설치하기</button>`, `<button type="button" class="textbtn" data-onb="finish">나중에 할게요</button>`)}`;
     const ios = onb.os === "ios";
     const steps = ios ? [["사파리 아래 공유 버튼", shareSvg], ["‘홈 화면에 추가’", ""], ["오른쪽 위 ‘추가’", ""]] : [["크롬 오른쪽 위 ⋮ 메뉴", ""], ["‘홈 화면에 추가’ 또는 ‘앱 설치’", ""], ["‘추가’ 또는 ‘설치’", ""]];
     return `<div class="page-in onb onbq">${hd}<div><h1 class="h1">홈 화면에 추가하면<br>내일 바로 열려요</h1><p class="sub" style="margin-top:6px">쓴 날 도장 찍으러 올 때 편해요</p></div>
@@ -1594,14 +1697,16 @@ details.more2[open] summary{color:var(--sub)}
         <label><input type="radio" name="onbos" value="ios" ${ios ? "checked" : ""}>아이폰</label><label><input type="radio" name="onbos" value="android" ${ios ? "" : "checked"}>안드로이드</label></div>
       <div class="osteps">${steps.map(([t, ic], i) => `<div><span class="n">${i + 1}</span><span class="t">${t}</span>${ic ? `<span class="ic">${ic}</span>` : ""}</div>`).join("")}</div>
 </div>
-      <div class="cta"><div class="cta-in onb-cta"><button type="button" data-onb="finish">추가했어요</button><button type="button" class="textbtn" data-onb="finish">나중에 할게요</button></div></div>`;
+      ${cta(`<button type="button" data-onb="finish">추가했어요</button>`, `<button type="button" class="textbtn" data-onb="finish">나중에 할게요</button>`)}`;
   }
   async function finishOnb(thenAdd) {
     // 미리 보기는 끝까지 둘러봐도 아무것도 저장하지 않아요
     if (onb.preview) { closeOnb(); return toast("미리 보기라 아무것도 저장하지 않았어요"); }
     const t = todayStr(), start = t.slice(0, 8) + "01", ps = onbPicked(), keep = onbKept();
-    const made = keep.map((p, i) => { const c = catOf(p.cat);
-      return normalize({ id: newId() + i, createdAt: Date.now() + i, name: p.name, cat: p.cat, ...planOf(p), price: onbPrice(p), start, mode: modeOf(p),
+    const made = keep.map((p, i) => { const c = catOf(p.cat), pl = planOf(p);
+      // 운동은 고른 결제 방식으로 이름을 맞춰요 (헬스장 → 헬스장 6개월권)
+      const name = p.cat === "fit" ? (pl.kind === "pass" ? `${onbShort(p)} ${passSfx(pl.months)}` : onbShort(p)) : p.name;
+      return normalize({ id: newId() + i, createdAt: Date.now() + i, name, cat: p.cat, ...pl, price: onbPrice(p), start, mode: modeOf(p),
         ref: p.ref || 0, unit: c.unit, label: p.label || autoLabel(p.name), emoji: p.emoji || c.emoji, color: inkOf(p), status: "active", uses: [] }); });
     items.push(...made); closeOnb(); showTab("stamp", true); renderAll();
     const skipped = ps.length - keep.length;
@@ -1611,14 +1716,22 @@ details.more2[open] summary{color:var(--sub)}
   }
   const onbGo = d => { const flow = onbFlow(); onb.key = flow[Math.max(0, Math.min(flow.indexOf(onb.key) + d, flow.length - 1))]; renderOnb(); $("onbPage").scrollTop = 0; };
   $("onbPage").addEventListener("click", async e => {
-    const b = e.target.closest("[data-onb],[data-pickp],[data-svc],[data-ofold],[data-ojump],[data-odemo]");
+    const b = e.target.closest("[data-onb],[data-svc],[data-tier],[data-period],[data-cat],[data-ofold],[data-ojump],[data-odemo]");
     if (!b || b.disabled) return;
+    if (b.dataset.cat) { const g = b.dataset.cat; onb.groups = onb.groups.includes(g) ? onb.groups.filter(x => x !== g) : [...onb.groups, g]; return renderOnb(); }
     if (b.dataset.svc) {
-      const s = onbServices().flatMap(x => x.list).find(x => x.id === b.dataset.svc);
+      const s = allServices().find(x => x.id === b.dataset.svc);
       if (svcOn(s)) onb.picked = onb.picked.filter(n => !s.names.includes(n)); else onb.picked.push(s.def);
-      return refreshPick();
+      return refreshList();
     }
-    if (b.dataset.ofold) { onb.open.push(b.dataset.ofold); return refreshPick(); }
+    if (b.dataset.tier) {
+      // 요금제를 바꾸면 그 자리에서 바꿔요 (고른 순서 유지)
+      const n = b.dataset.tier, at = onb.picked.findIndex(y => tierOf(n).includes(y));
+      if (at >= 0) onb.picked.splice(at, 1, n); else onb.picked.push(n);
+      return refreshList();
+    }
+    if (b.dataset.period) { const [n, v] = b.dataset.period.split("|"); onb.plan[n] = +v; return refreshList(); }
+    if (b.dataset.ofold) { onb.open.push(b.dataset.ofold); return refreshList(); }
     if (b.dataset.odemo != null) {
       const i = +b.dataset.odemo, x = DEMOS[i];
       onb.demo[i] = x.uses + onb.demo[i] >= x.be ? 0 : onb.demo[i] + 1;
@@ -1629,19 +1742,16 @@ details.more2[open] summary{color:var(--sub)}
       $("onbNote").innerHTML = `${won1 ? "<b>이제 내 구독으로 해 볼까요?</b>" : "깜빡한 날은 나중에 찍어도 돼요 · 못 뽑으면 해지할지 알려 드려요"}<br>가입 없이, 기록은 내 휴대폰에만 남아요`;
       return;
     }
-    if (b.dataset.ojump) { if (onb.q) { onb.q = ""; $("onbQ").value = ""; refreshPick(); } $("og-" + b.dataset.ojump)?.scrollIntoView({ block: "start" }); return; }
-    if (b.dataset.pickp) {
-      const n = b.dataset.pickp; if (onb.picked.includes(n)) return;
-      // 요금제를 바꾸면 그 자리에서 바꿔요 (고른 순서 유지)
-      const at = onb.picked.findIndex(y => tierOf(n).includes(y));
-      if (at >= 0) onb.picked.splice(at, 1, n); else onb.picked.push(n);
-      return renderOnb();
-    }
+    if (b.dataset.ojump) { if (onb.q) { onb.q = ""; $("onbQ").value = ""; refreshList(); } $("og-" + b.dataset.ojump)?.scrollIntoView({ block: "start" }); return; }
     const a = b.dataset.onb;
     // 마지막 화면(claude.ai나 홈 화면 앱에서는 사용법 화면)이면 다음 대신 마쳐요
-    if (a === "next") { const flow = onbFlow(); return flow.indexOf(onb.key) >= flow.length - 1 ? finishOnb(false) : onbGo(1); }
+    if (a === "next") {
+      if (onb.key === "cats") onb.find = false;
+      const flow = onbFlow(); return flow.indexOf(onb.key) >= flow.length - 1 ? finishOnb(false) : onbGo(1);
+    }
     if (a === "back") return onbGo(-1);
-    if (a === "skipAmt") { delete onb.amt[onb.key.slice(1)]; return onbGo(1); }
+    if (a === "find") { onb.find = true; onb.key = "find"; renderOnb(); return $("onbPage").scrollTop = 0; }
+    if (a === "skipAmt") { for (const p of onbPicked().filter(needsAmount)) delete onb.amt[p.key]; return onbGo(1); }
     if (a === "sample") { if (onb.preview) { closeOnb(); return toast("미리 보기에서는 예시를 넣지 않아요"); } closeOnb(); return loadSamples(); }
     if (a === "manual") { closeOnb(); return onb.preview ? toast("미리 보기라 아무것도 저장하지 않았어요") : openAdd(); }
     if (a === "finish") return finishOnb(false);
@@ -1650,15 +1760,19 @@ details.more2[open] summary{color:var(--sub)}
   });
   $("onbPage").addEventListener("change", e => { if (e.target.name === "onbos") { onb.os = e.target.value; renderOnb(); } });
   $("onbPage").addEventListener("input", e => {
-    if (e.target.id === "onbQ") { onb.q = e.target.value; return refreshPick(); }
-    if (e.target.id !== "onbAmt") return;
-    const raw = String(e.target.value).replace(/[^\d]/g, ""), k = onb.key.slice(1);
+    if (e.target.id === "onbQ") { onb.q = e.target.value; return refreshList(); }
+    const k = e.target.dataset.amt; if (!k) return;
+    const raw = String(e.target.value).replace(/[^\d]/g, "");
     e.target.value = raw === "" ? "" : Number(raw).toLocaleString("ko-KR");
     if (raw === "" || raw === "0") delete onb.amt[k]; else onb.amt[k] = Number(raw);
-    const nx = document.querySelector('#onbPage [data-onb="next"]'); if (nx) nx.disabled = !onb.amt[k];
-    const pl = $("onbPill"); if (pl) pl.textContent = `하루 ${won(dayOf(onbMonthly()))}`;
   });
-  $("onbPage").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "onbAmt" && onb.amt[onb.key.slice(1)]) onbGo(1); });
+  // 금액 칸에서 엔터: 다음 칸으로, 마지막 칸이면 다음 화면으로
+  $("onbPage").addEventListener("keydown", e => {
+    if (e.key !== "Enter" || !e.target.dataset.amt) return;
+    e.preventDefault();
+    const all = [...document.querySelectorAll("#onbPage [data-amt]")], i = all.indexOf(e.target);
+    if (i < all.length - 1) all[i + 1].focus(); else onbGo(1);
+  });
 
   // ---------- 탭 ----------
   const TABS = ["stamp", "report", "mine"], TAB_KEY = "bonjeon-tab";
@@ -1707,7 +1821,7 @@ details.more2[open] summary{color:var(--sub)}
     if (act === "groupBack") { add.group = null; return renderAdd(); }
     if (act === "manual") { add.preset = null; add.cat = "etc"; add.step = 2; renderAdd(); setTimeout(() => { if (!$("addBody").contains(document.activeElement) || document.activeElement.tagName === "BUTTON") $("fName")?.focus(); }, 30); return; }
     if (act === "sample") return loadSamples();
-    if (act === "onbPick") return openOnb("pick");
+    if (act === "onbPick") return openOnb("cats");
     if (act === "onbPreview") { $("setSheet").hidden = true; return openOnb("intro", true); }
     if (act === "clearSamples") return clearSamples();
     if (act === "savedSheet") return openSaved();
