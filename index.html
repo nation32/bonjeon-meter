@@ -610,7 +610,7 @@ details.more2[open] summary{color:var(--sub)}
     <div class="backup" id="installBox" hidden><button class="btn sm pri" type="button" id="installBtn">앱 설치하기</button><span class="small">홈 화면에 본전 아이콘이 생겨요</span></div>
     <p class="small" id="installTip" hidden><b>홈 화면에 추가</b>하면 앱처럼 쓸 수 있어요. 아이폰은 사파리 공유 버튼 → ‘홈 화면에 추가’, 안드로이드는 크롬 메뉴 → ‘홈 화면에 추가’.</p>
     <button class="btn pri" type="button" data-act="closeSet" style="height:56px;font-size:17px">닫기</button></div></div>
-<div class="sheet" id="savedSheet" hidden><div class="sheet-in" role="dialog" aria-label="올해 아낀 돈 내역" id="savedBody"></div></div>
+<div class="sheet" id="savedSheet" hidden><div class="sheet-in" role="dialog" aria-label="올해 해지해서 아낀 돈 내역" id="savedBody"></div></div>
 <div class="toast" id="toast" hidden><span id="toastMsg"></span><button type="button" id="toastUndo" hidden>되돌리기</button></div>
 
 <script>
@@ -809,27 +809,17 @@ details.more2[open] summary{color:var(--sub)}
     const nm = stampName(it);
     return { title: `${nm}${josa(nm, "은", "는")} 정리해도 될 것 같아요` };
   }
+  // 아낀 돈 = 해지해서 실제로 안 나간 돈만. '본전 넘김'처럼 따로 샀다면 냈을 돈은 아낀 돈에 넣지 않아요
   function savingsDetail(t = todayStr()) {
-    const y0 = t.slice(0, 4) + "-01-01", cancel = [], gain = [];
+    const y0 = t.slice(0, 4) + "-01-01", cancel = [];
     for (const it of items) {
-      if (it.status === "cancelled" && it.cancelledAt) {
-        const from = it.cancelledAt > y0 ? it.cancelledAt : y0, days = Math.max(0, daysBetween(from, t));
-        const amt = days * monthlyOf(it, it.cancelledAt) * 12 / 365;
-        if (it.cancelledAt.slice(0, 4) === t.slice(0, 4) || amt > 0) cancel.push({ it, amt, days });
-      }
-      if (it.mode !== "count" || !(it.ref > 0)) continue;
-      const step = it.kind === "recurring" ? it.months : null;
-      let g = 0, u = 0;
-      for (let k = 0, s = it.start; s <= t && k < 400; k++) {
-        const e = addMonths(it.start, step ? (k + 1) * step : it.months);
-        if (e > y0) { const uu = usesIn(it, s, e), v = it.ref * uu - priceAt(it, s); if (v > 0) { g += v; u += uu; } }
-        if (!step) break;
-        s = e;
-      }
-      if (g > 0) gain.push({ it, amt: g, uses: u });
+      if (it.status !== "cancelled" || !it.cancelledAt) continue;
+      const from = it.cancelledAt > y0 ? it.cancelledAt : y0, days = Math.max(0, daysBetween(from, t));
+      const amt = days * monthlyOf(it, it.cancelledAt) * 12 / 365;
+      if (it.cancelledAt.slice(0, 4) === t.slice(0, 4) || amt > 0) cancel.push({ it, amt, days });
     }
-    const sum = a => a.reduce((s, x) => s + x.amt, 0);
-    return { cancel, gain, cancelSum: sum(cancel), gainSum: sum(gain), total: sum(cancel) + sum(gain) };
+    const total = cancel.reduce((s, x) => s + x.amt, 0);
+    return { cancel, total };
   }
 
   // ---------- 저장 ----------
@@ -1067,7 +1057,7 @@ details.more2[open] summary{color:var(--sub)}
     } else if (isCur) h += progressHtml(rows, t);
     else h += pastHtml(rows, k);
     const sv = savingsDetail(t);
-    h += `<button type="button" class="card savedrow" data-act="savedSheet"><span>올해 아낀 돈</span><b class="good" id="savedTotal">${won(sv.total)} ›</b></button>`;
+    if (sv.cancel.length) h += `<button type="button" class="card savedrow" data-act="savedSheet"><span>올해 해지해서 아낀 돈</span><b class="good" id="savedTotal">${won(sv.total)} ›</b></button>`;
     el.innerHTML = h;
   }
   function segBar(list) { return `<span class="segbar">${list.map(v => `<span style="background:${DOT[v]}"></span>`).join("")}</span>`; }
@@ -1170,12 +1160,10 @@ details.more2[open] summary{color:var(--sub)}
     const sv = savingsDetail();
     const row = (it, title, sub, amt) => `<div class="row">${av(it)}<span class="mid"><span class="nm">${esc(title)}</span><span class="ds">${esc(sub)}</span></span><span class="rt"><b class="good">${won(amt)}</b></span></div>`;
     $("savedBody").innerHTML = `<span class="grab"></span>
-      <div><span class="lbl">올해 아낀 돈</span><span class="hero good">${won(sv.total)}</span><span class="sub">1월 1일부터 오늘까지 아낀 돈이에요</span></div>
-      <div><div class="sec-h"><span>해지해서 아낀 돈</span><span>${won(sv.cancelSum)}</span></div>
+      <div><span class="lbl">올해 해지해서 아낀 돈</span><span class="hero good">${won(sv.total)}</span><span class="sub">해지한 날부터 오늘까지 안 나간 돈이에요</span></div>
+      <div>
         <div class="rows">${sv.cancel.length ? sv.cancel.map(x => row(x.it, `${shortName(x.it)} 해지`, `${md(x.it.cancelledAt)} 해지 · ${x.days}일 동안 안 나갔어요`, x.amt)).join("") : `<p class="sub">아직 해지한 게 없어요.</p>`}</div></div>
-      <div><div class="sec-h"><span>본전 넘겨서 아낀 돈</span><span>${won(sv.gainSum)}</span></div>
-        <div class="rows">${sv.gain.length ? sv.gain.map(x => row(x.it, shortName(x.it), `올해 ${x.uses}번 · 따로 샀을 때보다`, x.amt)).join("") : `<p class="sub">본전 기준 금액을 넣은 항목이 본전을 넘기면 여기에 쌓여요.</p>`}</div></div>
-      <div class="foot"><span><b>해지</b> · 해지한 날부터 하루 금액이 매일 쌓여요</span><span><b>본전 넘김</b> · 따로 샀을 때 금액에서 낸 금액을 뺀 만큼이에요</span></div>
+      <div class="foot"><span>해지한 날부터 그 구독의 하루 금액이 매일 쌓여요. 1월 1일에 새로 시작해요</span></div>
       <button class="btn pri" type="button" data-act="closeSheet" style="height:56px;font-size:17px">확인</button>`;
     $("savedSheet").hidden = false; lock();
   }

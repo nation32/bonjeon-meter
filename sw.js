@@ -1,5 +1,5 @@
 // 본전 service worker: 앱 화면은 오프라인에서도 열리게, 새 버전은 다음 실행 때 반영
-const CACHE = "bonjeon-acf443a2";
+const CACHE = "bonjeon-346fc77c";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
